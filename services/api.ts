@@ -1,10 +1,29 @@
 import { Player, Team, DreamTeamSubmission, AppConfig } from '../types';
-import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS } from '../constants';
+import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, DATA_VERSION } from '../constants';
 
 // --- STORAGE KEYS ---
-const KEY_PLAYERS = 'ikl_data_players_v1';
-const KEY_TEAMS = 'ikl_data_teams_v1';
-const KEY_CONFIG = 'ikl_data_config_v1';
+// Main storage keys
+const KEY_PLAYERS = 'ikl_data_players_v2';
+const KEY_TEAMS = 'ikl_data_teams_v2';
+const KEY_CONFIG = 'ikl_data_config_v2';
+const KEY_VERSION = 'ikl_data_version';
+
+// --- HELPER: CHECK VERSION AND RESET ---
+const checkVersionAndReset = () => {
+    const storedVersion = localStorage.getItem(KEY_VERSION);
+    // If stored version doesn't match code version, reset data to defaults
+    if (storedVersion !== DATA_VERSION) {
+        console.log(`New version detected (Old: ${storedVersion}, New: ${DATA_VERSION}). Resetting data to defaults.`);
+        localStorage.setItem(KEY_PLAYERS, JSON.stringify(MOCK_PLAYERS));
+        localStorage.setItem(KEY_TEAMS, JSON.stringify(MOCK_TEAMS));
+        localStorage.setItem(KEY_VERSION, DATA_VERSION);
+        // We do NOT reset config (logoUrl, googleFormUrl) usually, but for major data changes it might be safer
+        // For now, let's keep config to preserve settings like Form URL
+    }
+};
+
+// Check version immediately on load
+checkVersionAndReset();
 
 // --- HELPER: LOAD FROM STORAGE ---
 const loadFromStorage = <T>(key: string, defaultVal: T): T => {
@@ -13,7 +32,7 @@ const loadFromStorage = <T>(key: string, defaultVal: T): T => {
     if (item) {
         return JSON.parse(item);
     }
-    // If no data exists yet, save the default mock data immediately so we have a base
+    // If no data exists yet, save the default mock data immediately
     try {
       localStorage.setItem(key, JSON.stringify(defaultVal));
     } catch (err) {
@@ -34,13 +53,11 @@ const saveToStorage = (key: string, value: any): boolean => {
   } catch (e) {
     console.error(`Error saving ${key}.`, e);
     
-    // Fallback: Try to strip large images (base64) from the data to save at least the text
     if (Array.isArray(value)) {
         try {
             console.log("Attempting to save text-only data...");
             const cleanValue = value.map(item => {
                 const newItem = { ...item };
-                // Check for image/logo fields and remove if they are base64 (large)
                 if (newItem.image && newItem.image.startsWith('data:')) {
                     newItem.image = ''; 
                 }
@@ -51,7 +68,7 @@ const saveToStorage = (key: string, value: any): boolean => {
             });
             
             localStorage.setItem(key, JSON.stringify(cleanValue));
-            alert("WARNING: Storage Full!\n\nYour TEXT changes (Stats, Names) were saved, but large IMAGES were removed to fit in storage.\n\nPlease use Image URLs instead of uploading files.");
+            alert("WARNING: Storage Full!\n\nYour TEXT changes were saved, but large IMAGES were removed.");
             return true;
         } catch (retryErr) {
             console.error("Text-only save also failed", retryErr);
@@ -59,7 +76,7 @@ const saveToStorage = (key: string, value: any): boolean => {
     }
 
     if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-        alert("CRITICAL ERROR: Storage Full!\n\nChanges could NOT be saved. Please delete some items or use external Image URLs.");
+        alert("CRITICAL ERROR: Storage Full!\n\nChanges could NOT be saved.");
     }
     return false;
   }
@@ -75,7 +92,6 @@ const defaultConfig: AppConfig = {
   googleFormUrl: ""
 };
 
-// Load config and merge with defaults to ensure new fields (like googleFormUrl) exist if local storage is old
 const storedConfig = loadFromStorage<AppConfig>(KEY_CONFIG, defaultConfig);
 let currentConfig: AppConfig = { ...defaultConfig, ...storedConfig };
 
@@ -85,7 +101,6 @@ const SIMULATE_DELAY = 100;
 
 export const getPlayers = async (): Promise<Player[]> => {
   return new Promise((resolve) => {
-    // Reload from variable which is kept in sync
     setTimeout(() => resolve([...currentPlayers]), SIMULATE_DELAY);
   });
 };
@@ -118,7 +133,6 @@ export const updatePlayer = async (updatedPlayer: Player): Promise<boolean> => {
         currentPlayers = newPlayers;
         resolve(true);
     } else {
-        // Even if save failed, update memory so app doesn't break immediately
         currentPlayers = newPlayers; 
         resolve(false);
     }
@@ -153,7 +167,6 @@ export const deletePlayer = async (id: string): Promise<boolean> => {
 
 export const bulkUpdatePlayers = async (players: Player[]): Promise<boolean> => {
     return new Promise((resolve) => {
-      // Force update memory first
       currentPlayers = players;
       const saved = saveToStorage(KEY_PLAYERS, players);
       resolve(saved);
@@ -187,7 +200,6 @@ export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
   return new Promise((resolve) => {
     if (saveToStorage(KEY_CONFIG, config)) {
         currentConfig = config;
-        // Dispatch custom event to notify Layout to re-render logo
         window.dispatchEvent(new Event('storage-config-updated'));
         resolve(true);
     } else {
@@ -204,27 +216,19 @@ export const submitDreamTeam = async (submission: Omit<DreamTeamSubmission, 'id'
     try {
         await fetch(currentConfig.googleFormUrl, {
             method: 'POST',
-            mode: 'no-cors', // 'no-cors' is required for simple Google Apps Script POSTs from web
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(submission)
         });
         return true;
     } catch (e) {
         console.error("Submission failed", e);
-        // We often return true here in no-cors mode because we can't read the response anyway, 
-        // assuming it worked if network didn't fail.
         return true; 
     }
   } else {
-    console.warn("No Google Web App URL configured in Admin Settings. Data not sent to sheets.");
+    console.warn("No Google Web App URL configured.");
   }
-  
-  // Simulation for when no URL is configured
   return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, 500);
+    setTimeout(() => resolve(true), 500);
   });
 };

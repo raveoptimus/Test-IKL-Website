@@ -240,11 +240,11 @@ export const DreamTeam: React.FC = () => {
                                     <span className="text-white font-display text-3xl">{item.Player}</span>
                                 </div>
                                 {item.TeamLogo ? (
-                                   <div title={item.Team} className="w-12 h-12 bg-white/5 rounded flex items-center justify-center p-1.5 border border-white/10">
+                                   <div title={item.Team} className="w-12 h-12 bg-white/5 rounded flex items-center justify-center p-1.5 border border-white/10 shrink-0">
                                       <img src={item.TeamLogo} alt={item.Team} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                                    </div>
                                 ) : (
-                                   <span className="text-gray-400 text-sm font-bold uppercase bg-white/5 px-2 py-1 rounded">{item.Team}</span>
+                                   <span className="text-gray-400 text-sm font-bold uppercase bg-white/5 px-2 py-1 rounded shrink-0">{item.Team}</span>
                                 )}
                             </div>
                         ))}

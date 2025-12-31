@@ -1,5 +1,9 @@
 import { Player, Role, Team, DreamTeamSubmission } from './types';
 
+// Update this version string whenever you paste new data from Admin to force users to reload fresh data
+// CHANGE THIS (e.g., V4, V5, V6) every time you update the players list below!
+export const DATA_VERSION = '2025-FALL-V4'; 
+
 export const ROLE_LABELS: Record<Role, string> = {
   [Role.CLASH]: 'CLASH LANE',
   [Role.FARM]: 'FARM LANE',
@@ -7,6 +11,8 @@ export const ROLE_LABELS: Record<Role, string> = {
   [Role.MID]: 'MID LANE',
   [Role.ROAM]: 'ROAMER'
 };
+
+// --- PASTE YOUR ADMIN DATA BELOW THIS LINE ---
 
 // Simulate KV Data for Players
 export const MOCK_PLAYERS: Player[] = [
