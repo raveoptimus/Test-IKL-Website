@@ -2,7 +2,7 @@ import { Player, Role, Team, DreamTeamSubmission, AppConfig } from './types';
 
 // Update this version string whenever you paste new data from Admin to force users to reload fresh data
 // CHANGE THIS (e.g., V5, V6) every time you update the players list below!
-export const DATA_VERSION = '2025-FALL-V13'; 
+export const DATA_VERSION = '2025-FALL-V19'; 
 
 export const ROLE_LABELS: Record<Role, string> = {
   [Role.CLASH]: 'CLASH LANE',

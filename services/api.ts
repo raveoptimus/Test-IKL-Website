@@ -32,6 +32,15 @@ const parseCSVLine = (line: string): string[] => {
     return result;
 };
 
+// --- HELPER: ROBUST NUMBER PARSER ---
+const parseNumeric = (val: string | undefined): number => {
+    if (!val) return 0;
+    // Remove commas (often used in formatted numbers like 1,200)
+    const clean = val.toString().replace(/,/g, '');
+    const num = Number(clean);
+    return isNaN(num) ? 0 : num;
+};
+
 // --- HELPER: NORMALIZE ROLE ---
 const normalizeRole = (rawRole: string): Role => {
     if (!rawRole) return Role.CLASH;
@@ -154,7 +163,10 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
             console.log("Fetching Players from Sheet...");
             const response = await fetch(currentConfig.playersSheetUrl);
             if (!response.ok) throw new Error("Network response was not ok");
-            const csvText = await response.text();
+            let csvText = await response.text();
+            // Remove potential Byte Order Mark (BOM)
+            csvText = csvText.replace(/^\uFEFF/, ''); 
+
             const lines = csvText.split('\n');
             if (lines.length < 2) throw new Error("CSV Empty");
 
@@ -193,11 +205,11 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
                     role: normalizeRole(getVal(['role', 'lane', 'pos', 'position']) || ''),
                     image: cleanDriveLink(getVal(['image', 'photo', 'url', 'pic', 'link'])),
                     stats: {
-                        matches: Number(getVal(['played', 'matches', 'games', 'main'])) || 0,
-                        kill: Number(getVal(['kill', 'kills', 'k'])) || 0,
-                        death: Number(getVal(['death', 'deaths', 'd'])) || 0,
-                        assist: Number(getVal(['assist', 'assists', 'a'])) || 0,
-                        gpm: Number(getVal(['gpm', 'gold', 'gold/min'])) || 0
+                        matches: parseNumeric(getVal(['played', 'matches', 'games', 'main'])),
+                        kill: parseNumeric(getVal(['kill', 'kills', 'k'])),
+                        death: parseNumeric(getVal(['death', 'deaths', 'd'])),
+                        assist: parseNumeric(getVal(['assist', 'assists', 'a'])),
+                        gpm: parseNumeric(getVal(['gpm', 'gold', 'gold/min']))
                     }
                 });
             }
@@ -217,7 +229,9 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
             console.log("Fetching Teams from Sheet...");
             const response = await fetch(currentConfig.teamsSheetUrl);
             if (!response.ok) throw new Error("Network response was not ok");
-            const csvText = await response.text();
+            let csvText = await response.text();
+            csvText = csvText.replace(/^\uFEFF/, ''); 
+
             const lines = csvText.split('\n');
             if (lines.length < 2) throw new Error("CSV Empty");
 
@@ -242,13 +256,15 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
                 newTeams.push({
                     id: getVal(['id']) || `t_${i}`,
                     name: name,
-                    logo: cleanDriveLink(getVal(['logo', 'url', 'image', 'pic'])) || '',
+                    logo: cleanDriveLink(getVal(['_logo', 'logo', 'url', 'image', 'pic'])) || '',
                     description: getVal(['desc', 'description']) || '',
-                    matchPoints: Number(getVal(['match point', 'points', 'pts', 'point'])) || 0,
-                    matchWins: Number(getVal(['match w', 'match win', 'win', 'mw'])) || 0,
-                    matchLosses: Number(getVal(['match l', 'match loss', 'loss', 'ml'])) || 0,
-                    gameWins: Number(getVal(['game w', 'game win', 'gw'])) || 0,
-                    gameLosses: Number(getVal(['game l', 'game loss', 'gl'])) || 0,
+                    matchPoints: parseNumeric(getVal(['match point', 'points', 'pts', 'point'])),
+                    
+                    // Updated keywords for separated Stats columns (e.g. _matchW, _matchL)
+                    matchWins: parseNumeric(getVal(['_matchw', 'match w', 'match win', 'win', 'mw'])),
+                    matchLosses: parseNumeric(getVal(['_matchl', 'match l', 'match loss', 'loss', 'ml'])),
+                    gameWins: parseNumeric(getVal(['_gamew', 'game w', 'game win', 'gw'])),
+                    gameLosses: parseNumeric(getVal(['_gamel', 'game l', 'game loss', 'gl'])),
                 });
             }
 

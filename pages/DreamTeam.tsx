@@ -32,22 +32,33 @@ const RoleSection: React.FC<{
             <div
               key={player.id}
               onClick={() => onSelect(player.id)}
-              className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300 transform active:scale-95 ${
+              className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300 transform active:scale-95 flex flex-col ${
                 isSelected 
-                  ? 'border-ikl-green shadow-[0_0_25px_rgba(74,222,128,0.5)] bg-gradient-to-b from-ikl-green/10 to-transparent z-10' 
-                  : 'border-white/5 bg-black/40 hover:border-ikl-red/50 hover:bg-white/5'
+                  ? 'border-ikl-green shadow-[0_0_25px_rgba(74,222,128,0.5)] z-10' 
+                  : 'border-white/5 hover:border-ikl-red/50'
               }`}
             >
-              {/* Image Container - CHANGED: 'Zoom out' logic. Using object-contain aligned bottom with 95% height. */}
-              <div className="aspect-[4/5] bg-gradient-to-b from-[#1a1a1a] via-[#111] to-black relative overflow-hidden flex items-end justify-center">
-                 {/* Selection Glow Effect behind player */}
-                 {isSelected && <div className="absolute inset-0 bg-ikl-green/20 blur-xl"></div>}
+              {/* Image Container with Custom Background Pattern */}
+              <div className="aspect-[4/5] relative overflow-hidden flex items-end justify-center bg-[#151515]">
+                 {/* Tech Grid Pattern Background */}
+                 <div className="absolute inset-0 opacity-20" style={{
+                    backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
+                    backgroundSize: '20px 20px'
+                 }}></div>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                 
+                 {/* Team Logo Watermark (Subtle) */}
+                 {teamLogo && (
+                    <img src={teamLogo} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] opacity-[0.03] grayscale pointer-events-none" referrerPolicy="no-referrer" />
+                 )}
+
+                 {/* Selection Glow */}
+                 {isSelected && <div className="absolute inset-0 bg-ikl-green/10 z-0"></div>}
 
                  {player.image && !imgError ? (
                    <img 
                     src={player.image} 
                     alt={player.name} 
-                    // Changed to object-contain object-bottom to show more body (zoom out effect)
                     className={`w-full h-[95%] object-contain object-bottom transition-all duration-300 relative z-10 ${isSelected ? 'scale-110 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105'}`}
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
@@ -57,32 +68,30 @@ const RoleSection: React.FC<{
                         {player.team.substring(0,2)}
                     </div>
                  )}
-                 {/* Stronger Gradient Overlay for Text readability */}
-                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-20 opacity-90"></div>
-              </div>
 
-              {/* Selection Badge */}
-              {isSelected && (
-                <div className="absolute top-3 right-3 bg-ikl-green text-black text-xs font-bold px-3 py-1 rounded shadow-lg animate-pulse uppercase tracking-wider z-30">
-                  Picked
-                </div>
-              )}
+                 {/* Top Right Picked Badge */}
+                 {isSelected && (
+                    <div className="absolute top-2 right-2 bg-ikl-green text-black text-[10px] font-bold px-2 py-0.5 rounded shadow-lg animate-pulse uppercase tracking-wider z-20">
+                    PICKED
+                    </div>
+                 )}
+              </div>
               
-              {/* Info Overlay */}
-              <div className="absolute bottom-0 left-0 w-full p-3 pt-8 z-30">
-                {/* Nickname */}
-                <div className={`font-display text-xl md:text-2xl font-bold leading-tight tracking-wide text-center mb-2 drop-shadow-md break-words whitespace-normal ${isSelected ? 'text-ikl-green' : 'text-white group-hover:text-white transition-colors'}`}>
+              {/* Footer Info Area - Solid Black Background */}
+              <div className="bg-[#080808] p-2 md:p-4 flex flex-col items-center justify-center border-t border-white/10 relative z-20 min-h-[90px] md:min-h-[100px]">
+                {/* Name - Adjusted for Wrapping on Mobile */}
+                <div className={`font-display text-xl md:text-3xl font-bold leading-none tracking-wide text-center uppercase break-words w-full mb-2 ${isSelected ? 'text-ikl-green' : 'text-white'}`}>
                     {player.name}
                 </div>
                 
-                {/* Team Info */}
-                <div className="flex items-center justify-center gap-2 border-t border-white/20 pt-2">
+                {/* Team Info Row: Logo + ABV */}
+                <div className="flex items-center justify-center gap-2 md:gap-3">
                     {teamLogo ? (
-                        <img src={teamLogo} alt={player.team} className="w-5 h-5 object-contain shrink-0" referrerPolicy="no-referrer" />
-                    ) : (
-                        <div className="w-4 h-4 bg-gray-700 rounded-full shrink-0"></div>
-                    )}
-                    <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest truncate max-w-[80px]">
+                        <div className="w-8 h-8 md:w-9 md:h-9 bg-white/5 rounded-full flex items-center justify-center p-1 border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                             <img src={teamLogo} alt={player.team} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                        </div>
+                    ) : null}
+                    <div className="text-gray-400 font-bold text-xs md:text-sm tracking-widest uppercase">
                         {player.teamAbv || player.team}
                     </div>
                 </div>

@@ -147,36 +147,58 @@ export const teamsToExcelData = (teams: Team[]) => {
 
 export const excelDataToTeams = (data: any[]): Team[] => {
     return data.map((row: any) => {
-        let matchWins = row._matchW || 0;
-        let matchLosses = row._matchL || 0;
-        
-        const matchWL = row['Match W - L'] || row['Match W-L'];
-        if (typeof matchWL === 'string' && matchWL.includes('-')) {
-            const parts = matchWL.split('-').map((s: string) => parseInt(s.trim()));
-            if (parts.length === 2) {
-                matchWins = parts[0];
-                matchLosses = parts[1];
+        // Try to find exact numeric columns first (support _matchW or standard names)
+        const findVal = (keys: string[]) => {
+            for (const k of keys) {
+                if (row[k] !== undefined) return Number(row[k]);
+                // Case insensitive check
+                const found = Object.keys(row).find(rk => rk.toLowerCase() === k.toLowerCase());
+                if (found && row[found] !== undefined) return Number(row[found]);
             }
+            return undefined;
+        };
+
+        let matchWins = findVal(['_matchW', 'matchWin', 'Match Win', 'MW']);
+        let matchLosses = findVal(['_matchL', 'matchLoss', 'Match Loss', 'ML']);
+        
+        // Fallback to "W - L" string parsing
+        if (matchWins === undefined) {
+             const matchWL = row['Match W - L'] || row['Match W-L'];
+             if (typeof matchWL === 'string' && matchWL.includes('-')) {
+                const parts = matchWL.split('-').map((s: string) => parseInt(s.trim()));
+                if (parts.length === 2) {
+                    matchWins = parts[0];
+                    matchLosses = parts[1];
+                }
+             }
         }
 
-        let gameWins = row._gameW || 0;
-        let gameLosses = row._gameL || 0;
+        let gameWins = findVal(['_gameW', 'gameWin', 'Game Win', 'GW']);
+        let gameLosses = findVal(['_gameL', 'gameLoss', 'Game Loss', 'GL']);
 
-        const gameWL = row['Game W - L'] || row['Game W-L'];
-        if (typeof gameWL === 'string' && gameWL.includes('-')) {
-            const parts = gameWL.split('-').map((s: string) => parseInt(s.trim()));
-            if (parts.length === 2) {
-                gameWins = parts[0];
-                gameLosses = parts[1];
+        if (gameWins === undefined) {
+            const gameWL = row['Game W - L'] || row['Game W-L'];
+            if (typeof gameWL === 'string' && gameWL.includes('-')) {
+                const parts = gameWL.split('-').map((s: string) => parseInt(s.trim()));
+                if (parts.length === 2) {
+                    gameWins = parts[0];
+                    gameLosses = parts[1];
+                }
             }
         }
         
-        const rawLogo = row._logo || row.LogoURL || row.Logo || '';
+        // Defaults
+        matchWins = matchWins || 0;
+        matchLosses = matchLosses || 0;
+        gameWins = gameWins || 0;
+        gameLosses = gameLosses || 0;
+
+        const rawLogo = row._logo || row.LogoURL || row.Logo || row['Logo'] || '';
 
         return {
-            id: String(row._id || Math.random().toString(36).substr(2, 9)),
-            name: row.Team || row.Name,
-            matchPoints: Number(row['Match Point']) || 0,
+            id: String(row._id || row.id || Math.random().toString(36).substr(2, 9)),
+            name: row.Team || row.Name || row['Team Name'],
+            matchPoints: Number(row['Match Point'] || row.Points || row.Pts) || 0,
             matchWins,
             matchLosses,
             gameWins,
