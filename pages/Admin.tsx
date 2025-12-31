@@ -28,6 +28,19 @@ const transparentBgStyle = {
   backgroundColor: '#111'
 };
 
+const convertDriveLink = (url: string) => {
+    if (!url) return url;
+    // Handle standard view link
+    if (url.includes('drive.google.com') && url.includes('/view')) {
+        const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (idMatch && idMatch[1]) {
+            return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+        }
+    }
+    // Handle short ID only (edge case)
+    return url;
+};
+
 export const Admin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
@@ -308,7 +321,7 @@ export const Admin: React.FC = () => {
                                          {/* PNG Friendly: Used Checkerboard Pattern */}
                                          <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 flex items-center justify-center" style={transparentBgStyle}>
                                             {player.image ? (
-                                                <img src={player.image} alt={player.name} className="w-full h-full object-contain" />
+                                                <img src={player.image} alt={player.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                                             ) : (
                                                 <div className="text-xs text-gray-500 font-bold">{player.team.substring(0,2)}</div>
                                             )}
@@ -355,7 +368,7 @@ export const Admin: React.FC = () => {
                                                 {/* PNG Friendly Preview with Checkerboard */}
                                                 <div className="w-full aspect-[4/5] border border-white/20 rounded-lg overflow-hidden relative mb-3 group flex items-center justify-center" style={transparentBgStyle}>
                                                     {editingPlayer.image ? (
-                                                        <img src={editingPlayer.image} alt="Preview" className="w-full h-full object-contain" />
+                                                        <img src={editingPlayer.image} alt="Preview" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                                                     ) : (
                                                         <div className="flex flex-col items-center justify-center text-gray-500 gap-2">
                                                             <span className="text-xs font-bold">No Image</span>
@@ -368,7 +381,7 @@ export const Admin: React.FC = () => {
                                                         placeholder="Or paste Image URL..."
                                                         className="w-full bg-black border border-white/20 rounded p-2 text-xs text-white"
                                                         value={editingPlayer.image && editingPlayer.image.startsWith('http') ? editingPlayer.image : ''}
-                                                        onChange={(e) => setEditingPlayer({...editingPlayer, image: e.target.value})}
+                                                        onChange={(e) => setEditingPlayer({...editingPlayer, image: convertDriveLink(e.target.value)})}
                                                     />
                                                     <div className="relative overflow-hidden">
                                                         <button type="button" className="w-full bg-white/10 hover:bg-white/20 text-white text-xs py-2 rounded transition-colors uppercase font-bold">
@@ -438,7 +451,7 @@ export const Admin: React.FC = () => {
                                  {/* PNG Friendly Logo Container */}
                                  <div className="w-20 h-20 rounded-lg flex items-center justify-center border border-white/10 overflow-hidden" style={transparentBgStyle}>
                                      {team.logo && !team.logo.includes('placehold') ? (
-                                         <img src={team.logo} alt={team.name} className="w-full h-full object-contain" />
+                                         <img src={team.logo} alt={team.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                                      ) : (
                                          <span className="font-display text-4xl text-gray-600 font-bold">{team.name.substring(0,2)}</span>
                                      )}
@@ -470,13 +483,13 @@ export const Admin: React.FC = () => {
                                     className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-red focus:outline-none"
                                     placeholder="https://example.com/logo.png"
                                     value={config.logoUrl}
-                                    onChange={e => setConfig({...config, logoUrl: e.target.value})}
+                                    onChange={e => setConfig({...config, logoUrl: convertDriveLink(e.target.value)})}
                                 />
                                 {/* PNG Friendly Preview - Checkerboard Pattern */}
                                 <div className="p-4 rounded border border-white/10 flex items-center gap-4" style={transparentBgStyle}>
                                     <span className="text-gray-500 text-sm font-bold uppercase bg-black/80 px-2 rounded">Preview:</span>
                                     {config.logoUrl ? (
-                                        <img src={config.logoUrl} alt="Logo Preview" className="h-12 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                                        <img src={config.logoUrl} alt="Logo Preview" className="h-12 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} referrerPolicy="no-referrer" />
                                     ) : (
                                         <span className="text-gray-600 text-xs italic">No URL entered</span>
                                     )}

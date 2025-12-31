@@ -71,6 +71,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 src={logoUrl} 
                 alt="IKL Logo" 
                 className="h-12 w-auto object-contain hover:scale-105 transition-transform duration-300"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                   // Fallback if image fails (optional, but good for UX)
+                   // e.currentTarget.style.display = 'none'; 
+                }}
               />
               <span className="font-display font-bold text-2xl tracking-widest text-white hidden sm:block">
                 FALL <span className="text-ikl-red">2025</span>
