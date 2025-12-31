@@ -8,9 +8,15 @@ export const Teams: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
-  useEffect(() => {
+  const loadData = () => {
     getTeams().then(setTeams);
     getPlayers().then(setPlayers);
+  };
+
+  useEffect(() => {
+    loadData();
+    window.addEventListener('data-updated', loadData);
+    return () => window.removeEventListener('data-updated', loadData);
   }, []);
 
   // --- DETAIL VIEW ---
@@ -39,7 +45,7 @@ export const Teams: React.FC = () => {
                  )}
             </div>
             <div className="text-center md:text-left">
-                 <h1 className="text-7xl md:text-9xl font-display font-bold text-white uppercase leading-none mb-6 drop-shadow-lg">{selectedTeam.name}</h1>
+                 <h1 className="text-7xl md:text-9xl font-display font-bold text-white uppercase leading-none mb-6 drop-shadow-lg break-words">{selectedTeam.name}</h1>
                  {/* Detail Intro */}
                  <p className="text-2xl text-gray-400 max-w-3xl leading-relaxed font-light">
                    {selectedTeam.description || "No team description available."}
@@ -69,8 +75,8 @@ export const Teams: React.FC = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
                       </div>
                       <div className="p-5 text-center bg-black/60 backdrop-blur-sm -mt-1 relative z-10 border-t border-white/5">
-                          {/* Nickname */}
-                          <h3 className="text-3xl font-display font-bold text-white uppercase tracking-wide mb-1">{player.name}</h3>
+                          {/* Nickname - Added wrapping */}
+                          <h3 className="text-3xl font-display font-bold text-white uppercase tracking-wide mb-1 break-words leading-none">{player.name}</h3>
                           <div className="inline-block px-3 py-1 bg-white/10 rounded text-xs font-bold text-gray-400 uppercase tracking-widest border border-white/5">
                              {ROLE_LABELS[player.role]}
                           </div>
@@ -115,7 +121,7 @@ export const Teams: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-b from-ikl-red/0 to-ikl-red/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                    </div>
                    
-                   <h2 className="text-5xl font-display font-bold text-white text-center uppercase mb-6 leading-none tracking-wide">{team.name}</h2>
+                   <h2 className="text-5xl font-display font-bold text-white text-center uppercase mb-6 leading-none tracking-wide break-words w-full">{team.name}</h2>
                 </div>
                 
                 <div className="flex items-center gap-2 text-base font-bold text-gray-500 uppercase tracking-widest group-hover:text-ikl-red transition-colors mt-4">

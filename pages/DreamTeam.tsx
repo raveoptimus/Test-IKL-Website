@@ -38,7 +38,7 @@ const RoleSection: React.FC<{
                   : 'border-white/5 bg-black/40 hover:border-ikl-red/50 hover:bg-white/5'
               }`}
             >
-              {/* Image Container */}
+              {/* Image Container - CHANGED: object-cover object-top to remove black bars and focus on face/body */}
               <div className="aspect-[4/5] bg-gradient-to-b from-[#1a1a1a] to-black relative overflow-hidden">
                  {/* Selection Glow Effect behind player */}
                  {isSelected && <div className="absolute inset-0 bg-ikl-green/20 blur-xl"></div>}
@@ -47,8 +47,7 @@ const RoleSection: React.FC<{
                    <img 
                     src={player.image} 
                     alt={player.name} 
-                    // Changed to object-contain to show full image, removed opacity dimming to highlight photo
-                    className={`w-full h-full object-contain object-bottom transition-all duration-300 relative z-10 ${isSelected ? 'scale-110 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105'}`}
+                    className={`w-full h-full object-cover object-top transition-all duration-300 relative z-10 ${isSelected ? 'scale-110 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105'}`}
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
                    />
@@ -58,7 +57,7 @@ const RoleSection: React.FC<{
                     </div>
                  )}
                  {/* Stronger Gradient Overlay for Text readability */}
-                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-20"></div>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-20 opacity-90"></div>
               </div>
 
               {/* Selection Badge */}
@@ -70,17 +69,17 @@ const RoleSection: React.FC<{
               
               {/* Info Overlay */}
               <div className="absolute bottom-0 left-0 w-full p-3 pt-8 z-30">
-                {/* Reduced font size for nickname */}
-                <div className={`font-display text-xl md:text-2xl font-bold leading-none tracking-wide text-center mb-2 drop-shadow-md ${isSelected ? 'text-ikl-green' : 'text-white group-hover:text-white transition-colors'}`}>
+                {/* Nickname - CHANGED: Added break-words and leading-tight to wrap long names */}
+                <div className={`font-display text-xl md:text-2xl font-bold leading-tight tracking-wide text-center mb-2 drop-shadow-md break-words whitespace-normal ${isSelected ? 'text-ikl-green' : 'text-white group-hover:text-white transition-colors'}`}>
                     {player.name}
                 </div>
                 
                 {/* Team Info */}
                 <div className="flex items-center justify-center gap-2 border-t border-white/20 pt-2">
                     {teamLogo ? (
-                        <img src={teamLogo} alt={player.team} className="w-5 h-5 object-contain" referrerPolicy="no-referrer" />
+                        <img src={teamLogo} alt={player.team} className="w-5 h-5 object-contain shrink-0" referrerPolicy="no-referrer" />
                     ) : (
-                        <div className="w-4 h-4 bg-gray-700 rounded-full"></div>
+                        <div className="w-4 h-4 bg-gray-700 rounded-full shrink-0"></div>
                     )}
                     <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest truncate max-w-[80px]">
                         {player.team}
@@ -117,13 +116,20 @@ export const DreamTeam: React.FC = () => {
 
   const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/167WebdFXfpn0arheh1KoHNwoRnbq2aJlHtlB00dxK1Q/edit?usp=sharing";
 
-  useEffect(() => {
+  const loadData = () => {
     Promise.all([getPlayers(), getTeams(), getAppConfig()]).then(([playerData, teamData, configData]) => {
       setPlayers(playerData);
       setTeams(teamData);
       setConfig(configData);
       setLoading(false);
     });
+  };
+
+  useEffect(() => {
+    loadData();
+    // Listen for data updates (from Auto Sync)
+    window.addEventListener('data-updated', loadData);
+    return () => window.removeEventListener('data-updated', loadData);
   }, []);
 
   const handleSelection = (role: Role, playerId: string) => {

@@ -272,6 +272,7 @@ export const updatePlayer = async (updatedPlayer: Player): Promise<boolean> => {
     const newPlayers = currentPlayers.map(p => p.id === updatedPlayer.id ? updatedPlayer : p);
     if (saveToStorage(KEY_PLAYERS, newPlayers)) {
         currentPlayers = newPlayers;
+        window.dispatchEvent(new Event('data-updated'));
         resolve(true);
     } else {
         currentPlayers = newPlayers; 
@@ -285,6 +286,7 @@ export const createPlayer = async (newPlayer: Player): Promise<boolean> => {
       const newPlayers = [...currentPlayers, newPlayer];
       if (saveToStorage(KEY_PLAYERS, newPlayers)) {
           currentPlayers = newPlayers;
+          window.dispatchEvent(new Event('data-updated'));
           resolve(true);
       } else {
           currentPlayers = newPlayers;
@@ -298,6 +300,7 @@ export const deletePlayer = async (id: string): Promise<boolean> => {
       const newPlayers = currentPlayers.filter(p => p.id !== id);
       if (saveToStorage(KEY_PLAYERS, newPlayers)) {
           currentPlayers = newPlayers;
+          window.dispatchEvent(new Event('data-updated'));
           resolve(true);
       } else {
           currentPlayers = newPlayers;
@@ -310,6 +313,9 @@ export const bulkUpdatePlayers = async (players: Player[]): Promise<boolean> => 
     return new Promise((resolve) => {
       currentPlayers = players;
       const saved = saveToStorage(KEY_PLAYERS, players);
+      if (saved) {
+          window.dispatchEvent(new Event('data-updated'));
+      }
       resolve(saved);
     });
 };
@@ -320,6 +326,7 @@ export const updateTeam = async (updatedTeam: Team): Promise<boolean> => {
     const newTeams = currentTeams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
     if (saveToStorage(KEY_TEAMS, newTeams)) {
         currentTeams = newTeams;
+        window.dispatchEvent(new Event('data-updated'));
         resolve(true);
     } else {
         currentTeams = newTeams;
@@ -332,6 +339,9 @@ export const bulkUpdateTeams = async (teams: Team[]): Promise<boolean> => {
     return new Promise((resolve) => {
       currentTeams = teams;
       const saved = saveToStorage(KEY_TEAMS, teams);
+      if (saved) {
+          window.dispatchEvent(new Event('data-updated'));
+      }
       resolve(saved);
     });
 };

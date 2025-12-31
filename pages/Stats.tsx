@@ -15,12 +15,18 @@ export const Stats: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'highlights' | 'roster'>('roster');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'calcKDA', direction: 'desc' });
 
+  const loadData = () => {
+      Promise.all([getPlayers(), getTeams()]).then(([playerData, teamData]) => {
+        setPlayers(playerData);
+        setTeams(teamData);
+        setLoading(false);
+      });
+  };
+
   useEffect(() => {
-    Promise.all([getPlayers(), getTeams()]).then(([playerData, teamData]) => {
-      setPlayers(playerData);
-      setTeams(teamData);
-      setLoading(false);
-    });
+    loadData();
+    window.addEventListener('data-updated', loadData);
+    return () => window.removeEventListener('data-updated', loadData);
   }, []);
 
   // --- PREPARE DATA ---

@@ -6,17 +6,23 @@ export const Standings: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const loadData = () => {
+      getTeams().then(data => {
+        // Sort by Match Points desc, then Net Game Win desc
+        setTeams(data.sort((a,b) => {
+            if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints;
+            const netA = a.gameWins - a.gameLosses;
+            const netB = b.gameWins - b.gameLosses;
+            return netB - netA;
+        }));
+        setLoading(false);
+      });
+  };
+
   useEffect(() => {
-    getTeams().then(data => {
-      // Sort by Match Points desc, then Net Game Win desc
-      setTeams(data.sort((a,b) => {
-          if (b.matchPoints !== a.matchPoints) return b.matchPoints - a.matchPoints;
-          const netA = a.gameWins - a.gameLosses;
-          const netB = b.gameWins - b.gameLosses;
-          return netB - netA;
-      }));
-      setLoading(false);
-    });
+    loadData();
+    window.addEventListener('data-updated', loadData);
+    return () => window.removeEventListener('data-updated', loadData);
   }, []);
 
   if (loading) return <div className="text-center py-20 text-2xl font-display animate-pulse text-gray-500">Loading Standings...</div>;
