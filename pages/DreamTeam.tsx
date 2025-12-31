@@ -73,7 +73,7 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
                            <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-gray-900 rounded-full overflow-hidden border border-white/10 group-hover:border-ikl-red/50 transition-colors">
                                  {player.image ? (
-                                    <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+                                    <img src={player.image} alt={player.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                                  ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-600 font-display">
                                        {player.name.substring(0,1)}
@@ -90,7 +90,7 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
                         </td>
                         <td className="py-3">
                            <div className="flex items-center gap-2 text-gray-400">
-                              {teamLogo && <img src={teamLogo} alt="Team" className="w-4 h-4 object-contain opacity-70" />}
+                              {teamLogo && <img src={teamLogo} alt="Team" className="w-4 h-4 object-contain opacity-70" referrerPolicy="no-referrer" />}
                               <span className="uppercase text-xs font-bold">{player.team}</span>
                            </div>
                         </td>
@@ -144,7 +144,7 @@ const RoleSection: React.FC<{
               {/* Image Container */}
               <div className="aspect-[4/5] bg-gray-900 relative">
                  {player.image ? (
-                   <img src={player.image} alt={player.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+                   <img src={player.image} alt={player.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" referrerPolicy="no-referrer" />
                  ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-6xl font-bold select-none">
                         {player.team.substring(0,2)}
@@ -170,7 +170,7 @@ const RoleSection: React.FC<{
                 {/* Team Info */}
                 <div className="flex items-center justify-center gap-2 border-t border-white/10 pt-2">
                     {teamLogo ? (
-                        <img src={teamLogo} alt={player.team} className="w-5 h-5 object-contain" />
+                        <img src={teamLogo} alt={player.team} className="w-5 h-5 object-contain" referrerPolicy="no-referrer" />
                     ) : (
                         <div className="w-5 h-5 bg-gray-700 rounded-full"></div>
                     )}

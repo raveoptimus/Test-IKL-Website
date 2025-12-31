@@ -30,14 +30,25 @@ const transparentBgStyle = {
 
 const convertDriveLink = (url: string) => {
     if (!url) return url;
-    // Handle standard view link
-    if (url.includes('drive.google.com') && url.includes('/view')) {
-        const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (idMatch && idMatch[1]) {
-            return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-        }
+
+    // Helper to construct the view link
+    const makeViewLink = (id: string) => `https://drive.google.com/uc?export=view&id=${id}`;
+
+    // Pattern 1: https://drive.google.com/file/d/VIDEO_ID/view...
+    const viewMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (viewMatch && viewMatch[1]) {
+        return makeViewLink(viewMatch[1]);
     }
-    // Handle short ID only (edge case)
+
+    // Pattern 2: https://drive.google.com/uc?id=VIDEO_ID... or similar
+    if (url.includes('drive.google.com')) {
+         const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+         if (idMatch && idMatch[1]) {
+             // If it's already a UC link but missing export=view, or just clean it up
+             return makeViewLink(idMatch[1]);
+         }
+    }
+    
     return url;
 };
 

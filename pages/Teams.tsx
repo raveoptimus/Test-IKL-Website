@@ -33,7 +33,7 @@ export const Teams: React.FC = () => {
             {/* PNG Friendly: Changed bg-black to bg-white/5 */}
             <div className="w-40 h-40 bg-white/5 rounded-full flex items-center justify-center border-4 border-white/10 shadow-[0_0_40px_rgba(255,42,42,0.2)] flex-shrink-0 relative overflow-hidden">
                  {selectedTeam.logo && !selectedTeam.logo.includes('placehold') ? (
-                     <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-full h-full object-contain" />
+                     <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                  ) : (
                      <span className="font-display text-6xl text-gray-700">{selectedTeam.name.substring(0,2)}</span>
                  )}
@@ -60,7 +60,7 @@ export const Teams: React.FC = () => {
                       {/* Photo Player - Keep dark bg for player photos usually, but can be adjusted */}
                       <div className="aspect-[4/5] bg-gray-900 relative">
                           {player.image ? (
-                             <img src={player.image} alt={player.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                             <img src={player.image} alt={player.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer" />
                           ) : (
                              <div className="w-full h-full flex items-center justify-center text-4xl font-display text-gray-800 font-bold">
                                 {player.name.substring(0,1)}
@@ -107,7 +107,7 @@ export const Teams: React.FC = () => {
                    {/* PNG Friendly: Changed bg-black to bg-white/5 (transparent-ish) */}
                    <div className="w-40 h-40 bg-white/5 rounded-full mb-8 border-2 border-dashed border-white/20 flex items-center justify-center group-hover:border-ikl-red group-hover:scale-105 transition-all duration-300 relative overflow-hidden">
                       {team.logo && !team.logo.includes('placehold') ? (
-                          <img src={team.logo} alt={team.name} className="w-full h-full object-contain" />
+                          <img src={team.logo} alt={team.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                       ) : (
                           <span className="font-display text-5xl text-gray-700 group-hover:text-white transition-colors z-10">{team.name.substring(0,2)}</span>
                       )}

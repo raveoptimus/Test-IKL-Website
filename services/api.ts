@@ -72,7 +72,7 @@ let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 
 // Updated default logo to the Google Drive link provided
 let currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, {
-  logoUrl: "https://drive.google.com/uc?export=view&id=1nRGF3ELWXAcpdnkQzvXHlCfHqgXQUclF",
+  logoUrl: "https://drive.google.com/uc?export=view&id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4",
   googleFormUrl: ""
 });
 
