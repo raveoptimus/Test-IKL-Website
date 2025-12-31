@@ -29,9 +29,10 @@ export const Teams: React.FC = () => {
 
          {/* Header Info: Detail Intro + Logo */}
          <div className="flex flex-col md:flex-row items-center gap-8 mb-16 bg-gradient-to-r from-black via-white/5 to-transparent p-8 rounded-xl border-l-4 border-ikl-red">
-            <div className="w-40 h-40 bg-black rounded-full flex items-center justify-center border-4 border-white/10 shadow-[0_0_40px_rgba(255,42,42,0.2)] flex-shrink-0 relative overflow-hidden">
+            {/* PNG Friendly: Changed bg-black to bg-white/5 */}
+            <div className="w-40 h-40 bg-white/5 rounded-full flex items-center justify-center border-4 border-white/10 shadow-[0_0_40px_rgba(255,42,42,0.2)] flex-shrink-0 relative overflow-hidden">
                  {selectedTeam.logo && !selectedTeam.logo.includes('placehold') ? (
-                     <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-full h-full object-cover" />
+                     <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-full h-full object-contain" />
                  ) : (
                      <span className="font-display text-6xl text-gray-700">{selectedTeam.name.substring(0,2)}</span>
                  )}
@@ -55,7 +56,7 @@ export const Teams: React.FC = () => {
            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {roster.map(player => (
                   <div key={player.id} className="bg-white/5 rounded-lg overflow-hidden group border border-white/5 hover:border-ikl-red/50 transition-all duration-300">
-                      {/* Photo Player */}
+                      {/* Photo Player - Keep dark bg for player photos usually, but can be adjusted */}
                       <div className="aspect-[4/5] bg-gray-900 relative">
                           {player.image ? (
                              <img src={player.image} alt={player.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
@@ -102,9 +103,10 @@ export const Teams: React.FC = () => {
                className="bg-ikl-panel border border-white/10 rounded-xl p-8 hover:border-ikl-red hover:shadow-[0_0_30px_rgba(255,42,42,0.15)] hover:-translate-y-2 transition-all duration-300 cursor-pointer group"
              >
                 <div className="flex flex-col items-center">
-                   <div className="w-40 h-40 bg-black rounded-full mb-8 border-2 border-dashed border-white/20 flex items-center justify-center group-hover:border-ikl-red group-hover:scale-105 transition-all duration-300 relative overflow-hidden">
+                   {/* PNG Friendly: Changed bg-black to bg-white/5 (transparent-ish) */}
+                   <div className="w-40 h-40 bg-white/5 rounded-full mb-8 border-2 border-dashed border-white/20 flex items-center justify-center group-hover:border-ikl-red group-hover:scale-105 transition-all duration-300 relative overflow-hidden">
                       {team.logo && !team.logo.includes('placehold') ? (
-                          <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+                          <img src={team.logo} alt={team.name} className="w-full h-full object-contain" />
                       ) : (
                           <span className="font-display text-5xl text-gray-700 group-hover:text-white transition-colors z-10">{team.name.substring(0,2)}</span>
                       )}
@@ -113,7 +115,6 @@ export const Teams: React.FC = () => {
                    
                    <h2 className="text-4xl font-display font-bold text-white text-center uppercase mb-4 leading-none">{team.name}</h2>
                    
-                   {/* REMOVED STATS - Only View Action */}
                    <div className="flex items-center gap-2 text-sm font-bold text-gray-500 uppercase tracking-widest group-hover:text-ikl-red transition-colors">
                       <span>View Roster</span>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>

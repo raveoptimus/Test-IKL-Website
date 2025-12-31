@@ -10,10 +10,9 @@ export const exportToExcel = (data: any[], fileName: string, sheetName: string) 
 };
 
 // Flatten Player object for Excel friendly format
-// Columns: ID, TEAM NAME, ROLE, PLAYER NAME, PLAYED, KILL, AVG KILL, DEATH, AVG DEATH, ASSIST, AVG ASSIST, KDA, GPM, Image URL
 export const playersToExcelData = (players: Player[]) => {
   return players.map(p => {
-    const played = p.stats.matches || 1; // Avoid division by zero
+    const played = p.stats.matches || 1; 
     const kda = (p.stats.kill + p.stats.assist) / (p.stats.death === 0 ? 1 : p.stats.death);
     
     return {
@@ -37,24 +36,40 @@ export const playersToExcelData = (players: Player[]) => {
 
 // Reconstruct Player object from Excel data
 export const excelDataToPlayers = (data: any[]): Player[] => {
-  return data.map((row: any) => ({
-    id: String(row.ID || Math.random().toString(36).substr(2, 9)),
-    name: row['PLAYER NAME'] || row.Name,
-    team: row['TEAM NAME'] || row.Team,
-    role: (row.ROLE || row.Role) as Role,
-    image: row['Image URL'] || row.ImageURL || undefined,
-    stats: {
-      matches: Number(row.PLAYED) || Number(row.Matches) || 0,
-      kill: Number(row.KILL) || 0,
-      death: Number(row.DEATH) || 0,
-      assist: Number(row.ASSIST) || 0,
-      gpm: Number(row.GPM) || 0
-    }
-  }));
+  return data.map((row: any) => {
+    // Helper to find key case-insensitively
+    const findKey = (keys: string[]) => {
+        for (const k of keys) {
+            if (row[k] !== undefined) return row[k];
+            // Try uppercase/lowercase variations
+            const lowerK = k.toLowerCase();
+            const upperK = k.toUpperCase();
+            const foundKey = Object.keys(row).find(rk => rk.toLowerCase() === lowerK || rk.replace(/\s/g, '').toLowerCase() === lowerK.replace(/\s/g, ''));
+            if (foundKey) return row[foundKey];
+        }
+        return undefined;
+    };
+
+    const imageUrl = findKey(['Image URL', 'ImageURL', 'Image', 'Photo', 'URL']);
+
+    return {
+        id: String(row.ID || Math.random().toString(36).substr(2, 9)),
+        name: findKey(['PLAYER NAME', 'Player Name', 'Name', 'Player']) || 'Unknown',
+        team: findKey(['TEAM NAME', 'Team Name', 'Team']) || 'Free Agent',
+        role: (findKey(['ROLE', 'Role']) || Role.CLASH) as Role,
+        image: imageUrl || undefined,
+        stats: {
+        matches: Number(findKey(['PLAYED', 'Played', 'Matches'])) || 0,
+        kill: Number(findKey(['KILL', 'Kill', 'Kills'])) || 0,
+        death: Number(findKey(['DEATH', 'Death', 'Deaths'])) || 0,
+        assist: Number(findKey(['ASSIST', 'Assist', 'Assists'])) || 0,
+        gpm: Number(findKey(['GPM', 'Gold'])) || 0
+        }
+    };
+  }).filter(p => p.name !== 'Unknown'); // Filter out empty rows
 };
 
 // Teams Export
-// Columns: Team, Match Point, Match W - L, Net Game Win, Game W - L
 export const teamsToExcelData = (teams: Team[]) => {
   return teams.map(t => ({
     Team: t.name,
@@ -62,7 +77,6 @@ export const teamsToExcelData = (teams: Team[]) => {
     'Match W - L': `${t.matchWins} - ${t.matchLosses}`,
     'Net Game Win': t.gameWins - t.gameLosses,
     'Game W - L': `${t.gameWins} - ${t.gameLosses}`,
-    // Hidden fields for re-import logic if needed, though usually we rely on parsing the W-L string or re-entering
     _id: t.id,
     _matchW: t.matchWins,
     _matchL: t.matchLosses,
@@ -74,12 +88,12 @@ export const teamsToExcelData = (teams: Team[]) => {
 
 export const excelDataToTeams = (data: any[]): Team[] => {
     return data.map((row: any) => {
-        // Parse W - L strings if present, otherwise look for hidden fields or default to 0
         let matchWins = row._matchW || 0;
         let matchLosses = row._matchL || 0;
         
-        if (typeof row['Match W - L'] === 'string' && row['Match W - L'].includes('-')) {
-            const parts = row['Match W - L'].split('-').map((s: string) => parseInt(s.trim()));
+        const matchWL = row['Match W - L'] || row['Match W-L'];
+        if (typeof matchWL === 'string' && matchWL.includes('-')) {
+            const parts = matchWL.split('-').map((s: string) => parseInt(s.trim()));
             if (parts.length === 2) {
                 matchWins = parts[0];
                 matchLosses = parts[1];
@@ -89,8 +103,9 @@ export const excelDataToTeams = (data: any[]): Team[] => {
         let gameWins = row._gameW || 0;
         let gameLosses = row._gameL || 0;
 
-        if (typeof row['Game W - L'] === 'string' && row['Game W - L'].includes('-')) {
-            const parts = row['Game W - L'].split('-').map((s: string) => parseInt(s.trim()));
+        const gameWL = row['Game W - L'] || row['Game W-L'];
+        if (typeof gameWL === 'string' && gameWL.includes('-')) {
+            const parts = gameWL.split('-').map((s: string) => parseInt(s.trim()));
             if (parts.length === 2) {
                 gameWins = parts[0];
                 gameLosses = parts[1];
@@ -105,9 +120,9 @@ export const excelDataToTeams = (data: any[]): Team[] => {
             matchLosses,
             gameWins,
             gameLosses,
-            logo: row._logo || row.LogoURL || ''
+            logo: row._logo || row.LogoURL || row.Logo || ''
         };
-    });
+    }).filter(t => t.name);
 };
 
 export const readExcelFile = (file: File): Promise<any[]> => {

@@ -14,7 +14,11 @@ const loadFromStorage = <T>(key: string, defaultVal: T): T => {
         return JSON.parse(item);
     }
     // If no data exists yet, save the default mock data immediately so we have a base
-    localStorage.setItem(key, JSON.stringify(defaultVal));
+    try {
+      localStorage.setItem(key, JSON.stringify(defaultVal));
+    } catch (err) {
+      console.warn("Could not initialize default data to storage", err);
+    }
     return defaultVal;
   } catch (e) {
     console.error(`Error loading ${key}`, e);
@@ -22,18 +26,40 @@ const loadFromStorage = <T>(key: string, defaultVal: T): T => {
   }
 };
 
-// --- HELPER: SAVE TO STORAGE ---
+// --- HELPER: SAVE TO STORAGE WITH FALLBACK ---
 const saveToStorage = (key: string, value: any): boolean => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (e) {
     console.error(`Error saving ${key}.`, e);
-    // Determine if it's a quota error
+    
+    // Fallback: Try to strip large images (base64) from the data to save at least the text
+    if (Array.isArray(value)) {
+        try {
+            console.log("Attempting to save text-only data...");
+            const cleanValue = value.map(item => {
+                const newItem = { ...item };
+                // Check for image/logo fields and remove if they are base64 (large)
+                if (newItem.image && newItem.image.startsWith('data:')) {
+                    newItem.image = ''; 
+                }
+                if (newItem.logo && newItem.logo.startsWith('data:')) {
+                    newItem.logo = '';
+                }
+                return newItem;
+            });
+            
+            localStorage.setItem(key, JSON.stringify(cleanValue));
+            alert("WARNING: Storage Full!\n\nYour TEXT changes (Stats, Names) were saved, but large IMAGES were removed to fit in storage.\n\nPlease use Image URLs instead of uploading files.");
+            return true;
+        } catch (retryErr) {
+            console.error("Text-only save also failed", retryErr);
+        }
+    }
+
     if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-        alert("CRITICAL ERROR: Storage Full!\n\nYou have uploaded too many large images. The browser cannot save your changes.\n\nSOLUTION:\n1. Use Image URLs instead of uploading files.\n2. Delete some players/teams to free up space.\n3. Try to compress your images.");
-    } else {
-        alert("Error saving data. Check console for details.");
+        alert("CRITICAL ERROR: Storage Full!\n\nChanges could NOT be saved. Please delete some items or use external Image URLs.");
     }
     return false;
   }
@@ -54,7 +80,7 @@ const SIMULATE_DELAY = 100;
 
 export const getPlayers = async (): Promise<Player[]> => {
   return new Promise((resolve) => {
-    // Re-read from variable (which is in sync with LS)
+    // Reload from variable which is kept in sync
     setTimeout(() => resolve([...currentPlayers]), SIMULATE_DELAY);
   });
 };
@@ -87,6 +113,8 @@ export const updatePlayer = async (updatedPlayer: Player): Promise<boolean> => {
         currentPlayers = newPlayers;
         resolve(true);
     } else {
+        // Even if save failed, update memory so app doesn't break immediately
+        currentPlayers = newPlayers; 
         resolve(false);
     }
   });
@@ -99,6 +127,7 @@ export const createPlayer = async (newPlayer: Player): Promise<boolean> => {
           currentPlayers = newPlayers;
           resolve(true);
       } else {
+          currentPlayers = newPlayers;
           resolve(false);
       }
     });
@@ -111,6 +140,7 @@ export const deletePlayer = async (id: string): Promise<boolean> => {
           currentPlayers = newPlayers;
           resolve(true);
       } else {
+          currentPlayers = newPlayers;
           resolve(false);
       }
     });
@@ -118,12 +148,10 @@ export const deletePlayer = async (id: string): Promise<boolean> => {
 
 export const bulkUpdatePlayers = async (players: Player[]): Promise<boolean> => {
     return new Promise((resolve) => {
-      if (saveToStorage(KEY_PLAYERS, players)) {
-          currentPlayers = players;
-          resolve(true);
-      } else {
-          resolve(false);
-      }
+      // Force update memory first
+      currentPlayers = players;
+      const saved = saveToStorage(KEY_PLAYERS, players);
+      resolve(saved);
     });
 };
 
@@ -135,6 +163,7 @@ export const updateTeam = async (updatedTeam: Team): Promise<boolean> => {
         currentTeams = newTeams;
         resolve(true);
     } else {
+        currentTeams = newTeams;
         resolve(false);
     }
   });
@@ -142,12 +171,9 @@ export const updateTeam = async (updatedTeam: Team): Promise<boolean> => {
 
 export const bulkUpdateTeams = async (teams: Team[]): Promise<boolean> => {
     return new Promise((resolve) => {
-      if (saveToStorage(KEY_TEAMS, teams)) {
-          currentTeams = teams;
-          resolve(true);
-      } else {
-          resolve(false);
-      }
+      currentTeams = teams;
+      const saved = saveToStorage(KEY_TEAMS, teams);
+      resolve(saved);
     });
 };
 
@@ -160,6 +186,7 @@ export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
         window.dispatchEvent(new Event('storage-config-updated'));
         resolve(true);
     } else {
+        currentConfig = config;
         resolve(false);
     }
   });
