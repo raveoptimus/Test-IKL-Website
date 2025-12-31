@@ -36,10 +36,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     // Fetch dynamic logo configuration on mount
-    getAppConfig().then(config => {
-      if (config.logoUrl) setLogoUrl(config.logoUrl);
-    });
-  }, [location.pathname]); // Re-check when changing pages (e.g. coming from Admin)
+    const fetchConfig = () => {
+        getAppConfig().then(config => {
+            if (config.logoUrl) setLogoUrl(config.logoUrl);
+        });
+    };
+
+    fetchConfig();
+
+    // Listen for updates from Admin panel
+    const handleStorageUpdate = () => fetchConfig();
+    window.addEventListener('storage-config-updated', handleStorageUpdate);
+
+    return () => {
+        window.removeEventListener('storage-config-updated', handleStorageUpdate);
+    };
+  }, []); 
 
   return (
     <div className="min-h-screen bg-ikl-darker text-white flex flex-col relative overflow-hidden">
