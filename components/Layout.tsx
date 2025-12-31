@@ -24,6 +24,7 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       <Link to="/teams" onClick={onClose} className="text-2xl font-display text-white hover:text-ikl-red">TEAMS</Link>
       <Link to="/stats" onClick={onClose} className="text-2xl font-display text-white hover:text-ikl-red">STATS</Link>
       <Link to="/standings" onClick={onClose} className="text-2xl font-display text-white hover:text-ikl-red">STANDINGS</Link>
+      <Link to="/admin" onClick={onClose} className="text-xl font-display text-gray-500 hover:text-white mt-8">ADMIN LOGIN</Link>
     </div>
   );
 };
@@ -104,6 +105,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
              <a href="#" className="text-gray-600 hover:text-ikl-red transition-colors">Instagram</a>
              <a href="#" className="text-gray-600 hover:text-ikl-red transition-colors">YouTube</a>
              <a href="#" className="text-gray-600 hover:text-ikl-red transition-colors">Discord</a>
+          </div>
+          <div className="mt-8 border-t border-white/5 pt-4">
+            <Link to="/admin" className="text-xs text-gray-700 hover:text-gray-500 transition-colors uppercase tracking-widest">
+              Admin Login
+            </Link>
           </div>
         </div>
       </footer>

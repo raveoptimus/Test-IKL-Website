@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Player, Role, Team } from '../types';
-import { getPlayers, getTeams, submitDreamTeam } from '../services/api';
+import { Player, Role, Team, AppConfig } from '../types';
+import { getPlayers, getTeams, getAppConfig } from '../services/api';
+import { exportToExcel } from '../services/excelService';
 
 // --- COMPONENTS ---
 
@@ -62,6 +63,9 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
              <tbody className="divide-y divide-white/5 text-sm">
                 {filteredPlayers.map(player => {
                    const teamLogo = teams.find(t => t.name === player.team)?.logo;
+                   // Calc KDA manually for display if needed or use pre-calc
+                   const kda = (player.stats.kill + player.stats.assist) / (player.stats.death || 1);
+                   
                    return (
                      <tr key={player.id} className="hover:bg-white/5 transition-colors group">
                         <td className="py-3 pl-2">
@@ -89,7 +93,7 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
                               <span className="uppercase text-xs font-bold">{player.team}</span>
                            </div>
                         </td>
-                        <td className="py-3 text-right font-mono text-ikl-red">{player.stats.kda.toFixed(1)}</td>
+                        <td className="py-3 text-right font-mono text-ikl-red">{kda.toFixed(1)}</td>
                         <td className="py-3 text-right pr-2 font-mono text-ikl-gold">{player.stats.gpm}</td>
                      </tr>
                    );
@@ -196,24 +200,19 @@ const RoleSection: React.FC<{
 export const DreamTeam: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<'builder' | 'list'>('builder');
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    week: '',
-    instagram: ''
-  });
+  const [success, setSuccess] = useState(false);
   
   const [selections, setSelections] = useState<{ [key in Role]?: string }>({});
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
-    Promise.all([getPlayers(), getTeams()]).then(([playerData, teamData]) => {
+    Promise.all([getPlayers(), getTeams(), getAppConfig()]).then(([playerData, teamData, configData]) => {
       setPlayers(playerData);
       setTeams(teamData);
+      setConfig(configData);
       setLoading(false);
     });
   }, []);
@@ -232,31 +231,16 @@ export const DreamTeam: React.FC = () => {
       if (!selections[role]) missingRoles.push(role);
     });
     setErrors(missingRoles);
-    return missingRoles.length === 0 && formData.email && formData.week && formData.instagram;
+    return missingRoles.length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
-       alert("Please fill all fields and select a player for every role.");
+       alert("Please select a player for every role.");
        return;
     }
 
-    setSubmitting(true);
-    
-    // Construct player names map
-    const finalSelections: any = {};
-    Object.entries(selections).forEach(([role, id]) => {
-        const p = players.find(x => x.id === id);
-        if (p) finalSelections[role] = p.name;
-    });
-
-    await submitDreamTeam({
-      ...formData,
-      selections: finalSelections
-    });
-
-    setSubmitting(false);
     setSuccess(true);
   };
 
@@ -267,6 +251,42 @@ export const DreamTeam: React.FC = () => {
     }
   };
 
+  // --- Export / Copy Functions ---
+
+  const getSelectedPlayersData = () => {
+      return Object.values(Role).map(role => {
+          const pid = selections[role];
+          const p = players.find(x => x.id === pid);
+          return {
+              Role: role.toUpperCase(),
+              Player: p?.name || 'Unknown',
+              Team: p?.team || 'Unknown'
+          };
+      });
+  };
+
+  const handleDownloadExcel = () => {
+      const data = getSelectedPlayersData();
+      // Pivot data to a single row for "Submission" style, or keep list? 
+      // User asked for "data bentuk sheet". A list is clearer for personal use.
+      // But if they want to paste into a row, transposing is better.
+      // Let's offer a simple list which is generic "Sheet Data".
+      exportToExcel(data, 'My_Dream_Team', 'DreamTeam');
+  };
+
+  const handleCopyToClipboard = () => {
+      const data = getSelectedPlayersData();
+      // Create tab separated string
+      const header = data.map(d => d.Role).join('\t');
+      const row = data.map(d => d.Player).join('\t');
+      const text = `${header}\n${row}`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+          alert("Team copied to clipboard! You can paste it into Excel/Sheets.");
+      });
+  };
+
+
   if (loading) return (
       <div className="flex h-screen items-center justify-center bg-black">
           <div className="text-center">
@@ -276,19 +296,53 @@ export const DreamTeam: React.FC = () => {
       </div>
   );
 
+  // Success State
   if (success) {
-    return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center text-center animate-fade-in px-4">
-        <div className="w-24 h-24 rounded-full bg-ikl-green flex items-center justify-center mb-6 shadow-[0_0_60px_rgba(74,222,128,0.4)] animate-bounce">
-          <svg className="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+      return (
+        <div className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in px-4">
+            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(74,222,128,0.4)]">
+                <svg className="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h1 className="text-5xl font-display font-bold text-white mb-2">TEAM READY</h1>
+            <p className="text-gray-400 mb-8 max-w-md">Your dream team has been generated.</p>
+            
+            <div className="bg-white/10 p-6 rounded-xl border border-white/10 w-full max-w-md mb-8">
+                <div className="space-y-3">
+                    {getSelectedPlayersData().map((item) => (
+                        <div key={item.Role} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                            <span className="text-gray-500 font-bold text-xs uppercase">{item.Role}</span>
+                            <span className="text-white font-display text-xl">{item.Player}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-xs">
+                <button 
+                    onClick={handleDownloadExcel}
+                    className="flex items-center justify-center gap-2 px-8 py-4 bg-green-600 text-white font-display text-xl font-bold rounded hover:bg-green-500 transition-colors uppercase tracking-widest shadow-lg"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Download .xlsx
+                </button>
+                
+                <button 
+                    onClick={handleCopyToClipboard}
+                    className="flex items-center justify-center gap-2 px-8 py-3 bg-white/10 text-white font-display text-lg font-bold rounded hover:bg-white/20 transition-colors uppercase tracking-widest"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                    Copy for Sheets
+                </button>
+
+                <button 
+                    onClick={() => { setSuccess(false); }} 
+                    className="text-gray-500 hover:text-white mt-4 text-sm"
+                >
+                    Edit Selection
+                </button>
+            </div>
         </div>
-        <h1 className="text-6xl font-display font-bold text-white mb-4">TEAM SUBMITTED</h1>
-        <p className="text-xl text-gray-400 max-w-lg mb-10">Thanks for participating! Make sure to watch the stream to see how your team performs.</p>
-        <button onClick={() => { setSuccess(false); setSelections({}); }} className="px-8 py-4 bg-white text-black font-display text-xl font-bold rounded hover:bg-gray-200 transition-colors uppercase tracking-widest">
-          Create Another Team
-        </button>
-      </div>
-    );
+      );
   }
 
   return (
@@ -348,56 +402,6 @@ export const DreamTeam: React.FC = () => {
                 
                 <form onSubmit={handleSubmit} className="space-y-12">
                   
-                  {/* Fan/Viewer Registration Card */}
-                  <div className="bg-gradient-to-br from-white/5 to-black border border-white/10 rounded-xl p-8 backdrop-blur-sm shadow-2xl">
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="w-2 h-8 bg-ikl-gold"></div>
-                        <h3 className="text-2xl font-display text-white uppercase tracking-wider">Registrasi</h3>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Email Address</label>
-                        <input 
-                          type="email" 
-                          required
-                          className="w-full bg-black/50 border border-white/20 rounded-lg p-4 text-white placeholder-gray-700 focus:border-ikl-red focus:outline-none transition-colors"
-                          placeholder="you@example.com"
-                          value={formData.email}
-                          onChange={e => setFormData({...formData, email: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Week</label>
-                        <div className="relative">
-                            <select 
-                              required
-                              className="w-full bg-black/50 border border-white/20 rounded-lg p-4 text-white appearance-none focus:border-ikl-red focus:outline-none transition-colors"
-                              value={formData.week}
-                              onChange={e => setFormData({...formData, week: e.target.value})}
-                            >
-                              <option value="">Select Week...</option>
-                              {[1,2,3,4,5,6].map(w => <option key={w} value={`Week ${w}`}>Week {w}</option>)}
-                            </select>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Instagram ID / Link</label>
-                        <input 
-                          type="text" 
-                          required
-                          className="w-full bg-black/50 border border-white/20 rounded-lg p-4 text-white placeholder-gray-700 focus:border-ikl-red focus:outline-none transition-colors"
-                          placeholder="@username or https://instagram.com/..."
-                          value={formData.instagram}
-                          onChange={e => setFormData({...formData, instagram: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Roles Selection */}
                   <div className="space-y-1">
                       {Object.values(Role).map(role => (
@@ -420,14 +424,9 @@ export const DreamTeam: React.FC = () => {
                       </div>
                       <button 
                         type="submit" 
-                        disabled={submitting}
-                        className={`w-full md:w-auto px-12 py-4 text-2xl font-display font-bold uppercase tracking-widest rounded-sm shadow-lg transition-all ${
-                          submitting 
-                          ? 'bg-gray-800 text-gray-500 cursor-wait' 
-                          : 'bg-ikl-red hover:bg-red-600 text-white shadow-[0_0_30px_rgba(255,42,42,0.4)] hover:scale-105 hover:-translate-y-1'
-                        }`}
+                        className={`w-full md:w-auto px-12 py-4 text-2xl font-display font-bold uppercase tracking-widest rounded-sm shadow-lg transition-all bg-ikl-red hover:bg-red-600 text-white shadow-[0_0_30px_rgba(255,42,42,0.4)] hover:scale-105 hover:-translate-y-1`}
                       >
-                        {submitting ? 'Submitting...' : 'Confirm Team'}
+                        Generate Team
                       </button>
                   </div>
                 </form>

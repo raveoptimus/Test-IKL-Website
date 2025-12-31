@@ -6,7 +6,8 @@ let currentPlayers = [...MOCK_PLAYERS];
 let currentTeams = [...MOCK_TEAMS];
 let currentSubmissions = [...MOCK_SUBMISSIONS];
 let currentConfig: AppConfig = {
-  logoUrl: "https://placehold.co/400x400/000000/ff2a2a?text=IKL+FALL" // Default placeholder
+  logoUrl: "https://placehold.co/400x400/000000/ff2a2a?text=IKL+FALL", // Default placeholder
+  googleFormUrl: ""
 };
 
 const SIMULATE_DELAY = 400;
@@ -108,14 +109,8 @@ export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
 export const submitDreamTeam = async (submission: Omit<DreamTeamSubmission, 'id' | 'submittedAt'>): Promise<boolean> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const newSub = {
-        ...submission,
-        id: `sub_${Date.now()}`,
-        submittedAt: new Date().toISOString()
-      };
-      currentSubmissions.unshift(newSub);
-      console.log("Submitting to KV:", newSub);
+      // Logic changed: We just return true to simulate success, actual logic happens in frontend redirect
       resolve(true);
-    }, 1000);
+    }, 500);
   });
 };

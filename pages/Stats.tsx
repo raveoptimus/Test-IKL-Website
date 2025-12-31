@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Player } from '../types';
 import { getPlayers } from '../services/api';
 
@@ -16,8 +16,13 @@ export const Stats: React.FC = () => {
 
   if (loading) return <div className="text-center py-20">Loading Stats...</div>;
 
-  // Prepare data for charts
-  const topKDA = [...players].sort((a, b) => b.stats.kda - a.stats.kda).slice(0, 5);
+  // Prepare data for charts with calculated KDA
+  const playersWithKDA = players.map(p => ({
+      ...p,
+      calcKDA: Number(((p.stats.kill + p.stats.assist) / (p.stats.death || 1)).toFixed(2))
+  }));
+
+  const topKDA = [...playersWithKDA].sort((a, b) => b.calcKDA - a.calcKDA).slice(0, 5);
   const topGPM = [...players].sort((a, b) => b.stats.gpm - a.stats.gpm).slice(0, 5);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -51,7 +56,7 @@ export const Stats: React.FC = () => {
                     <XAxis type="number" stroke="#666" />
                     <YAxis dataKey="name" type="category" stroke="#fff" width={80} tick={{fontFamily: 'Teko', fontSize: 18}} />
                     <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(255,255,255,0.05)'}} />
-                    <Bar dataKey="stats.kda" fill="#ff2a2a" barSize={20} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="calcKDA" fill="#ff2a2a" barSize={20} radius={[0, 4, 4, 0]} />
                  </BarChart>
                </ResponsiveContainer>
              </div>
@@ -87,18 +92,22 @@ export const Stats: React.FC = () => {
                      <th className="p-4 font-bold">Team</th>
                      <th className="p-4 font-bold">Role</th>
                      <th className="p-4 font-bold text-right">Matches</th>
+                     <th className="p-4 font-bold text-right">K/D/A</th>
                      <th className="p-4 font-bold text-right">KDA</th>
                      <th className="p-4 font-bold text-right">GPM</th>
                   </tr>
                </thead>
                <tbody className="divide-y divide-white/5">
-                  {players.map(p => (
+                  {playersWithKDA.map(p => (
                      <tr key={p.id} className="hover:bg-white/5 transition-colors">
                         <td className="p-4 font-display text-xl text-white">{p.name}</td>
                         <td className="p-4 text-gray-400">{p.team}</td>
                         <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs uppercase text-gray-300">{p.role}</span></td>
                         <td className="p-4 text-right font-mono text-gray-400">{p.stats.matches}</td>
-                        <td className="p-4 text-right font-mono text-ikl-red">{p.stats.kda.toFixed(2)}</td>
+                         <td className="p-4 text-right font-mono text-gray-400 text-xs">
+                            {p.stats.kill}/{p.stats.death}/{p.stats.assist}
+                         </td>
+                        <td className="p-4 text-right font-mono text-ikl-red">{p.calcKDA.toFixed(2)}</td>
                         <td className="p-4 text-right font-mono text-ikl-gold">{p.stats.gpm}</td>
                      </tr>
                   ))}

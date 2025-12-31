@@ -6,26 +6,33 @@ export enum Role {
   ROAM = 'roam'
 }
 
+export interface PlayerStats {
+  matches: number; // Played
+  kill: number;
+  death: number;
+  assist: number;
+  gpm: number;
+  // Computed values like KDA, Avg Kill, etc., are derived from these
+}
+
 export interface Player {
   id: string;
   name: string;
   team: string;
   role: Role;
   image?: string; // URL to image
-  stats: {
-    kda: number;
-    gpm: number; // Gold per minute
-    matches: number;
-  };
+  stats: PlayerStats;
 }
 
 export interface Team {
   id: string;
   name: string;
   logo: string;
-  wins: number;
-  losses: number;
-  points: number;
+  matchPoints: number;
+  matchWins: number;
+  matchLosses: number;
+  gameWins: number;
+  gameLosses: number;
   description?: string;
 }
 
@@ -40,12 +47,7 @@ export interface DreamTeamSubmission {
   submittedAt: string;
 }
 
-export interface StatPoint {
-  subject: string;
-  A: number;
-  fullMark: number;
-}
-
 export interface AppConfig {
   logoUrl: string;
+  googleFormUrl?: string;
 }

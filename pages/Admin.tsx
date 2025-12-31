@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DreamTeamSubmission, Player, Team, Role, AppConfig } from '../types';
-import { getSubmissions, getPlayers, getTeams, updatePlayer, createPlayer, updateTeam, bulkUpdatePlayers, bulkUpdateTeams, getAppConfig, updateAppConfig } from '../services/api';
+import { Player, Team, Role, AppConfig } from '../types';
+import { getPlayers, getTeams, updatePlayer, createPlayer, updateTeam, bulkUpdatePlayers, bulkUpdateTeams, getAppConfig, updateAppConfig } from '../services/api';
 import { exportToExcel, playersToExcelData, excelDataToPlayers, teamsToExcelData, excelDataToTeams, readExcelFile } from '../services/excelService';
 
-type Tab = 'submissions' | 'players' | 'teams' | 'settings';
+type Tab = 'players' | 'teams' | 'settings';
 
 // Helper to convert file to base64 string for image storage
 const fileToBase64 = (file: File): Promise<string> => {
@@ -18,14 +18,13 @@ const fileToBase64 = (file: File): Promise<string> => {
 export const Admin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tab>('submissions');
+  const [activeTab, setActiveTab] = useState<Tab>('players');
   const [loading, setLoading] = useState(false);
 
   // Data State
-  const [submissions, setSubmissions] = useState<DreamTeamSubmission[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
-  const [config, setConfig] = useState<AppConfig>({ logoUrl: '' });
+  const [config, setConfig] = useState<AppConfig>({ logoUrl: '', googleFormUrl: '' });
 
   // Editing State
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
@@ -38,7 +37,7 @@ export const Admin: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') {
+    if (password === 'optimus1') {
       setAuthed(true);
       fetchAll();
     } else {
@@ -48,13 +47,11 @@ export const Admin: React.FC = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [subsData, playersData, teamsData, configData] = await Promise.all([
-        getSubmissions(),
+    const [playersData, teamsData, configData] = await Promise.all([
         getPlayers(),
         getTeams(),
         getAppConfig()
     ]);
-    setSubmissions(subsData);
     setPlayers(playersData);
     setTeams(teamsData);
     setConfig(configData);
@@ -69,14 +66,14 @@ export const Admin: React.FC = () => {
           name: '',
           team: '',
           role: Role.CLASH,
-          stats: { kda: 0, gpm: 0, matches: 0 },
+          stats: { matches: 0, kill: 0, death: 0, assist: 0, gpm: 0 },
           image: ''
       });
   };
 
   const handleEditPlayerClick = (player: Player) => {
       setIsNewPlayer(false);
-      setEditingPlayer({ ...player });
+      setEditingPlayer({ ...player, stats: { ...player.stats } });
   };
 
   const handleSavePlayer = async (e: React.FormEvent) => {
@@ -123,10 +120,9 @@ export const Admin: React.FC = () => {
                   fetchAll();
               }
           } catch (err) {
-              alert('Error reading file. Please ensure it is a valid Excel file.');
+              alert('Error reading file. Please ensure it is a valid Excel file with correct columns.');
               console.error(err);
           }
-          // Reset input
           if (playerFileInputRef.current) playerFileInputRef.current.value = '';
       }
   };
@@ -135,6 +131,22 @@ export const Admin: React.FC = () => {
   const handleSaveTeam = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!editingTeam) return;
+
+      // Sync Check: If name changed, update all players associated with this team
+      const originalTeam = teams.find(t => t.id === editingTeam.id);
+      if (originalTeam && originalTeam.name !== editingTeam.name) {
+          const confirmSync = window.confirm(
+              `You are renaming team "${originalTeam.name}" to "${editingTeam.name}".\n\nDo you want to update all ${players.filter(p => p.team === originalTeam.name).length} associated players to this new team name?`
+          );
+
+          if (confirmSync) {
+              const updatedPlayers = players.map(p => 
+                  p.team === originalTeam.name ? { ...p, team: editingTeam.name } : p
+              );
+              await bulkUpdatePlayers(updatedPlayers);
+          }
+      }
+
       await updateTeam(editingTeam);
       setEditingTeam(null);
       fetchAll();
@@ -167,7 +179,7 @@ export const Admin: React.FC = () => {
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     await updateAppConfig(config);
-    alert("Configuration saved! Layout will update.");
+    alert("Configuration saved!");
   };
 
 
@@ -182,7 +194,7 @@ export const Admin: React.FC = () => {
            <form onSubmit={handleLogin} className="space-y-4">
               <input 
                 type="password" 
-                placeholder="Enter Password (admin123)" 
+                placeholder="Enter Password" 
                 className="w-full bg-black/50 border border-white/20 p-3 rounded text-white text-center focus:border-ikl-red outline-none transition-colors"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -195,14 +207,14 @@ export const Admin: React.FC = () => {
   }
 
   return (
-    <div className="animate-fade-in min-h-screen">
+    <div className="animate-fade-in min-h-screen pb-20">
        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-display font-bold text-white">ADMINISTRATION</h1>
-            <p className="text-gray-400 text-sm">Manage League Data and View Submissions</p>
+            <p className="text-gray-400 text-sm">Manage League Data</p>
           </div>
           <div className="flex flex-wrap gap-2 bg-ikl-panel p-1 rounded-lg border border-white/10">
-              {(['submissions', 'players', 'teams', 'settings'] as Tab[]).map(tab => (
+              {(['players', 'teams', 'settings'] as Tab[]).map(tab => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -218,50 +230,6 @@ export const Admin: React.FC = () => {
          <div className="text-center py-20 text-gray-400">Syncing Data...</div>
        ) : (
          <>
-            {/* SUBMISSIONS TAB */}
-            {activeTab === 'submissions' && (
-                <div className="bg-ikl-panel rounded-xl border border-white/10 overflow-hidden shadow-xl">
-                    <div className="p-4 bg-white/5 border-b border-white/10 flex justify-between items-center">
-                        <h3 className="font-display text-xl text-white">Latest Dream Team Entries</h3>
-                        <span className="text-ikl-gold font-mono">{submissions.length} Total</span>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                        <thead className="bg-black/40 text-gray-400 uppercase">
-                            <tr>
-                            <th className="p-4 text-left">Date</th>
-                            <th className="p-4 text-left">Week</th>
-                            <th className="p-4 text-left">Manager</th>
-                            <th className="p-4 text-left">Roster</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {submissions.map(sub => (
-                            <tr key={sub.id} className="hover:bg-white/5 transition-colors">
-                                <td className="p-4 whitespace-nowrap text-gray-500">{new Date(sub.submittedAt).toLocaleDateString()}</td>
-                                <td className="p-4 font-bold text-ikl-gold">{sub.week}</td>
-                                <td className="p-4">
-                                    <div className="text-white font-bold">{sub.email}</div>
-                                    <a href={sub.instagram} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline">Instagram</a>
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex flex-wrap gap-2">
-                                    {Object.entries(sub.selections).map(([role, player]) => (
-                                        <span key={role} className="px-2 py-1 bg-black/40 rounded border border-white/10 text-xs">
-                                            <span className="text-gray-500 uppercase mr-1">{role.charAt(0)}:</span>
-                                            <span className="text-white font-bold">{player}</span>
-                                        </span>
-                                    ))}
-                                    </div>
-                                </td>
-                            </tr>
-                            ))}
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
             {/* PLAYERS TAB */}
             {activeTab === 'players' && (
                 <div className="space-y-6">
@@ -306,15 +274,12 @@ export const Admin: React.FC = () => {
                                          <h4 className="font-display text-2xl text-white">{player.name}</h4>
                                     </div>
                                     <div className="text-gray-400 text-sm font-bold uppercase">{player.team} &bull; <span className="text-ikl-red">{player.role}</span></div>
-                                    <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <span className="block text-gray-500 text-xs">KDA</span>
-                                            <span className="text-white font-mono">{player.stats.kda.toFixed(2)}</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-gray-500 text-xs">GPM</span>
-                                            <span className="text-ikl-gold font-mono">{player.stats.gpm}</span>
-                                        </div>
+                                    <div className="mt-3 grid grid-cols-2 gap-4 text-xs font-mono text-gray-500">
+                                        <div>Matches: <span className="text-white">{player.stats.matches}</span></div>
+                                        <div>GPM: <span className="text-white">{player.stats.gpm}</span></div>
+                                        <div>K: <span className="text-white">{player.stats.kill}</span></div>
+                                        <div>D: <span className="text-white">{player.stats.death}</span></div>
+                                        <div>A: <span className="text-white">{player.stats.assist}</span></div>
                                     </div>
                                 </div>
                                 <button 
@@ -367,71 +332,54 @@ export const Admin: React.FC = () => {
                                         </select>
                                     </div>
                                     
-                                    {/* IMAGE UPLOAD SECTION */}
+                                    {/* IMAGE UPLOAD */}
                                     <div className="bg-white/5 p-4 rounded-lg border border-white/10">
                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-3">Player Image</label>
                                         <div className="flex items-start gap-4">
-                                            {/* Preview */}
-                                            <div className="w-20 h-24 bg-black border border-white/20 rounded overflow-hidden flex-shrink-0">
+                                            <div className="w-16 h-16 bg-black border border-white/20 rounded overflow-hidden flex-shrink-0">
                                                 {editingPlayer.image ? (
                                                     <img src={editingPlayer.image} alt="Preview" className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs text-center p-1">No Image</div>
+                                                    <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">No Img</div>
                                                 )}
                                             </div>
-                                            
-                                            <div className="flex-grow space-y-3">
-                                                {/* URL Input */}
-                                                <div>
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="https://example.com/image.png" 
-                                                        className="w-full bg-black border border-white/20 rounded p-2 text-white text-xs"
-                                                        value={editingPlayer.image || ''}
-                                                        onChange={e => setEditingPlayer({...editingPlayer, image: e.target.value})}
-                                                    />
-                                                </div>
-                                                
-                                                {/* OR separator */}
-                                                <div className="flex items-center gap-2">
-                                                    <div className="h-px bg-white/10 flex-grow"></div>
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase">OR UPLOAD FILE</span>
-                                                    <div className="h-px bg-white/10 flex-grow"></div>
-                                                </div>
-
-                                                {/* File Input */}
-                                                <label className="block">
-                                                    <span className="sr-only">Choose photo</span>
-                                                    <input 
-                                                        type="file" 
-                                                        accept="image/*"
-                                                        onChange={handlePlayerImageUpload}
-                                                        className="block w-full text-xs text-gray-400
-                                                        file:mr-2 file:py-1 file:px-3
-                                                        file:rounded file:border-0
-                                                        file:text-xs file:font-semibold
-                                                        file:bg-ikl-red file:text-white
-                                                        hover:file:bg-red-600
-                                                        cursor-pointer"
-                                                    />
-                                                </label>
-                                            </div>
+                                            <input 
+                                                type="file" 
+                                                accept="image/*"
+                                                onChange={handlePlayerImageUpload}
+                                                className="block w-full text-xs text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-ikl-red file:text-white cursor-pointer"
+                                            />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">KDA</label>
-                                            <input type="number" step="0.1" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.kda} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, kda: parseFloat(e.target.value)}})} />
+                                    {/* NEW STATS GRID */}
+                                    <div className="border-t border-white/10 pt-4">
+                                        <h4 className="text-white font-bold mb-4">Statistics</h4>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Matches (Played)</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.matches} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, matches: parseInt(e.target.value) || 0}})} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">GPM</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.gpm} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, gpm: parseInt(e.target.value) || 0}})} />
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">GPM</label>
-                                            <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.gpm} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, gpm: parseInt(e.target.value)}})} />
+                                        <div className="grid grid-cols-3 gap-4 mt-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-ikl-green uppercase mb-1">Total Kills</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.kill} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, kill: parseInt(e.target.value) || 0}})} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-red-500 uppercase mb-1">Total Deaths</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.death} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, death: parseInt(e.target.value) || 0}})} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-blue-400 uppercase mb-1">Total Assists</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.assist} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, assist: parseInt(e.target.value) || 0}})} />
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Matches</label>
-                                            <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingPlayer.stats.matches} onChange={e => setEditingPlayer({...editingPlayer, stats: {...editingPlayer.stats, matches: parseInt(e.target.value)}})} />
-                                        </div>
+                                        <p className="text-xs text-gray-500 mt-2 italic">* Averages and KDA will be calculated automatically.</p>
                                     </div>
 
                                     <div className="flex justify-end space-x-4 mt-6 pt-4 border-t border-white/10">
@@ -473,10 +421,11 @@ export const Admin: React.FC = () => {
                                  </div>
                                  <div>
                                      <h4 className="font-display text-3xl text-white uppercase">{team.name}</h4>
-                                     <div className="flex space-x-4 mt-1 text-sm">
-                                         <span className="text-ikl-green font-bold">W: {team.wins}</span>
-                                         <span className="text-red-400 font-bold">L: {team.losses}</span>
-                                         <span className="text-white border-l border-white/20 pl-4">PTS: {team.points}</span>
+                                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-sm text-gray-400">
+                                         <span>Pts: <b className="text-white">{team.matchPoints}</b></span>
+                                         <span>Match: <b className="text-white">{team.matchWins}-{team.matchLosses}</b></span>
+                                         <span>Net Game: <b className="text-white">{team.gameWins - team.gameLosses}</b></span>
+                                         <span>Game: <b className="text-white">{team.gameWins}-{team.gameLosses}</b></span>
                                      </div>
                                  </div>
                              </div>
@@ -484,7 +433,7 @@ export const Admin: React.FC = () => {
                                  onClick={() => setEditingTeam(team)}
                                  className="px-4 py-2 bg-white/5 rounded hover:bg-white/20 text-gray-400 hover:text-white font-display text-lg uppercase"
                              >
-                                 Edit Stats
+                                 Edit
                              </button>
                          </div>
                      ))}
@@ -501,18 +450,27 @@ export const Admin: React.FC = () => {
                                      <input className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.name} onChange={e => setEditingTeam({...editingTeam, name: e.target.value})} />
                                  </div>
                                  
-                                 <div className="grid grid-cols-3 gap-4">
+                                 <div>
+                                      <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Match Points</label>
+                                      <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.matchPoints} onChange={e => setEditingTeam({...editingTeam, matchPoints: parseInt(e.target.value) || 0})} />
+                                 </div>
+
+                                 <div className="grid grid-cols-2 gap-4">
                                      <div>
-                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Wins</label>
-                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.wins} onChange={e => setEditingTeam({...editingTeam, wins: parseInt(e.target.value)})} />
+                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Match Wins</label>
+                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.matchWins} onChange={e => setEditingTeam({...editingTeam, matchWins: parseInt(e.target.value) || 0})} />
                                      </div>
                                      <div>
-                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Losses</label>
-                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.losses} onChange={e => setEditingTeam({...editingTeam, losses: parseInt(e.target.value)})} />
+                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Match Losses</label>
+                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.matchLosses} onChange={e => setEditingTeam({...editingTeam, matchLosses: parseInt(e.target.value) || 0})} />
                                      </div>
                                      <div>
-                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Points</label>
-                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.points} onChange={e => setEditingTeam({...editingTeam, points: parseInt(e.target.value)})} />
+                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Game Wins</label>
+                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.gameWins} onChange={e => setEditingTeam({...editingTeam, gameWins: parseInt(e.target.value) || 0})} />
+                                     </div>
+                                     <div>
+                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Game Losses</label>
+                                         <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.gameLosses} onChange={e => setEditingTeam({...editingTeam, gameLosses: parseInt(e.target.value) || 0})} />
                                      </div>
                                  </div>
 
@@ -534,10 +492,6 @@ export const Admin: React.FC = () => {
                     <form onSubmit={handleSaveConfig} className="space-y-6">
                         <div>
                             <label className="block text-lg font-bold text-white mb-2">League Logo URL</label>
-                            <p className="text-gray-400 text-sm mb-3">
-                                Paste a direct URL to your logo image here (PNG or JPG recommended). 
-                                This will update the logo in the top navigation bar.
-                            </p>
                             <div className="flex gap-4">
                                 <input 
                                     type="url" 
@@ -547,12 +501,25 @@ export const Admin: React.FC = () => {
                                     onChange={e => setConfig({...config, logoUrl: e.target.value})}
                                 />
                             </div>
-                            <div className="mt-4 p-4 bg-white/5 rounded text-center">
-                                <p className="text-xs text-gray-500 uppercase mb-2">Preview</p>
-                                <img src={config.logoUrl} alt="Preview" className="h-20 mx-auto object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                        </div>
+
+                         <div>
+                            <label className="block text-lg font-bold text-white mb-2">SBBT Submission Google Form</label>
+                            <p className="text-gray-400 text-sm mb-3">
+                                Users will be redirected here after building their team.
+                            </p>
+                            <div className="flex gap-4">
+                                <input 
+                                    type="url" 
+                                    className="flex-grow bg-black border border-white/20 rounded p-3 text-white focus:border-ikl-red focus:outline-none"
+                                    placeholder="https://docs.google.com/forms/..."
+                                    value={config.googleFormUrl || ''}
+                                    onChange={e => setConfig({...config, googleFormUrl: e.target.value})}
+                                />
                             </div>
                         </div>
-                        <div className="flex justify-end">
+
+                        <div className="flex justify-end pt-4">
                             <button type="submit" className="px-8 py-3 bg-ikl-red text-white font-display font-bold text-xl rounded hover:bg-red-600 transition-colors">
                                 Save Configuration
                             </button>
