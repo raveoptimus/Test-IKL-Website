@@ -40,6 +40,26 @@ const convertDriveLink = (url: string) => {
     return url;
 };
 
+// --- NEW: Convert Edit Link to CSV Export Link ---
+const convertSheetLinkToCSV = (url: string, gid?: string) => {
+    if (!url) return '';
+    // Extract Spreadsheet ID
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+        const id = match[1];
+        // If it's already an export link, leave it
+        if (url.includes('output=csv') || url.includes('format=csv')) return url;
+        
+        // Construct CSV export link
+        // Note: gid=0 is usually the first sheet. If user provides a specific gid in URL, we preserve it.
+        const gidMatch = url.match(/gid=([0-9]+)/);
+        const sheetGid = gidMatch ? gidMatch[1] : (gid || '0');
+        
+        return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${sheetGid}`;
+    }
+    return url;
+};
+
 export const Admin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
@@ -209,7 +229,7 @@ export const Admin: React.FC = () => {
         alert("Sync Successful! Data updated from Sheets.");
         fetchAll();
     } else {
-        alert("Sync Failed: " + (result.message || "Unknown error"));
+        alert("Sync Failed: " + (result.message || "Unknown error.\n\nMake sure the Sheet is 'Shared' with 'Anyone with the link'"));
     }
   };
 
@@ -382,17 +402,32 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
                          <div className="pt-8 mt-8 border-t border-white/10">
                             <h4 className="text-xl font-display text-ikl-gold mb-4 uppercase tracking-widest">Automatic Sync (Google Sheets)</h4>
                             <p className="text-gray-400 text-sm mb-4">
-                                To enable automatic updates without code changes, publish your Google Sheets to the Web as CSV and paste the links here.
+                                Paste your Google Sheet Link here. We will automatically convert it to a CSV link.<br/>
+                                <span className="text-red-500">Note: Your Sheet must be "Anyone with the link can view".</span>
                             </p>
                             
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Players Sheet (CSV URL)</label>
-                                    <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-gold focus:outline-none" placeholder="https://docs.google.com/.../pub?output=csv" value={config.playersSheetUrl || ''} onChange={e => setConfig({...config, playersSheetUrl: e.target.value})} />
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Players Sheet Link</label>
+                                    <input 
+                                        type="url" 
+                                        className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-gold focus:outline-none" 
+                                        placeholder="https://docs.google.com/spreadsheets/d/..." 
+                                        value={config.playersSheetUrl || ''} 
+                                        onChange={e => setConfig({...config, playersSheetUrl: convertSheetLinkToCSV(e.target.value)})} 
+                                    />
+                                    <p className="text-[10px] text-gray-500 mt-1 truncate">{config.playersSheetUrl}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Teams Sheet (CSV URL)</label>
-                                    <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-gold focus:outline-none" placeholder="https://docs.google.com/.../pub?output=csv" value={config.teamsSheetUrl || ''} onChange={e => setConfig({...config, teamsSheetUrl: e.target.value})} />
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Teams Sheet Link</label>
+                                    <input 
+                                        type="url" 
+                                        className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-gold focus:outline-none" 
+                                        placeholder="https://docs.google.com/spreadsheets/d/..." 
+                                        value={config.teamsSheetUrl || ''} 
+                                        onChange={e => setConfig({...config, teamsSheetUrl: convertSheetLinkToCSV(e.target.value, '0')})} 
+                                    />
+                                    <p className="text-[10px] text-gray-500 mt-1 truncate">{config.teamsSheetUrl}</p>
                                 </div>
                                 <button type="button" onClick={handleForceSync} disabled={isSyncing} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded font-bold uppercase tracking-wider transition-colors text-sm border border-white/10 flex items-center gap-2">
                                     {isSyncing ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>}

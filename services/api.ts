@@ -19,12 +19,15 @@ const parseCSVLine = (line: string): string[] => {
             let val = line.substring(startValueIndex, i).trim();
             // Remove surrounding quotes if present
             if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+            // Handle double double-quotes used as escape
+            val = val.replace(/""/g, '"');
             result.push(val);
             startValueIndex = i + 1;
         }
     }
     let lastVal = line.substring(startValueIndex).trim();
     if (lastVal.startsWith('"') && lastVal.endsWith('"')) lastVal = lastVal.slice(1, -1);
+    lastVal = lastVal.replace(/""/g, '"');
     result.push(lastVal);
     return result;
 };
@@ -32,12 +35,34 @@ const parseCSVLine = (line: string): string[] => {
 // --- HELPER: NORMALIZE ROLE ---
 const normalizeRole = (rawRole: string): Role => {
     if (!rawRole) return Role.CLASH;
-    const s = String(rawRole).toLowerCase().replace(/[\s\-_]/g, '');
-    if (s.includes('jung')) return Role.JUNGLE;
-    if (s.includes('mid') || s.includes('mage')) return Role.MID;
-    if (s.includes('roam') || s.includes('tank') || s.includes('supp')) return Role.ROAM;
-    if (s.includes('farm') || s.includes('gold') || s.includes('mm')) return Role.FARM;
+    const s = String(rawRole).toLowerCase().trim();
+    
+    // Exact mapping for clean data
+    if (s === 'clash' || s === 'exp') return Role.CLASH;
+    if (s === 'jungle' || s === 'jungler') return Role.JUNGLE;
+    if (s === 'mid' || s === 'midlane') return Role.MID;
+    if (s === 'roam' || s === 'roamer') return Role.ROAM;
+    if (s === 'farm' || s === 'gold') return Role.FARM;
+
+    const clean = s.replace(/[\s\-_]/g, '');
+    if (clean.includes('jung')) return Role.JUNGLE;
+    if (clean.includes('mid') || clean.includes('mage')) return Role.MID;
+    if (clean.includes('roam') || clean.includes('tank') || clean.includes('supp')) return Role.ROAM;
+    if (clean.includes('farm') || clean.includes('gold') || clean.includes('mm')) return Role.FARM;
     return Role.CLASH; 
+};
+
+// --- HELPER: SMART DRIVE LINK CLEANER ---
+const cleanDriveLink = (url: string | undefined): string | undefined => {
+    if (!url || typeof url !== 'string') return undefined;
+    const makeDirectLink = (id: string) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+    if (url.includes('drive.google.com')) {
+        const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (fileMatch && fileMatch[1]) return makeDirectLink(fileMatch[1]);
+        const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (idMatch && idMatch[1]) return makeDirectLink(idMatch[1]);
+    }
+    return url;
 };
 
 // --- HELPER: CHECK VERSION AND RESET ---
@@ -130,40 +155,46 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
         try {
             console.log("Fetching Players from Sheet...");
             const response = await fetch(currentConfig.playersSheetUrl);
+            if (!response.ok) throw new Error("Network response was not ok");
             const csvText = await response.text();
             const lines = csvText.split('\n');
+            if (lines.length < 2) throw new Error("CSV Empty");
+
             const headers = parseCSVLine(lines[0].toLowerCase());
             
-            // Expected headers: id, name, team, role, image, matches, kill, death, assist, gpm
             const newPlayers: Player[] = [];
 
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
                 const cols = parseCSVLine(lines[i]);
-                // Basic mapping based on index or header name could be added, 
-                // but here we assume a strict column order for simplicity or robust find
                 
-                // We will use a loose mapping strategy
+                // Helper to find column index by list of possible names
                 const getVal = (keywords: string[]) => {
-                    const idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
+                    // Try exact matches first
+                    let idx = headers.findIndex(h => keywords.includes(h));
+                    if (idx !== -1) return cols[idx];
+                    
+                    // Try fuzzy matches
+                    idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
                     return idx !== -1 ? cols[idx] : undefined;
                 };
 
-                const name = getVal(['name', 'player']);
+                const name = getVal(['player name', 'playername', 'name', 'ign', 'nick']);
+                // Strict check: if no name, skip row
                 if (!name) continue;
 
                 newPlayers.push({
                     id: getVal(['id']) || `p_${i}`,
                     name: name,
-                    team: getVal(['team']) || 'Unknown',
-                    role: normalizeRole(getVal(['role']) || ''),
-                    image: getVal(['image', 'photo', 'url']),
+                    team: getVal(['team name', 'teamname', 'team', 'squad']) || 'Unknown',
+                    role: normalizeRole(getVal(['role', 'lane', 'pos', 'position']) || ''),
+                    image: cleanDriveLink(getVal(['image', 'photo', 'url', 'pic', 'link'])),
                     stats: {
-                        matches: Number(getVal(['match', 'played'])) || 0,
-                        kill: Number(getVal(['kill'])) || 0,
-                        death: Number(getVal(['death'])) || 0,
-                        assist: Number(getVal(['assist'])) || 0,
-                        gpm: Number(getVal(['gpm', 'gold'])) || 0
+                        matches: Number(getVal(['played', 'matches', 'games', 'main'])) || 0,
+                        kill: Number(getVal(['kill', 'kills', 'k'])) || 0,
+                        death: Number(getVal(['death', 'deaths', 'd'])) || 0,
+                        assist: Number(getVal(['assist', 'assists', 'a'])) || 0,
+                        gpm: Number(getVal(['gpm', 'gold', 'gold/min'])) || 0
                     }
                 });
             }
@@ -182,8 +213,11 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
         try {
             console.log("Fetching Teams from Sheet...");
             const response = await fetch(currentConfig.teamsSheetUrl);
+            if (!response.ok) throw new Error("Network response was not ok");
             const csvText = await response.text();
             const lines = csvText.split('\n');
+            if (lines.length < 2) throw new Error("CSV Empty");
+
             const headers = parseCSVLine(lines[0].toLowerCase());
             
             const newTeams: Team[] = [];
@@ -193,23 +227,25 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
                 const cols = parseCSVLine(lines[i]);
                 
                 const getVal = (keywords: string[]) => {
-                    const idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
-                    return idx !== -1 ? cols[idx] : undefined;
+                     let idx = headers.findIndex(h => keywords.includes(h));
+                     if (idx !== -1) return cols[idx];
+                     idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
+                     return idx !== -1 ? cols[idx] : undefined;
                 };
 
-                const name = getVal(['name', 'team']);
+                const name = getVal(['team name', 'teamname', 'team', 'name']);
                 if (!name) continue;
 
                 newTeams.push({
                     id: getVal(['id']) || `t_${i}`,
                     name: name,
-                    logo: getVal(['logo', 'url', 'image']) || '',
-                    description: getVal(['desc']) || '',
-                    matchPoints: Number(getVal(['point'])) || 0,
-                    matchWins: Number(getVal(['match_w', 'match win'])) || 0,
-                    matchLosses: Number(getVal(['match_l', 'match loss'])) || 0,
-                    gameWins: Number(getVal(['game_w', 'game win'])) || 0,
-                    gameLosses: Number(getVal(['game_l', 'game loss'])) || 0,
+                    logo: cleanDriveLink(getVal(['logo', 'url', 'image', 'pic'])) || '',
+                    description: getVal(['desc', 'description']) || '',
+                    matchPoints: Number(getVal(['match point', 'points', 'pts', 'point'])) || 0,
+                    matchWins: Number(getVal(['match w', 'match win', 'win', 'mw'])) || 0,
+                    matchLosses: Number(getVal(['match l', 'match loss', 'loss', 'ml'])) || 0,
+                    gameWins: Number(getVal(['game w', 'game win', 'gw'])) || 0,
+                    gameLosses: Number(getVal(['game l', 'game loss', 'gl'])) || 0,
                 });
             }
 
@@ -226,7 +262,7 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
     if (updated) {
         return { success: true };
     } else {
-        return { success: false, message: "Sync attempted but no data changed or failed." };
+        return { success: false, message: "Sync attempted but no valid data found or network failed." };
     }
 };
 
