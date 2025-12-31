@@ -70,7 +70,7 @@ const saveToStorage = (key: string, value: any): boolean => {
 let currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, [...MOCK_PLAYERS]);
 let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 
-// Updated default logo to the Google Drive link provided
+// Updated default logo to the specific Google Drive link provided by user
 let currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, {
   logoUrl: "https://drive.google.com/uc?export=view&id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4",
   googleFormUrl: ""

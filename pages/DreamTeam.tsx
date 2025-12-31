@@ -71,14 +71,23 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
                      <tr key={player.id} className="hover:bg-white/5 transition-colors group">
                         <td className="py-3 pl-2">
                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-gray-900 rounded-full overflow-hidden border border-white/10 group-hover:border-ikl-red/50 transition-colors">
+                              <div className="w-10 h-10 bg-gray-900 rounded-full overflow-hidden border border-white/10 group-hover:border-ikl-red/50 transition-colors relative">
                                  {player.image ? (
-                                    <img src={player.image} alt={player.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-600 font-display">
-                                       {player.name.substring(0,1)}
-                                    </div>
-                                 )}
+                                    <img 
+                                        src={player.image} 
+                                        alt={player.name} 
+                                        className="w-full h-full object-cover" 
+                                        referrerPolicy="no-referrer"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                            e.currentTarget.parentElement?.classList.add('fallback-avatar');
+                                        }}
+                                    />
+                                 ) : null}
+                                 {/* Fallback Text Avatar */}
+                                 <div className={`absolute inset-0 flex items-center justify-center text-gray-600 font-display pointer-events-none ${player.image ? 'opacity-0' : 'opacity-100'} fallback-content`}>
+                                     {player.name.substring(0,1)}
+                                 </div>
                               </div>
                               <span className="font-display text-xl text-white tracking-wide">{player.name}</span>
                            </div>
@@ -130,6 +139,7 @@ const RoleSection: React.FC<{
         {players.filter(p => p.role === role).map((player) => {
            const isSelected = selectedId === player.id;
            const teamLogo = teams.find(t => t.name === player.team)?.logo;
+           const [imgError, setImgError] = useState(false);
 
            return (
             <div
@@ -143,10 +153,16 @@ const RoleSection: React.FC<{
             >
               {/* Image Container */}
               <div className="aspect-[4/5] bg-gray-900 relative">
-                 {player.image ? (
-                   <img src={player.image} alt={player.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" referrerPolicy="no-referrer" />
+                 {player.image && !imgError ? (
+                   <img 
+                    src={player.image} 
+                    alt={player.name} 
+                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
+                    referrerPolicy="no-referrer"
+                    onError={() => setImgError(true)}
+                   />
                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-6xl font-bold select-none">
+                    <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-6xl font-bold select-none bg-gradient-to-b from-gray-900 to-black">
                         {player.team.substring(0,2)}
                     </div>
                  )}

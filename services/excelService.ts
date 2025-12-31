@@ -34,6 +34,28 @@ export const playersToExcelData = (players: Player[]) => {
   });
 };
 
+// --- SMART LINK CONVERTER ---
+const cleanDriveLink = (url: string | undefined): string | undefined => {
+    if (!url || typeof url !== 'string') return undefined;
+    
+    // Check if it's a Google Drive link
+    if (url.includes('drive.google.com')) {
+        // Pattern 1: /file/d/ID/view
+        const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (fileMatch && fileMatch[1]) {
+            return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
+        }
+        
+        // Pattern 2: id=ID
+        const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (idMatch && idMatch[1]) {
+             return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+        }
+    }
+    
+    return url;
+};
+
 // --- SMART ROLE MAPPER ---
 const normalizeRole = (rawRole: any): Role => {
     if (!rawRole) return Role.CLASH;
@@ -86,7 +108,7 @@ export const excelDataToPlayers = (data: any[]): Player[] => {
         name: findKey(['PLAYER NAME', 'Name', 'Player', 'Ign', 'Nick']) || 'Unknown',
         team: findKey(['TEAM NAME', 'Team', 'Squad']) || 'Free Agent',
         role: normalizeRole(rawRole),
-        image: imageUrl || undefined,
+        image: cleanDriveLink(imageUrl),
         stats: {
             matches: Number(findKey(['PLAYED', 'Matches', 'Games', 'Main'])) || 0,
             kill: Number(findKey(['KILL', 'Kills', 'K'])) || 0,
@@ -140,6 +162,8 @@ export const excelDataToTeams = (data: any[]): Team[] => {
                 gameLosses = parts[1];
             }
         }
+        
+        const rawLogo = row._logo || row.LogoURL || row.Logo || '';
 
         return {
             id: String(row._id || Math.random().toString(36).substr(2, 9)),
@@ -149,7 +173,7 @@ export const excelDataToTeams = (data: any[]): Team[] => {
             matchLosses,
             gameWins,
             gameLosses,
-            logo: row._logo || row.LogoURL || row.Logo || ''
+            logo: cleanDriveLink(rawLogo) || ''
         };
     }).filter(t => t.name);
 };
