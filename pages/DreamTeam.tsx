@@ -38,8 +38,8 @@ const RoleSection: React.FC<{
                   : 'border-white/5 bg-black/40 hover:border-ikl-red/50 hover:bg-white/5'
               }`}
             >
-              {/* Image Container - CHANGED: object-cover object-top to remove black bars and focus on face/body */}
-              <div className="aspect-[4/5] bg-gradient-to-b from-[#1a1a1a] to-black relative overflow-hidden">
+              {/* Image Container - CHANGED: 'Zoom out' logic. Using object-contain aligned bottom with 95% height. */}
+              <div className="aspect-[4/5] bg-gradient-to-b from-[#1a1a1a] via-[#111] to-black relative overflow-hidden flex items-end justify-center">
                  {/* Selection Glow Effect behind player */}
                  {isSelected && <div className="absolute inset-0 bg-ikl-green/20 blur-xl"></div>}
 
@@ -47,7 +47,8 @@ const RoleSection: React.FC<{
                    <img 
                     src={player.image} 
                     alt={player.name} 
-                    className={`w-full h-full object-cover object-top transition-all duration-300 relative z-10 ${isSelected ? 'scale-110 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105'}`}
+                    // Changed to object-contain object-bottom to show more body (zoom out effect)
+                    className={`w-full h-[95%] object-contain object-bottom transition-all duration-300 relative z-10 ${isSelected ? 'scale-110 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105'}`}
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
                    />
@@ -69,7 +70,7 @@ const RoleSection: React.FC<{
               
               {/* Info Overlay */}
               <div className="absolute bottom-0 left-0 w-full p-3 pt-8 z-30">
-                {/* Nickname - CHANGED: Added break-words and leading-tight to wrap long names */}
+                {/* Nickname */}
                 <div className={`font-display text-xl md:text-2xl font-bold leading-tight tracking-wide text-center mb-2 drop-shadow-md break-words whitespace-normal ${isSelected ? 'text-ikl-green' : 'text-white group-hover:text-white transition-colors'}`}>
                     {player.name}
                 </div>

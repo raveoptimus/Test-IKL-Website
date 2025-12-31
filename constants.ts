@@ -2,7 +2,7 @@ import { Player, Role, Team, DreamTeamSubmission, AppConfig } from './types';
 
 // Update this version string whenever you paste new data from Admin to force users to reload fresh data
 // CHANGE THIS (e.g., V5, V6) every time you update the players list below!
-export const DATA_VERSION = '2025-FALL-V7'; 
+export const DATA_VERSION = '2025-FALL-V12'; 
 
 export const ROLE_LABELS: Record<Role, string> = {
   [Role.CLASH]: 'CLASH LANE',
@@ -32,7 +32,7 @@ export const MOCK_PLAYERS: Player[] = [
   {
     "id": "1",
     "name": "RRQ.Harpist",
-    "team": "REX REGUM QEON",
+    "team": "RRQ",
     "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4&sz=w1000",
     "stats": {
@@ -50,7 +50,7 @@ export const MOCK_PLAYERS: Player[] = [
 export const MOCK_TEAMS: Team[] = [
   {
     "id": "t1",
-    "name": "REX REGUM QEON",
+    "name": "RRQ",
     "matchPoints": 15,
     "matchWins": 10,
     "matchLosses": 2,
