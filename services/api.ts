@@ -1,5 +1,5 @@
 import { Player, Team, DreamTeamSubmission, AppConfig, Role } from '../types';
-import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, DATA_VERSION, ROLE_LABELS } from '../constants';
+import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, DATA_VERSION, ROLE_LABELS, GLOBAL_CONFIG } from '../constants';
 
 // --- STORAGE KEYS ---
 const KEY_PLAYERS = 'ikl_data_players_v2';
@@ -70,8 +70,10 @@ const checkVersionAndReset = () => {
     const storedVersion = localStorage.getItem(KEY_VERSION);
     if (storedVersion !== DATA_VERSION) {
         console.log(`New version detected (Old: ${storedVersion}, New: ${DATA_VERSION}). Resetting data to defaults.`);
+        // Reset ALL data to ensure GLOBAL_CONFIG from constants.ts is applied
         localStorage.setItem(KEY_PLAYERS, JSON.stringify(MOCK_PLAYERS));
         localStorage.setItem(KEY_TEAMS, JSON.stringify(MOCK_TEAMS));
+        localStorage.setItem(KEY_CONFIG, JSON.stringify(GLOBAL_CONFIG));
         localStorage.setItem(KEY_VERSION, DATA_VERSION);
     }
 };
@@ -105,13 +107,9 @@ const saveToStorage = (key: string, value: any): boolean => {
 let currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, [...MOCK_PLAYERS]);
 let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 
-const defaultConfig: AppConfig = {
-  logoUrl: "https://drive.google.com/thumbnail?id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4&sz=w1000",
-  googleFormUrl: ""
-};
-
-const storedConfig = loadFromStorage<AppConfig>(KEY_CONFIG, defaultConfig);
-let currentConfig: AppConfig = { ...defaultConfig, ...storedConfig };
+// Use GLOBAL_CONFIG from constants.ts as the default
+const storedConfig = loadFromStorage<AppConfig>(KEY_CONFIG, GLOBAL_CONFIG);
+let currentConfig: AppConfig = { ...GLOBAL_CONFIG, ...storedConfig };
 
 const SIMULATE_DELAY = 100;
 

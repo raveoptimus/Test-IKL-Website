@@ -217,7 +217,7 @@ export const Admin: React.FC = () => {
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     await updateAppConfig(config);
-    alert("Configuration saved!");
+    alert("Configuration saved! IMPORTANT: This only saves to YOUR computer. To make it live for everyone, click 'Copy Config for Code' below and paste it into constants.ts");
     fetchAll();
   };
   
@@ -231,6 +231,21 @@ export const Admin: React.FC = () => {
     } else {
         alert("Sync Failed: " + (result.message || "Unknown error.\n\nMake sure the Sheet is 'Shared' with 'Anyone with the link'"));
     }
+  };
+
+  // --- NEW: Copy Config Feature ---
+  const handleCopyConfigForCode = () => {
+    const codeSnippet = `
+// --- PASTE THIS INTO constants.ts (Replace existing GLOBAL_CONFIG) ---
+export const GLOBAL_CONFIG: AppConfig = ${JSON.stringify(config, null, 2)};
+    `;
+    
+    navigator.clipboard.writeText(codeSnippet).then(() => {
+        alert("Config code copied to clipboard!\n\n1. Open 'constants.ts' in your project.\n2. Replace 'export const GLOBAL_CONFIG = { ... }' with the code you just copied.\n3. Deploy your app.");
+    }).catch(err => {
+        console.error("Failed to copy", err);
+        alert("Failed to copy. Check console.");
+    });
   };
 
   // --- NEW: Copy Data for Code Feature ---
@@ -438,20 +453,26 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
 
                         {/* DEVELOPER ZONE */}
                         <div className="pt-8 mt-8 border-t border-white/10">
-                            <h4 className="text-xl font-display text-gray-500 mb-4 uppercase tracking-widest">Developer Zone (Legacy)</h4>
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-lg">
-                                <p className="text-gray-400 text-sm mb-4">
-                                    Use this if you prefer to hardcode data into the website source code.
-                                </p>
-                                <button type="button" onClick={handleCopyDataForCode} className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-mono text-sm border border-white/20 rounded transition-all uppercase tracking-widest">
-                                    Copy Data for Code
-                                </button>
+                            <h4 className="text-xl font-display text-gray-500 mb-4 uppercase tracking-widest">Developer Zone</h4>
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-4">
+                                <div>
+                                    <p className="text-gray-400 text-sm mb-2 font-bold">1. SAVE CONFIGURATION TO CODE (Required for Global Update)</p>
+                                    <button type="button" onClick={handleCopyConfigForCode} className="w-full py-4 bg-gradient-to-r from-ikl-gold/20 to-yellow-900/20 text-ikl-gold font-mono text-sm border border-ikl-gold/30 rounded transition-all uppercase tracking-widest hover:border-ikl-gold">
+                                        Copy Config for Code
+                                    </button>
+                                </div>
+                                <div>
+                                    <p className="text-gray-400 text-sm mb-2 font-bold">2. HARDCODE MOCK DATA (Optional)</p>
+                                    <button type="button" onClick={handleCopyDataForCode} className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-mono text-sm border border-white/20 rounded transition-all uppercase tracking-widest">
+                                        Copy Data for Code
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <div className="flex justify-end pt-4 border-t border-white/10">
                             <button type="submit" className="px-10 py-4 bg-white text-black font-display font-bold text-2xl rounded hover:bg-ikl-red hover:text-white transition-all shadow-xl uppercase tracking-widest">
-                                Save Configuration
+                                Save Configuration (Local Only)
                             </button>
                         </div>
                     </form>
