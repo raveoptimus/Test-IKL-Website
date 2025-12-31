@@ -83,7 +83,7 @@ const RoleSection: React.FC<{
                         <div className="w-4 h-4 bg-gray-700 rounded-full shrink-0"></div>
                     )}
                     <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest truncate max-w-[80px]">
-                        {player.team}
+                        {player.teamAbv || player.team}
                     </div>
                 </div>
               </div>
@@ -201,7 +201,7 @@ export const DreamTeam: React.FC = () => {
           return {
               Role: ROLE_LABELS[role],
               Player: p?.name || 'Unknown',
-              Team: p?.team || 'Unknown',
+              Team: p?.teamAbv || p?.team || 'Unknown',
               TeamLogo: t?.logo
           };
       });

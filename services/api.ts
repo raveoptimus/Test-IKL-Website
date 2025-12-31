@@ -181,10 +181,15 @@ export const syncDataFromSheets = async (): Promise<{ success: boolean; message?
                 // Strict check: if no name, skip row
                 if (!name) continue;
 
+                const teamName = getVal(['team name', 'teamname', 'team', 'squad']) || 'Unknown';
+                // Try to get ABV Team, fallback to full team name
+                const teamAbv = getVal(['abv team', 'team abv', 'abv', 'tag', 'code']) || teamName;
+
                 newPlayers.push({
                     id: getVal(['id']) || `p_${i}`,
                     name: name,
-                    team: getVal(['team name', 'teamname', 'team', 'squad']) || 'Unknown',
+                    team: teamName,
+                    teamAbv: teamAbv,
                     role: normalizeRole(getVal(['role', 'lane', 'pos', 'position']) || ''),
                     image: cleanDriveLink(getVal(['image', 'photo', 'url', 'pic', 'link'])),
                     stats: {

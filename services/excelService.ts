@@ -18,6 +18,7 @@ export const playersToExcelData = (players: Player[]) => {
     return {
       ID: p.id,
       'TEAM NAME': p.team,
+      'ABV TEAM': p.teamAbv || p.team, // Include ABV in Export
       ROLE: p.role,
       'PLAYER NAME': p.name,
       PLAYED: p.stats.matches,
@@ -106,11 +107,14 @@ export const excelDataToPlayers = (data: any[]): Player[] => {
 
     const imageUrl = findKey(['Image URL', 'Image', 'Photo', 'Link', 'Picture', 'Icon', 'Foto']);
     const rawRole = findKey(['ROLE', 'Position', 'Pos', 'Lane', 'Role Name']);
+    const teamName = findKey(['TEAM NAME', 'Team', 'Squad']) || 'Free Agent';
+    const teamAbv = findKey(['ABV TEAM', 'ABV', 'TAG', 'Team Abv']) || teamName;
 
     return {
         id: String(row.ID || Math.random().toString(36).substr(2, 9)),
         name: findKey(['PLAYER NAME', 'Name', 'Player', 'Ign', 'Nick']) || 'Unknown',
-        team: findKey(['TEAM NAME', 'Team', 'Squad']) || 'Free Agent',
+        team: teamName,
+        teamAbv: teamAbv,
         role: normalizeRole(rawRole),
         image: cleanDriveLink(imageUrl),
         stats: {

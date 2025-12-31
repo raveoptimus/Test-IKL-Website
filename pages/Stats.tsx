@@ -190,7 +190,7 @@ export const Stats: React.FC = () => {
                                   {teamLogo && (
                                       <img src={teamLogo} alt={p.team} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
                                   )}
-                                  <span>{p.team}</span>
+                                  <span>{p.teamAbv || p.team}</span>
                               </div>
                           </td>
                           <td className="p-5"><span className="px-3 py-1 bg-white/10 border border-white/5 rounded text-xs uppercase text-gray-300 font-bold tracking-wider">{ROLE_LABELS[p.role]}</span></td>

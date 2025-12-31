@@ -19,6 +19,7 @@ export interface Player {
   id: string;
   name: string;
   team: string;
+  teamAbv?: string; // New: Abbreviation for display (e.g. RRQ instead of RRQ Hoshi)
   role: Role;
   image?: string; // URL to image
   stats: PlayerStats;
