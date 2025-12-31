@@ -13,13 +13,16 @@ export const ROLE_LABELS: Record<Role, string> = {
 };
 
 
+
 // --- PASTE THIS INTO constants.ts (Replace existing GLOBAL_CONFIG) ---
 export const GLOBAL_CONFIG: AppConfig = {
   "logoUrl": "https://drive.google.com/thumbnail?id=1nRGF3ELWXAcpdnkQzvXHlCfHqgXQUclF&sz=w1000",
   "googleFormUrl": "https://script.google.com/macros/s/AKfycbw-YWflS7ZUauerR664Oumj7yNWRl9e2R5RjTCyLh3OZwZOetxIreWBPDyf8Wmdqrm-6w/exec",
   "playersSheetUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDgxWI1M9k61wI-h9N-SBs5oRP6L56-46tu6aZdr1QEcdR-lLjwtYq_ySQgsCjtd4KQRRZe7osiR3A/pub?gid=0&single=true&output=csv",
-  "teamsSheetUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDgxWI1M9k61wI-h9N-SBs5oRP6L56-46tu6aZdr1QEcdR-lLjwtYq_ySQgsCjtd4KQRRZe7osiR3A/pub?gid=777170230&single=true&output=csv"
+  "teamsSheetUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDgxWI1M9k61wI-h9N-SBs5oRP6L56-46tu6aZdr1QEcdR-lLjwtYq_ySQgsCjtd4KQRRZe7osiR3A/pub?gid=777170230&single=true&output=csv",
+  "kvUrl": "https://drive.google.com/thumbnail?id=1FcUCzvm9VitTGrWJyVndzMQZbEMG1lDv&sz=w1000"
 };
+    
     
 
 // --- MOCK DATA (Fallback if Sheets fail) ---
