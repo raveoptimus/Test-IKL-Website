@@ -40,11 +40,10 @@ const convertDriveLink = (url: string) => {
         return makeViewLink(viewMatch[1]);
     }
 
-    // Pattern 2: https://drive.google.com/uc?id=VIDEO_ID... or similar
+    // Pattern 2: https://drive.google.com/uc?id=VIDEO_ID... or open?id=...
     if (url.includes('drive.google.com')) {
          const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
          if (idMatch && idMatch[1]) {
-             // If it's already a UC link but missing export=view, or just clean it up
              return makeViewLink(idMatch[1]);
          }
     }
@@ -66,8 +65,16 @@ export const Admin: React.FC = () => {
   const [isNewPlayer, setIsNewPlayer] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   
+  // State to track if the preview image in the modal failed to load
+  const [previewError, setPreviewError] = useState(false);
+
   const playerFileInputRef = useRef<HTMLInputElement>(null);
   const teamFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Reset preview error when editing player changes or image URL changes
+  useEffect(() => {
+    setPreviewError(false);
+  }, [editingPlayer?.image]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -330,12 +337,23 @@ export const Admin: React.FC = () => {
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center space-x-3">
                                          {/* PNG Friendly: Used Checkerboard Pattern */}
-                                         <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 flex items-center justify-center" style={transparentBgStyle}>
+                                         <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 flex items-center justify-center relative" style={transparentBgStyle}>
                                             {player.image ? (
-                                                <img src={player.image} alt={player.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
-                                            ) : (
-                                                <div className="text-xs text-gray-500 font-bold">{player.team.substring(0,2)}</div>
-                                            )}
+                                                <img 
+                                                  src={player.image} 
+                                                  alt={player.name} 
+                                                  className="w-full h-full object-contain" 
+                                                  referrerPolicy="no-referrer" 
+                                                  onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                    e.currentTarget.parentElement?.classList.add('show-initials');
+                                                  }}
+                                                />
+                                            ) : null}
+                                            {/* Fallback initials if image missing or broken (controlled by onError hiding img) */}
+                                            <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500 font-bold pointer-events-none opacity-100" style={{ zIndex: 0 }}>
+                                                {player.team.substring(0,2)}
+                                            </div>
                                          </div>
                                          <div className="overflow-hidden">
                                             <h4 className="font-display text-2xl text-white leading-none truncate">{player.name}</h4>
@@ -378,11 +396,21 @@ export const Admin: React.FC = () => {
                                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-3">Player Photo</label>
                                                 {/* PNG Friendly Preview with Checkerboard */}
                                                 <div className="w-full aspect-[4/5] border border-white/20 rounded-lg overflow-hidden relative mb-3 group flex items-center justify-center" style={transparentBgStyle}>
-                                                    {editingPlayer.image ? (
-                                                        <img src={editingPlayer.image} alt="Preview" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                                                    {editingPlayer.image && !previewError ? (
+                                                        <img 
+                                                          src={editingPlayer.image} 
+                                                          alt="Preview" 
+                                                          className="w-full h-full object-contain" 
+                                                          referrerPolicy="no-referrer"
+                                                          onError={() => setPreviewError(true)}
+                                                        />
                                                     ) : (
-                                                        <div className="flex flex-col items-center justify-center text-gray-500 gap-2">
-                                                            <span className="text-xs font-bold">No Image</span>
+                                                        <div className="flex flex-col items-center justify-center text-gray-500 gap-2 text-center p-2">
+                                                            {previewError ? (
+                                                                <span className="text-red-500 font-bold text-xs">LOAD ERROR<br/>Check Link</span>
+                                                            ) : (
+                                                                <span className="text-xs font-bold">No Image</span>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
@@ -390,8 +418,9 @@ export const Admin: React.FC = () => {
                                                     <input 
                                                         type="text"
                                                         placeholder="Or paste Image URL..."
-                                                        className="w-full bg-black border border-white/20 rounded p-2 text-xs text-white"
-                                                        value={editingPlayer.image && editingPlayer.image.startsWith('http') ? editingPlayer.image : ''}
+                                                        className="w-full bg-black border border-white/20 rounded p-2 text-xs text-white placeholder-gray-600"
+                                                        // logic change: show value unless it's a huge base64 string
+                                                        value={editingPlayer.image && !editingPlayer.image.startsWith('data:') ? editingPlayer.image : ''}
                                                         onChange={(e) => setEditingPlayer({...editingPlayer, image: convertDriveLink(e.target.value)})}
                                                     />
                                                     <div className="relative overflow-hidden">

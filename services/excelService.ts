@@ -46,7 +46,7 @@ const cleanDriveLink = (url: string | undefined): string | undefined => {
             return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
         }
         
-        // Pattern 2: id=ID
+        // Pattern 2: id=ID or open?id=ID
         const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
         if (idMatch && idMatch[1]) {
              return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
