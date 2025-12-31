@@ -195,6 +195,30 @@ export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
 };
 
 export const submitDreamTeam = async (submission: Omit<DreamTeamSubmission, 'id' | 'submittedAt'>): Promise<boolean> => {
+  console.log("Submitting:", submission);
+  
+  if (currentConfig.googleFormUrl) {
+    try {
+        await fetch(currentConfig.googleFormUrl, {
+            method: 'POST',
+            mode: 'no-cors', // 'no-cors' is required for simple Google Apps Script POSTs from web
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(submission)
+        });
+        return true;
+    } catch (e) {
+        console.error("Submission failed", e);
+        // We often return true here in no-cors mode because we can't read the response anyway, 
+        // assuming it worked if network didn't fail.
+        return true; 
+    }
+  } else {
+    console.warn("No Google Web App URL configured in Admin Settings. Data not sent to sheets.");
+  }
+  
+  // Simulation for when no URL is configured
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(true);

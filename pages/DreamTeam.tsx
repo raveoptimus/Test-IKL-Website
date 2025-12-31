@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Player, Role, Team, AppConfig } from '../types';
-import { getPlayers, getTeams, getAppConfig } from '../services/api';
+import { getPlayers, getTeams, getAppConfig, submitDreamTeam } from '../services/api';
 import { ROLE_LABELS } from '../constants';
 
 // --- COMPONENTS ---
@@ -113,6 +113,7 @@ export const DreamTeam: React.FC = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [week, setWeek] = useState('1');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/167WebdFXfpn0arheh1KoHNwoRnbq2aJlHtlB00dxK1Q/edit?usp=sharing";
 
@@ -165,9 +166,22 @@ export const DreamTeam: React.FC = () => {
   };
 
   // Step 2: User confirms details -> Go to Success
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Data is already in state, just proceed
+    setIsSubmitting(true);
+    
+    // Construct Payload
+    const payload = {
+        email,
+        instagram: username,
+        week,
+        selections: selections as { [key in Role]: string }
+    };
+
+    // Send to Google Sheets (via API service)
+    await submitDreamTeam(payload);
+    
+    setIsSubmitting(false);
     setStep('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -249,13 +263,15 @@ export const DreamTeam: React.FC = () => {
                         <div className="pt-6 space-y-4">
                             <button 
                                 onClick={handleFinalSubmit}
-                                className="w-full py-5 bg-gradient-to-r from-ikl-red to-red-700 text-white font-display text-3xl font-bold rounded uppercase tracking-widest shadow-lg hover:shadow-[0_0_30px_rgba(255,42,42,0.4)] transition-all transform active:scale-95"
+                                disabled={isSubmitting}
+                                className={`w-full py-5 bg-gradient-to-r from-ikl-red to-red-700 text-white font-display text-3xl font-bold rounded uppercase tracking-widest shadow-lg hover:shadow-[0_0_30px_rgba(255,42,42,0.4)] transition-all transform active:scale-95 ${isSubmitting ? 'opacity-50 cursor-wait' : ''}`}
                             >
-                                CONFIRM & SUBMIT
+                                {isSubmitting ? 'SUBMITTING...' : 'CONFIRM & SUBMIT'}
                             </button>
                             <button 
                                 type="button"
                                 onClick={() => setStep('builder')}
+                                disabled={isSubmitting}
                                 className="w-full py-4 bg-transparent border border-white/10 text-gray-400 font-display text-xl font-bold rounded uppercase tracking-widest hover:text-white hover:bg-white/5 transition-colors"
                             >
                                 Back to Edit
@@ -275,31 +291,12 @@ export const DreamTeam: React.FC = () => {
             <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(74,222,128,0.3)] animate-slide-up">
                 <svg className="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-2 animate-slide-up">TEAM SUBMITTED</h1>
-            <p className="text-gray-400 mb-10 text-xl font-display uppercase tracking-widest animate-slide-up">Good luck for Week {week}!</p>
             
-            <div className="flex flex-col gap-4 w-full max-w-md animate-slide-up">
-                <button 
-                    onClick={handleViewStandings}
-                    className="flex items-center justify-center gap-3 px-8 py-6 bg-white text-black font-display text-3xl font-bold rounded hover:bg-gray-200 transition-colors uppercase tracking-widest shadow-xl transform hover:scale-105 duration-300"
-                >
-                   <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                   View Global Standings
-                </button>
-
-                <button 
-                    onClick={() => { 
-                        setStep('builder'); 
-                        setSelections({}); 
-                        setEmail(''); 
-                        setUsername('');
-                        setWeek('1');
-                    }} 
-                    className="text-gray-500 hover:text-white mt-8 text-lg tracking-wide uppercase font-bold"
-                >
-                    Create Another Team
-                </button>
-            </div>
+            <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-4 animate-slide-up">SUBMITTED</h1>
+            
+            <p className="text-4xl md:text-5xl font-display font-bold uppercase tracking-widest animate-slide-up text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 drop-shadow-[0_0_25px_rgba(255,255,255,0.6)]">
+                Good luck for Week {week}!
+            </p>
         </div>
       );
   }

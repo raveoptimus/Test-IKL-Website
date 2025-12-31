@@ -621,6 +621,20 @@ export const Admin: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Google Web App URL Input */}
+                        <div>
+                            <label className="block text-lg font-bold text-white mb-2">Google Sheet Web App URL</label>
+                            <p className="text-gray-400 text-sm mb-3">Deploy your Google Apps Script as a Web App and paste the URL here to enable submissions.</p>
+                            <input 
+                                type="url" 
+                                className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-red focus:outline-none"
+                                placeholder="https://script.google.com/macros/s/..."
+                                value={config.googleFormUrl || ''}
+                                onChange={e => setConfig({...config, googleFormUrl: e.target.value})}
+                            />
+                        </div>
+
                         <div className="flex justify-end pt-4 border-t border-white/10">
                             <button type="submit" className="px-10 py-4 bg-white text-black font-display font-bold text-2xl rounded hover:bg-ikl-red hover:text-white transition-all shadow-xl uppercase tracking-widest">
                                 Save Configuration
