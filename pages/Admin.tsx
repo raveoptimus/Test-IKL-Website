@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Player, Team, Role, AppConfig } from '../types';
-import { getPlayers, getTeams, updatePlayer, createPlayer, updateTeam, bulkUpdatePlayers, bulkUpdateTeams, getAppConfig, updateAppConfig, deletePlayer } from '../services/api';
+import { getPlayers, getTeams, updatePlayer, createPlayer, updateTeam, bulkUpdatePlayers, bulkUpdateTeams, getAppConfig, updateAppConfig, deletePlayer, syncDataFromSheets } from '../services/api';
 import { exportToExcel, playersToExcelData, excelDataToPlayers, teamsToExcelData, excelDataToTeams, readExcelFile } from '../services/excelService';
 import { ROLE_LABELS } from '../constants';
 
@@ -57,6 +57,7 @@ export const Admin: React.FC = () => {
   const [previewError, setPreviewError] = useState(false);
   const playerFileInputRef = useRef<HTMLInputElement>(null);
   const teamFileInputRef = useRef<HTMLInputElement>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     setPreviewError(false);
@@ -198,6 +199,18 @@ export const Admin: React.FC = () => {
     await updateAppConfig(config);
     alert("Configuration saved!");
     fetchAll();
+  };
+  
+  const handleForceSync = async () => {
+    setIsSyncing(true);
+    const result = await syncDataFromSheets();
+    setIsSyncing(false);
+    if (result.success) {
+        alert("Sync Successful! Data updated from Sheets.");
+        fetchAll();
+    } else {
+        alert("Sync Failed: " + (result.message || "Unknown error"));
+    }
   };
 
   // --- NEW: Copy Data for Code Feature ---
@@ -365,20 +378,36 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
                             <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-red focus:outline-none" placeholder="https://script.google.com/macros/s/..." value={config.googleFormUrl || ''} onChange={e => setConfig({...config, googleFormUrl: e.target.value})} />
                         </div>
                         
+                        {/* --- NEW: AUTOMATIC SYNC SECTION --- */}
+                         <div className="pt-8 mt-8 border-t border-white/10">
+                            <h4 className="text-xl font-display text-ikl-gold mb-4 uppercase tracking-widest">Automatic Sync (Google Sheets)</h4>
+                            <p className="text-gray-400 text-sm mb-4">
+                                To enable automatic updates without code changes, publish your Google Sheets to the Web as CSV and paste the links here.
+                            </p>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Players Sheet (CSV URL)</label>
+                                    <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-gold focus:outline-none" placeholder="https://docs.google.com/.../pub?output=csv" value={config.playersSheetUrl || ''} onChange={e => setConfig({...config, playersSheetUrl: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Teams Sheet (CSV URL)</label>
+                                    <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-gold focus:outline-none" placeholder="https://docs.google.com/.../pub?output=csv" value={config.teamsSheetUrl || ''} onChange={e => setConfig({...config, teamsSheetUrl: e.target.value})} />
+                                </div>
+                                <button type="button" onClick={handleForceSync} disabled={isSyncing} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded font-bold uppercase tracking-wider transition-colors text-sm border border-white/10 flex items-center gap-2">
+                                    {isSyncing ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>}
+                                    Test & Force Sync Now
+                                </button>
+                            </div>
+                        </div>
+
                         {/* DEVELOPER ZONE */}
                         <div className="pt-8 mt-8 border-t border-white/10">
-                            <h4 className="text-xl font-display text-gray-500 mb-4 uppercase tracking-widest">Developer Zone</h4>
-                            <div className="bg-red-900/10 border border-red-900/30 p-6 rounded-lg">
+                            <h4 className="text-xl font-display text-gray-500 mb-4 uppercase tracking-widest">Developer Zone (Legacy)</h4>
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-lg">
                                 <p className="text-gray-400 text-sm mb-4">
-                                    Since this app doesn't use a cloud database, data on your PC is not automatically synced to mobile/other users. 
-                                    To update data for everyone:
+                                    Use this if you prefer to hardcode data into the website source code.
                                 </p>
-                                <ol className="list-decimal pl-5 text-gray-300 text-sm space-y-2 mb-6">
-                                    <li>Click "Copy Data for Code" below.</li>
-                                    <li>Open <code>constants.ts</code> in your code editor.</li>
-                                    <li>Replace <code>MOCK_PLAYERS</code> and <code>MOCK_TEAMS</code> with the copied code.</li>
-                                    <li>Deploy to Vercel.</li>
-                                </ol>
                                 <button type="button" onClick={handleCopyDataForCode} className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-mono text-sm border border-white/20 rounded transition-all uppercase tracking-widest">
                                     Copy Data for Code
                                 </button>

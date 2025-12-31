@@ -50,4 +50,6 @@ export interface DreamTeamSubmission {
 export interface AppConfig {
   logoUrl: string;
   googleFormUrl?: string;
+  playersSheetUrl?: string; // New: Link to published Google Sheet CSV for Players
+  teamsSheetUrl?: string;   // New: Link to published Google Sheet CSV for Teams
 }

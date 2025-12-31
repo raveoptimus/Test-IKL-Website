@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getAppConfig } from '../services/api';
+import { getAppConfig, syncDataFromSheets } from '../services/api';
 
 const NavLink = ({ to, label, active }: { to: string; label: string; active: boolean }) => (
   <Link
@@ -56,6 +56,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     };
 
     fetchConfig();
+    
+    // Attempt background sync
+    syncDataFromSheets().then(result => {
+       if (result.success) {
+           console.log("Remote data synced successfully.");
+           fetchConfig(); // Re-fetch in case config changed
+       }
+    });
 
     // Listen for updates from Admin panel
     const handleStorageUpdate = () => fetchConfig();

@@ -1,43 +1,64 @@
-import { Player, Team, DreamTeamSubmission, AppConfig } from '../types';
-import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, DATA_VERSION } from '../constants';
+import { Player, Team, DreamTeamSubmission, AppConfig, Role } from '../types';
+import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, DATA_VERSION, ROLE_LABELS } from '../constants';
 
 // --- STORAGE KEYS ---
-// Main storage keys
 const KEY_PLAYERS = 'ikl_data_players_v2';
 const KEY_TEAMS = 'ikl_data_teams_v2';
 const KEY_CONFIG = 'ikl_data_config_v2';
 const KEY_VERSION = 'ikl_data_version';
 
+// --- HELPER: CSV PARSER ---
+const parseCSVLine = (line: string): string[] => {
+    const result = [];
+    let startValueIndex = 0;
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] === '"') {
+            inQuotes = !inQuotes;
+        } else if (line[i] === ',' && !inQuotes) {
+            let val = line.substring(startValueIndex, i).trim();
+            // Remove surrounding quotes if present
+            if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+            result.push(val);
+            startValueIndex = i + 1;
+        }
+    }
+    let lastVal = line.substring(startValueIndex).trim();
+    if (lastVal.startsWith('"') && lastVal.endsWith('"')) lastVal = lastVal.slice(1, -1);
+    result.push(lastVal);
+    return result;
+};
+
+// --- HELPER: NORMALIZE ROLE ---
+const normalizeRole = (rawRole: string): Role => {
+    if (!rawRole) return Role.CLASH;
+    const s = String(rawRole).toLowerCase().replace(/[\s\-_]/g, '');
+    if (s.includes('jung')) return Role.JUNGLE;
+    if (s.includes('mid') || s.includes('mage')) return Role.MID;
+    if (s.includes('roam') || s.includes('tank') || s.includes('supp')) return Role.ROAM;
+    if (s.includes('farm') || s.includes('gold') || s.includes('mm')) return Role.FARM;
+    return Role.CLASH; 
+};
+
 // --- HELPER: CHECK VERSION AND RESET ---
 const checkVersionAndReset = () => {
     const storedVersion = localStorage.getItem(KEY_VERSION);
-    // If stored version doesn't match code version, reset data to defaults
     if (storedVersion !== DATA_VERSION) {
         console.log(`New version detected (Old: ${storedVersion}, New: ${DATA_VERSION}). Resetting data to defaults.`);
         localStorage.setItem(KEY_PLAYERS, JSON.stringify(MOCK_PLAYERS));
         localStorage.setItem(KEY_TEAMS, JSON.stringify(MOCK_TEAMS));
         localStorage.setItem(KEY_VERSION, DATA_VERSION);
-        // We do NOT reset config (logoUrl, googleFormUrl) usually, but for major data changes it might be safer
-        // For now, let's keep config to preserve settings like Form URL
     }
 };
 
-// Check version immediately on load
 checkVersionAndReset();
 
 // --- HELPER: LOAD FROM STORAGE ---
 const loadFromStorage = <T>(key: string, defaultVal: T): T => {
   try {
     const item = localStorage.getItem(key);
-    if (item) {
-        return JSON.parse(item);
-    }
-    // If no data exists yet, save the default mock data immediately
-    try {
-      localStorage.setItem(key, JSON.stringify(defaultVal));
-    } catch (err) {
-      console.warn("Could not initialize default data to storage", err);
-    }
+    if (item) return JSON.parse(item);
+    localStorage.setItem(key, JSON.stringify(defaultVal));
     return defaultVal;
   } catch (e) {
     console.error(`Error loading ${key}`, e);
@@ -45,45 +66,17 @@ const loadFromStorage = <T>(key: string, defaultVal: T): T => {
   }
 };
 
-// --- HELPER: SAVE TO STORAGE WITH FALLBACK ---
 const saveToStorage = (key: string, value: any): boolean => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (e) {
-    console.error(`Error saving ${key}.`, e);
-    
-    if (Array.isArray(value)) {
-        try {
-            console.log("Attempting to save text-only data...");
-            const cleanValue = value.map(item => {
-                const newItem = { ...item };
-                if (newItem.image && newItem.image.startsWith('data:')) {
-                    newItem.image = ''; 
-                }
-                if (newItem.logo && newItem.logo.startsWith('data:')) {
-                    newItem.logo = '';
-                }
-                return newItem;
-            });
-            
-            localStorage.setItem(key, JSON.stringify(cleanValue));
-            alert("WARNING: Storage Full!\n\nYour TEXT changes were saved, but large IMAGES were removed.");
-            return true;
-        } catch (retryErr) {
-            console.error("Text-only save also failed", retryErr);
-        }
-    }
-
-    if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-        alert("CRITICAL ERROR: Storage Full!\n\nChanges could NOT be saved.");
-    }
+    console.error(`Error saving ${key}`, e);
     return false;
   }
 };
 
 // --- INITIALIZE STATE ---
-// Load synchronously on startup
 let currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, [...MOCK_PLAYERS]);
 let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 
@@ -121,6 +114,120 @@ export const getAppConfig = async (): Promise<AppConfig> => {
   return new Promise((resolve) => {
     setTimeout(() => resolve({...currentConfig}), SIMULATE_DELAY);
   });
+};
+
+// --- REMOTE SYNC OPERATIONS ---
+
+export const syncDataFromSheets = async (): Promise<{ success: boolean; message?: string }> => {
+    if (!currentConfig.playersSheetUrl && !currentConfig.teamsSheetUrl) {
+        return { success: false, message: "No Sheet URLs configured" };
+    }
+
+    let updated = false;
+
+    // 1. Sync Players
+    if (currentConfig.playersSheetUrl) {
+        try {
+            console.log("Fetching Players from Sheet...");
+            const response = await fetch(currentConfig.playersSheetUrl);
+            const csvText = await response.text();
+            const lines = csvText.split('\n');
+            const headers = parseCSVLine(lines[0].toLowerCase());
+            
+            // Expected headers: id, name, team, role, image, matches, kill, death, assist, gpm
+            const newPlayers: Player[] = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const cols = parseCSVLine(lines[i]);
+                // Basic mapping based on index or header name could be added, 
+                // but here we assume a strict column order for simplicity or robust find
+                
+                // We will use a loose mapping strategy
+                const getVal = (keywords: string[]) => {
+                    const idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
+                    return idx !== -1 ? cols[idx] : undefined;
+                };
+
+                const name = getVal(['name', 'player']);
+                if (!name) continue;
+
+                newPlayers.push({
+                    id: getVal(['id']) || `p_${i}`,
+                    name: name,
+                    team: getVal(['team']) || 'Unknown',
+                    role: normalizeRole(getVal(['role']) || ''),
+                    image: getVal(['image', 'photo', 'url']),
+                    stats: {
+                        matches: Number(getVal(['match', 'played'])) || 0,
+                        kill: Number(getVal(['kill'])) || 0,
+                        death: Number(getVal(['death'])) || 0,
+                        assist: Number(getVal(['assist'])) || 0,
+                        gpm: Number(getVal(['gpm', 'gold'])) || 0
+                    }
+                });
+            }
+
+            if (newPlayers.length > 0) {
+                await bulkUpdatePlayers(newPlayers);
+                updated = true;
+            }
+        } catch (e) {
+            console.error("Failed to sync players", e);
+        }
+    }
+
+    // 2. Sync Teams
+    if (currentConfig.teamsSheetUrl) {
+        try {
+            console.log("Fetching Teams from Sheet...");
+            const response = await fetch(currentConfig.teamsSheetUrl);
+            const csvText = await response.text();
+            const lines = csvText.split('\n');
+            const headers = parseCSVLine(lines[0].toLowerCase());
+            
+            const newTeams: Team[] = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const cols = parseCSVLine(lines[i]);
+                
+                const getVal = (keywords: string[]) => {
+                    const idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
+                    return idx !== -1 ? cols[idx] : undefined;
+                };
+
+                const name = getVal(['name', 'team']);
+                if (!name) continue;
+
+                newTeams.push({
+                    id: getVal(['id']) || `t_${i}`,
+                    name: name,
+                    logo: getVal(['logo', 'url', 'image']) || '',
+                    description: getVal(['desc']) || '',
+                    matchPoints: Number(getVal(['point'])) || 0,
+                    matchWins: Number(getVal(['match_w', 'match win'])) || 0,
+                    matchLosses: Number(getVal(['match_l', 'match loss'])) || 0,
+                    gameWins: Number(getVal(['game_w', 'game win'])) || 0,
+                    gameLosses: Number(getVal(['game_l', 'game loss'])) || 0,
+                });
+            }
+
+            if (newTeams.length > 0) {
+                await bulkUpdateTeams(newTeams);
+                updated = true;
+            }
+
+        } catch (e) {
+             console.error("Failed to sync teams", e);
+        }
+    }
+
+    if (updated) {
+        return { success: true };
+    } else {
+        return { success: false, message: "Sync attempted but no data changed or failed." };
+    }
 };
 
 // --- WRITE OPERATIONS (ADMIN) ---
@@ -211,7 +318,6 @@ export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
 
 export const submitDreamTeam = async (submission: Omit<DreamTeamSubmission, 'id' | 'submittedAt'>): Promise<boolean> => {
   console.log("Submitting:", submission);
-  
   if (currentConfig.googleFormUrl) {
     try {
         await fetch(currentConfig.googleFormUrl, {
@@ -222,13 +328,8 @@ export const submitDreamTeam = async (submission: Omit<DreamTeamSubmission, 'id'
         });
         return true;
     } catch (e) {
-        console.error("Submission failed", e);
         return true; 
     }
-  } else {
-    console.warn("No Google Web App URL configured.");
   }
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(true), 500);
-  });
+  return new Promise((resolve) => setTimeout(() => resolve(true), 500));
 };
