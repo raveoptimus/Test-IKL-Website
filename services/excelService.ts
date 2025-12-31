@@ -38,18 +38,21 @@ export const playersToExcelData = (players: Player[]) => {
 const cleanDriveLink = (url: string | undefined): string | undefined => {
     if (!url || typeof url !== 'string') return undefined;
     
+    // Use lh3.googleusercontent.com/d/ID which is more stable for embedding than drive.google.com/uc
+    const makeDirectLink = (id: string) => `https://lh3.googleusercontent.com/d/${id}`;
+
     // Check if it's a Google Drive link
     if (url.includes('drive.google.com')) {
         // Pattern 1: /file/d/ID/view
         const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (fileMatch && fileMatch[1]) {
-            return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
+            return makeDirectLink(fileMatch[1]);
         }
         
         // Pattern 2: id=ID or open?id=ID
         const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
         if (idMatch && idMatch[1]) {
-             return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+             return makeDirectLink(idMatch[1]);
         }
     }
     

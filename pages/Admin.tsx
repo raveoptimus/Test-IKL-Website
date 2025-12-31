@@ -31,20 +31,20 @@ const transparentBgStyle = {
 const convertDriveLink = (url: string) => {
     if (!url) return url;
 
-    // Helper to construct the view link
-    const makeViewLink = (id: string) => `https://drive.google.com/uc?export=view&id=${id}`;
+    // Use lh3.googleusercontent.com/d/ID which is more stable for embedding than drive.google.com/uc
+    const makeDirectLink = (id: string) => `https://lh3.googleusercontent.com/d/${id}`;
 
-    // Pattern 1: https://drive.google.com/file/d/VIDEO_ID/view...
+    // Pattern 1: https://drive.google.com/file/d/ID/view...
     const viewMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
     if (viewMatch && viewMatch[1]) {
-        return makeViewLink(viewMatch[1]);
+        return makeDirectLink(viewMatch[1]);
     }
 
-    // Pattern 2: https://drive.google.com/uc?id=VIDEO_ID... or open?id=...
+    // Pattern 2: https://drive.google.com/uc?id=ID... or open?id=...
     if (url.includes('drive.google.com')) {
          const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
          if (idMatch && idMatch[1]) {
-             return makeViewLink(idMatch[1]);
+             return makeDirectLink(idMatch[1]);
          }
     }
     
@@ -407,7 +407,7 @@ export const Admin: React.FC = () => {
                                                     ) : (
                                                         <div className="flex flex-col items-center justify-center text-gray-500 gap-2 text-center p-2">
                                                             {previewError ? (
-                                                                <span className="text-red-500 font-bold text-xs">LOAD ERROR<br/>Check Link</span>
+                                                                <span className="text-red-500 font-bold text-xs">LOAD ERROR<br/>Check Permissions</span>
                                                             ) : (
                                                                 <span className="text-xs font-bold">No Image</span>
                                                             )}
@@ -417,9 +417,8 @@ export const Admin: React.FC = () => {
                                                 <div className="flex flex-col gap-2">
                                                     <input 
                                                         type="text"
-                                                        placeholder="Or paste Image URL..."
+                                                        placeholder="Paste Public Drive Link..."
                                                         className="w-full bg-black border border-white/20 rounded p-2 text-xs text-white placeholder-gray-600"
-                                                        // logic change: show value unless it's a huge base64 string
                                                         value={editingPlayer.image && !editingPlayer.image.startsWith('data:') ? editingPlayer.image : ''}
                                                         onChange={(e) => setEditingPlayer({...editingPlayer, image: convertDriveLink(e.target.value)})}
                                                     />
@@ -451,7 +450,7 @@ export const Admin: React.FC = () => {
                                                         </select>
                                                     </div>
                                                 </div>
-                                                {/* Stats inputs (simplified for brevity, logic remains same) */}
+                                                {/* Stats inputs */}
                                                 <div className="bg-white/5 rounded-lg p-4 border border-white/5 mt-4">
                                                     <h4 className="text-white font-bold mb-4">Performance Stats</h4>
                                                     <div className="grid grid-cols-2 gap-4 mb-4">
