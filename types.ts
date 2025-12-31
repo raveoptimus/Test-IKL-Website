@@ -49,7 +49,8 @@ export interface DreamTeamSubmission {
 
 export interface AppConfig {
   logoUrl: string;
+  kvUrl?: string;          // New: Link to Key Visual / Banner Background
   googleFormUrl?: string;
-  playersSheetUrl?: string; // New: Link to published Google Sheet CSV for Players
-  teamsSheetUrl?: string;   // New: Link to published Google Sheet CSV for Teams
+  playersSheetUrl?: string; 
+  teamsSheetUrl?: string;   
 }

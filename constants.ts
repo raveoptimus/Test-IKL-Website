@@ -2,7 +2,7 @@ import { Player, Role, Team, DreamTeamSubmission, AppConfig } from './types';
 
 // Update this version string whenever you paste new data from Admin to force users to reload fresh data
 // CHANGE THIS (e.g., V5, V6) every time you update the players list below!
-export const DATA_VERSION = '2025-FALL-V5'; 
+export const DATA_VERSION = '2025-FALL-V6'; 
 
 export const ROLE_LABELS: Record<Role, string> = {
   [Role.CLASH]: 'CLASH LANE',
@@ -12,14 +12,15 @@ export const ROLE_LABELS: Record<Role, string> = {
   [Role.ROAM]: 'ROAMER'
 };
 
-// --- GLOBAL CONFIGURATION (SOURCE OF TRUTH) ---
-// PASTE YOUR CONFIG FROM ADMIN PANEL HERE to apply it to all users
+
+// --- PASTE THIS INTO constants.ts (Replace existing GLOBAL_CONFIG) ---
 export const GLOBAL_CONFIG: AppConfig = {
-  logoUrl: "https://drive.google.com/file/d/1nRGF3ELWXAcpdnkQzvXHlCfHqgXQUclF/view?usp=drive_link",
-  googleFormUrl: "",
-  playersSheetUrl: "", // Paste your CSV Link here
-  teamsSheetUrl: ""    // Paste your CSV Link here
+  "logoUrl": "https://drive.google.com/thumbnail?id=1nRGF3ELWXAcpdnkQzvXHlCfHqgXQUclF&sz=w1000",
+  "googleFormUrl": "https://script.google.com/macros/s/AKfycbw-YWflS7ZUauerR664Oumj7yNWRl9e2R5RjTCyLh3OZwZOetxIreWBPDyf8Wmdqrm-6w/exec",
+  "playersSheetUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDgxWI1M9k61wI-h9N-SBs5oRP6L56-46tu6aZdr1QEcdR-lLjwtYq_ySQgsCjtd4KQRRZe7osiR3A/pub?gid=0&single=true&output=csv",
+  "teamsSheetUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDgxWI1M9k61wI-h9N-SBs5oRP6L56-46tu6aZdr1QEcdR-lLjwtYq_ySQgsCjtd4KQRRZe7osiR3A/pub?gid=777170230&single=true&output=csv"
 };
+    
 
 // --- MOCK DATA (Fallback if Sheets fail) ---
 

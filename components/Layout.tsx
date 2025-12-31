@@ -46,12 +46,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState("https://placehold.co/400x400/000000/ff2a2a?text=IKL+FALL");
+  const [kvUrl, setKvUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    // Fetch dynamic logo configuration on mount
+    // Fetch dynamic logo & KV configuration on mount
     const fetchConfig = () => {
         getAppConfig().then(config => {
             if (config.logoUrl) setLogoUrl(config.logoUrl);
+            if (config.kvUrl) setKvUrl(config.kvUrl);
         });
     };
 
@@ -76,26 +78,46 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <div className="min-h-screen bg-ikl-darker text-white flex flex-col relative overflow-hidden">
-      {/* Dynamic Background */}
+      {/* --- DYNAMIC GLOBAL BACKGROUND (KV) --- */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-ikl-red/10 to-transparent opacity-20"></div>
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-ikl-red/5 rounded-full blur-[120px]"></div>
-        {/* Hexagon Pattern Overlay */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
+         {/* KV Image Layer */}
+         {kvUrl ? (
+             <div className="absolute top-0 left-0 w-full h-[60vh] md:h-[80vh] opacity-40 transition-opacity duration-1000 ease-out">
+                <img 
+                    src={kvUrl} 
+                    alt="Season Theme" 
+                    className="w-full h-full object-cover object-top mask-image-b-gradient"
+                    referrerPolicy="no-referrer"
+                />
+             </div>
+         ) : (
+             // Fallback Gradient if no KV
+             <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-ikl-red/10 to-transparent opacity-20"></div>
+         )}
+         
+         {/* Gradient Overlay for Readability (Fades KV into black at bottom) */}
+         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#050505]/80 to-[#050505]"></div>
+         
+         {/* Ambient Glows */}
+         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-ikl-red/5 rounded-full blur-[120px]"></div>
+         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px] mix-blend-overlay"></div>
+         
+         {/* Texture Overlay */}
+         <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/5 shadow-2xl">
+      <nav className="sticky top-0 z-40 bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 md:h-24">
             <div className="flex-shrink-0 flex items-center space-x-4">
               {/* Dynamic Logo Section */}
               <div className="relative group">
-                <div className="absolute -inset-2 bg-ikl-red/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute -inset-2 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <img 
                     src={logoUrl} 
                     alt="IKL Logo" 
-                    className="h-10 md:h-14 w-auto object-contain relative z-10 transition-transform duration-300 group-hover:scale-110"
+                    className="h-10 md:h-14 w-auto object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                        // Fallback if image fails (optional)
@@ -103,10 +125,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 />
               </div>
               <div className="hidden sm:flex flex-col">
-                  <span className="font-display font-bold text-2xl md:text-3xl tracking-[0.15em] text-white leading-none">
+                  <span className="font-display font-bold text-2xl md:text-3xl tracking-[0.15em] text-white leading-none drop-shadow-lg">
                     INDONESIA KINGS LAGA
                   </span>
-                  <span className="font-display font-bold text-lg md:text-xl text-ikl-red tracking-[0.3em] leading-none opacity-90 mt-1">
+                  <span className="font-display font-bold text-lg md:text-xl text-ikl-red tracking-[0.3em] leading-none opacity-90 mt-1 drop-shadow-md">
                     FALL 2025
                   </span>
               </div>
@@ -143,7 +165,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </main>
 
       {/* Footer */}
-      <footer className="z-10 bg-[#080808] border-t border-white/5 py-16 relative overflow-hidden">
+      <footer className="z-10 bg-[#080808]/90 border-t border-white/5 py-16 relative overflow-hidden backdrop-blur-sm">
         {/* Decor line */}
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-ikl-red to-transparent opacity-50"></div>
         

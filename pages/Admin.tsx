@@ -407,13 +407,29 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
                                 <div className="p-4 rounded border border-white/10 flex items-center gap-4" style={transparentBgStyle}><span className="text-gray-500 text-sm font-bold uppercase bg-black/80 px-2 rounded">Preview:</span>{config.logoUrl ? <img src={config.logoUrl} alt="Logo Preview" className="h-12 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} referrerPolicy="no-referrer" /> : <span className="text-gray-600 text-xs italic">No URL entered</span>}</div>
                             </div>
                         </div>
+                        
+                        {/* --- NEW: KEY VISUAL URL --- */}
+                        <div>
+                            <label className="block text-lg font-bold text-white mb-2">Key Visual / Background (KV)</label>
+                            <p className="text-gray-400 text-sm mb-3">The main theme image that appears as the background for the entire site.</p>
+                            <div className="flex flex-col gap-4">
+                                <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-red focus:outline-none" placeholder="https://i.imgur.com/..." value={config.kvUrl || ''} onChange={e => setConfig({...config, kvUrl: convertDriveLink(e.target.value)})} />
+                                <div className="p-2 rounded border border-white/10 relative h-32 overflow-hidden flex items-center justify-center bg-black">
+                                     {config.kvUrl ? (
+                                         <img src={config.kvUrl} alt="KV Preview" className="absolute inset-0 w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                                     ) : <span className="text-gray-600 text-xs italic relative z-10">No KV Image Set</span>}
+                                     <span className="relative z-10 text-white font-bold text-xl drop-shadow-md">PREVIEW</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div>
                             <label className="block text-lg font-bold text-white mb-2">Google Sheet Web App URL</label>
                             <p className="text-gray-400 text-sm mb-3">Deploy your Google Apps Script as a Web App and paste the URL here to enable submissions.</p>
                             <input type="url" className="w-full bg-black border border-white/20 rounded p-4 text-white focus:border-ikl-red focus:outline-none" placeholder="https://script.google.com/macros/s/..." value={config.googleFormUrl || ''} onChange={e => setConfig({...config, googleFormUrl: e.target.value})} />
                         </div>
                         
-                        {/* --- NEW: AUTOMATIC SYNC SECTION --- */}
+                        {/* --- AUTOMATIC SYNC SECTION --- */}
                          <div className="pt-8 mt-8 border-t border-white/10">
                             <h4 className="text-xl font-display text-ikl-gold mb-4 uppercase tracking-widest">Automatic Sync (Google Sheets)</h4>
                             <p className="text-gray-400 text-sm mb-4">
