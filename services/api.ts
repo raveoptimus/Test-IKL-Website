@@ -70,11 +70,14 @@ const saveToStorage = (key: string, value: any): boolean => {
 let currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, [...MOCK_PLAYERS]);
 let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 
-// Updated default logo to the specific Google Drive link provided by user, using the more reliable endpoint
-let currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, {
+const defaultConfig: AppConfig = {
   logoUrl: "https://drive.google.com/thumbnail?id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4&sz=w1000",
   googleFormUrl: ""
-});
+};
+
+// Load config and merge with defaults to ensure new fields (like googleFormUrl) exist if local storage is old
+const storedConfig = loadFromStorage<AppConfig>(KEY_CONFIG, defaultConfig);
+let currentConfig: AppConfig = { ...defaultConfig, ...storedConfig };
 
 const SIMULATE_DELAY = 100;
 
