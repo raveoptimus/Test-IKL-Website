@@ -2,15 +2,20 @@ import { Player, Team, DreamTeamSubmission, AppConfig } from '../types';
 import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS } from '../constants';
 
 // --- STORAGE KEYS ---
-const KEY_PLAYERS = 'ikl_data_players';
-const KEY_TEAMS = 'ikl_data_teams';
-const KEY_CONFIG = 'ikl_data_config';
+const KEY_PLAYERS = 'ikl_data_players_v1';
+const KEY_TEAMS = 'ikl_data_teams_v1';
+const KEY_CONFIG = 'ikl_data_config_v1';
 
 // --- HELPER: LOAD FROM STORAGE ---
 const loadFromStorage = <T>(key: string, defaultVal: T): T => {
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultVal;
+    if (item) {
+        return JSON.parse(item);
+    }
+    // If no data exists yet, save the default mock data immediately so we have a base
+    localStorage.setItem(key, JSON.stringify(defaultVal));
+    return defaultVal;
   } catch (e) {
     console.error(`Error loading ${key}`, e);
     return defaultVal;
@@ -18,19 +23,24 @@ const loadFromStorage = <T>(key: string, defaultVal: T): T => {
 };
 
 // --- HELPER: SAVE TO STORAGE ---
-const saveToStorage = (key: string, value: any) => {
+const saveToStorage = (key: string, value: any): boolean => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (e) {
-    console.error(`Error saving ${key}. Storage might be full (Base64 images?).`, e);
-    alert("Warning: Could not save data. Local storage might be full. Try using Image URLs instead of uploading large files.");
+    console.error(`Error saving ${key}.`, e);
+    // Determine if it's a quota error
+    if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+        alert("CRITICAL ERROR: Storage Full!\n\nYou have uploaded too many large images. The browser cannot save your changes.\n\nSOLUTION:\n1. Use Image URLs instead of uploading files.\n2. Delete some players/teams to free up space.\n3. Try to compress your images.");
+    } else {
+        alert("Error saving data. Check console for details.");
+    }
     return false;
   }
 };
 
 // --- INITIALIZE STATE ---
-// We initialize from storage once, or fall back to MOCK constants
+// Load synchronously on startup
 let currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, [...MOCK_PLAYERS]);
 let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 let currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, {
@@ -44,15 +54,13 @@ const SIMULATE_DELAY = 100;
 
 export const getPlayers = async (): Promise<Player[]> => {
   return new Promise((resolve) => {
-    // Reload from storage to ensure we have latest
-    currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, currentPlayers);
+    // Re-read from variable (which is in sync with LS)
     setTimeout(() => resolve([...currentPlayers]), SIMULATE_DELAY);
   });
 };
 
 export const getTeams = async (): Promise<Team[]> => {
   return new Promise((resolve) => {
-    currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, currentTeams);
     setTimeout(() => resolve([...currentTeams]), SIMULATE_DELAY);
   });
 };
@@ -65,7 +73,6 @@ export const getSubmissions = async (): Promise<DreamTeamSubmission[]> => {
 
 export const getAppConfig = async (): Promise<AppConfig> => {
   return new Promise((resolve) => {
-    currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, currentConfig);
     setTimeout(() => resolve({...currentConfig}), SIMULATE_DELAY);
   });
 };
@@ -75,75 +82,86 @@ export const getAppConfig = async (): Promise<AppConfig> => {
 // Players
 export const updatePlayer = async (updatedPlayer: Player): Promise<boolean> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      currentPlayers = currentPlayers.map(p => p.id === updatedPlayer.id ? updatedPlayer : p);
-      saveToStorage(KEY_PLAYERS, currentPlayers);
-      resolve(true);
-    }, SIMULATE_DELAY);
+    const newPlayers = currentPlayers.map(p => p.id === updatedPlayer.id ? updatedPlayer : p);
+    if (saveToStorage(KEY_PLAYERS, newPlayers)) {
+        currentPlayers = newPlayers;
+        resolve(true);
+    } else {
+        resolve(false);
+    }
   });
 };
 
 export const createPlayer = async (newPlayer: Player): Promise<boolean> => {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        currentPlayers = [...currentPlayers, newPlayer];
-        saveToStorage(KEY_PLAYERS, currentPlayers);
-        resolve(true);
-      }, SIMULATE_DELAY);
+      const newPlayers = [...currentPlayers, newPlayer];
+      if (saveToStorage(KEY_PLAYERS, newPlayers)) {
+          currentPlayers = newPlayers;
+          resolve(true);
+      } else {
+          resolve(false);
+      }
     });
 };
 
 export const deletePlayer = async (id: string): Promise<boolean> => {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        currentPlayers = currentPlayers.filter(p => p.id !== id);
-        saveToStorage(KEY_PLAYERS, currentPlayers);
-        resolve(true);
-      }, SIMULATE_DELAY);
+      const newPlayers = currentPlayers.filter(p => p.id !== id);
+      if (saveToStorage(KEY_PLAYERS, newPlayers)) {
+          currentPlayers = newPlayers;
+          resolve(true);
+      } else {
+          resolve(false);
+      }
     });
 };
 
 export const bulkUpdatePlayers = async (players: Player[]): Promise<boolean> => {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        currentPlayers = players;
-        saveToStorage(KEY_PLAYERS, currentPlayers);
-        resolve(true);
-      }, SIMULATE_DELAY);
+      if (saveToStorage(KEY_PLAYERS, players)) {
+          currentPlayers = players;
+          resolve(true);
+      } else {
+          resolve(false);
+      }
     });
 };
 
 // Teams
 export const updateTeam = async (updatedTeam: Team): Promise<boolean> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      currentTeams = currentTeams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
-      saveToStorage(KEY_TEAMS, currentTeams);
-      resolve(true);
-    }, SIMULATE_DELAY);
+    const newTeams = currentTeams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
+    if (saveToStorage(KEY_TEAMS, newTeams)) {
+        currentTeams = newTeams;
+        resolve(true);
+    } else {
+        resolve(false);
+    }
   });
 };
 
 export const bulkUpdateTeams = async (teams: Team[]): Promise<boolean> => {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        currentTeams = teams;
-        saveToStorage(KEY_TEAMS, currentTeams);
-        resolve(true);
-      }, SIMULATE_DELAY);
+      if (saveToStorage(KEY_TEAMS, teams)) {
+          currentTeams = teams;
+          resolve(true);
+      } else {
+          resolve(false);
+      }
     });
 };
 
 // Config
 export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      currentConfig = config;
-      saveToStorage(KEY_CONFIG, currentConfig);
-      // Dispatch custom event to notify other components (like Layout)
-      window.dispatchEvent(new Event('storage-config-updated'));
-      resolve(true);
-    }, SIMULATE_DELAY);
+    if (saveToStorage(KEY_CONFIG, config)) {
+        currentConfig = config;
+        // Dispatch custom event to notify Layout to re-render logo
+        window.dispatchEvent(new Event('storage-config-updated'));
+        resolve(true);
+    } else {
+        resolve(false);
+    }
   });
 };
 

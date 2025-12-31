@@ -88,27 +88,32 @@ export const Admin: React.FC = () => {
       e.preventDefault();
       if (!editingPlayer) return;
 
+      let success = false;
       if (isNewPlayer) {
           const newPlayer = { ...editingPlayer, id: `p_${Date.now()}` };
-          await createPlayer(newPlayer);
+          success = await createPlayer(newPlayer);
       } else {
-          await updatePlayer(editingPlayer);
+          success = await updatePlayer(editingPlayer);
       }
       
-      setEditingPlayer(null);
-      setIsNewPlayer(false);
-      fetchAll();
+      if (success) {
+        setEditingPlayer(null);
+        setIsNewPlayer(false);
+        fetchAll();
+      }
   };
   
   const handlePlayerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0] && editingPlayer) {
+          const file = e.target.files[0];
+          // LIMIT: 300KB to prevent localStorage crash
+          if (file.size > 300000) {
+              alert("FILE TOO LARGE!\n\nTo keep the app fast and working, please use images smaller than 300KB.\n\nTip: Use an online image compressor or paste an Image URL instead.");
+              return;
+          }
+
           try {
-              // Limit size check (e.g. 300KB) to prevent localStorage crash
-              if (e.target.files[0].size > 300000) {
-                  alert("File is too large! Please upload an image smaller than 300KB or use an Image URL.");
-                  return;
-              }
-              const base64 = await fileToBase64(e.target.files[0]);
+              const base64 = await fileToBase64(file);
               setEditingPlayer({ ...editingPlayer, image: base64 });
           } catch (err) {
               console.error(err);
@@ -127,10 +132,18 @@ export const Admin: React.FC = () => {
           try {
               const rawData = await readExcelFile(e.target.files[0]);
               const newPlayers = excelDataToPlayers(rawData);
+              
+              if (newPlayers.length === 0) {
+                alert("No valid players found in Excel. Check column headers.");
+                return;
+              }
+
               if (window.confirm(`Found ${newPlayers.length} players. This will overwrite the current list. Continue?`)) {
-                  await bulkUpdatePlayers(newPlayers);
-                  alert('Players imported successfully!');
-                  fetchAll();
+                  const success = await bulkUpdatePlayers(newPlayers);
+                  if (success) {
+                    alert('Players imported successfully!');
+                    fetchAll();
+                  }
               }
           } catch (err) {
               alert('Error reading file. Please ensure it is a valid Excel file with correct columns.');
@@ -160,9 +173,11 @@ export const Admin: React.FC = () => {
           }
       }
 
-      await updateTeam(editingTeam);
-      setEditingTeam(null);
-      fetchAll();
+      const success = await updateTeam(editingTeam);
+      if (success) {
+        setEditingTeam(null);
+        fetchAll();
+      }
   };
 
   const handleExportTeams = () => {
@@ -175,10 +190,18 @@ export const Admin: React.FC = () => {
           try {
               const rawData = await readExcelFile(e.target.files[0]);
               const newTeams = excelDataToTeams(rawData);
+              
+              if (newTeams.length === 0) {
+                alert("No valid teams found in Excel. Check column headers.");
+                return;
+              }
+
               if (window.confirm(`Found ${newTeams.length} teams. This will overwrite the current standings. Continue?`)) {
-                  await bulkUpdateTeams(newTeams);
-                  alert('Teams imported successfully!');
-                  fetchAll();
+                  const success = await bulkUpdateTeams(newTeams);
+                  if (success) {
+                    alert('Teams imported successfully!');
+                    fetchAll();
+                  }
               }
           } catch (err) {
               alert('Error reading file. Please ensure it is a valid Excel file.');
@@ -191,8 +214,10 @@ export const Admin: React.FC = () => {
   // --- Settings ---
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateAppConfig(config);
-    alert("Configuration saved! Data is persisted locally.");
+    const success = await updateAppConfig(config);
+    if(success) {
+        alert("Configuration saved! Data is persisted locally.");
+    }
   };
 
 
@@ -363,7 +388,9 @@ export const Admin: React.FC = () => {
                                                         onChange={(e) => setEditingPlayer({...editingPlayer, image: e.target.value})}
                                                     />
                                                     <div className="relative overflow-hidden">
-                                                        <button type="button" className="w-full bg-white/10 hover:bg-white/20 text-white text-xs py-2 rounded transition-colors uppercase font-bold">Upload File</button>
+                                                        <button type="button" className="w-full bg-white/10 hover:bg-white/20 text-white text-xs py-2 rounded transition-colors uppercase font-bold">
+                                                            {editingPlayer.image?.startsWith('data') ? 'Change File' : 'Upload File'}
+                                                        </button>
                                                         <input 
                                                             type="file" 
                                                             accept="image/*"
