@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Player, Role, Team, AppConfig } from '../types';
 import { getPlayers, getTeams, getAppConfig } from '../services/api';
 import { exportToExcel } from '../services/excelService';
+import { ROLE_LABELS } from '../constants';
 
 // --- COMPONENTS ---
 
@@ -44,7 +45,7 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
                 onChange={(e) => setRoleFilter(e.target.value as Role | 'all')}
              >
                 <option value="all">All Roles</option>
-                {Object.values(Role).map(r => <option key={r} value={r}>{r}</option>)}
+                {Object.values(Role).map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
              </select>
           </div>
        </div>
@@ -84,7 +85,7 @@ const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ playe
                         </td>
                         <td className="py-3">
                            <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] uppercase text-gray-300 tracking-wider">
-                              {player.role}
+                              {ROLE_LABELS[player.role]}
                            </span>
                         </td>
                         <td className="py-3">
@@ -117,20 +118,11 @@ const RoleSection: React.FC<{
   error?: boolean;
 }> = ({ role, players, teams, selectedId, onSelect, error }) => {
   
-  // Mapping role to display name
-  const roleDisplayNames: {[key in Role]: string} = {
-      [Role.CLASH]: "CLASH LANE",
-      [Role.JUNGLE]: "JUNGLER",
-      [Role.MID]: "MID LANE",
-      [Role.FARM]: "FARM LANE",
-      [Role.ROAM]: "ROAMER"
-  };
-
   return (
     <div className={`mb-12 rounded-xl p-6 transition-all duration-500 ${error ? 'bg-red-900/20 border border-red-500 shadow-[0_0_30px_rgba(255,42,42,0.3)]' : 'bg-white/5 border border-white/5'}`}>
       <div className="flex items-center mb-6 border-l-4 border-ikl-red pl-4">
         <h2 className="text-3xl md:text-4xl font-display font-bold tracking-widest text-white uppercase">
-          {roleDisplayNames[role]}
+          {ROLE_LABELS[role]}
         </h2>
       </div>
       
@@ -258,7 +250,7 @@ export const DreamTeam: React.FC = () => {
           const pid = selections[role];
           const p = players.find(x => x.id === pid);
           return {
-              Role: role.toUpperCase(),
+              Role: ROLE_LABELS[role],
               Player: p?.name || 'Unknown',
               Team: p?.team || 'Unknown'
           };
@@ -267,16 +259,11 @@ export const DreamTeam: React.FC = () => {
 
   const handleDownloadExcel = () => {
       const data = getSelectedPlayersData();
-      // Pivot data to a single row for "Submission" style, or keep list? 
-      // User asked for "data bentuk sheet". A list is clearer for personal use.
-      // But if they want to paste into a row, transposing is better.
-      // Let's offer a simple list which is generic "Sheet Data".
       exportToExcel(data, 'My_Dream_Team', 'DreamTeam');
   };
 
   const handleCopyToClipboard = () => {
       const data = getSelectedPlayersData();
-      // Create tab separated string
       const header = data.map(d => d.Role).join('\t');
       const row = data.map(d => d.Player).join('\t');
       const text = `${header}\n${row}`;
@@ -296,7 +283,6 @@ export const DreamTeam: React.FC = () => {
       </div>
   );
 
-  // Success State
   if (success) {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center text-center animate-fade-in px-4">

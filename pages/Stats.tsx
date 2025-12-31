@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Player } from '../types';
 import { getPlayers } from '../services/api';
+import { ROLE_LABELS } from '../constants';
 
 export const Stats: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -102,7 +103,7 @@ export const Stats: React.FC = () => {
                      <tr key={p.id} className="hover:bg-white/5 transition-colors">
                         <td className="p-4 font-display text-xl text-white">{p.name}</td>
                         <td className="p-4 text-gray-400">{p.team}</td>
-                        <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs uppercase text-gray-300">{p.role}</span></td>
+                        <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs uppercase text-gray-300">{ROLE_LABELS[p.role]}</span></td>
                         <td className="p-4 text-right font-mono text-gray-400">{p.stats.matches}</td>
                          <td className="p-4 text-right font-mono text-gray-400 text-xs">
                             {p.stats.kill}/{p.stats.death}/{p.stats.assist}

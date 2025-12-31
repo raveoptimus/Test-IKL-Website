@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Team, Player } from '../types';
 import { getTeams, getPlayers } from '../services/api';
+import { ROLE_LABELS } from '../constants';
 
 export const Teams: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -70,7 +71,7 @@ export const Teams: React.FC = () => {
                           {/* Nickname */}
                           <h3 className="text-2xl md:text-3xl font-display font-bold text-white uppercase tracking-wide">{player.name}</h3>
                           <div className="mt-2 inline-block px-2 py-0.5 bg-white/10 rounded text-[10px] text-gray-400 uppercase tracking-widest">
-                             {player.role}
+                             {ROLE_LABELS[player.role]}
                           </div>
                       </div>
                   </div>

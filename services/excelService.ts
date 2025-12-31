@@ -34,39 +34,68 @@ export const playersToExcelData = (players: Player[]) => {
   });
 };
 
+// --- SMART ROLE MAPPER ---
+const normalizeRole = (rawRole: any): Role => {
+    if (!rawRole) return Role.CLASH;
+    const s = String(rawRole).toLowerCase().trim();
+
+    // Exact user specific mapping
+    if (s === 'jungler' || s === 'jungle') return Role.JUNGLE;
+    if (s === 'mid lane' || s === 'midlane' || s === 'mid') return Role.MID;
+    if (s === 'roamer' || s === 'roam') return Role.ROAM;
+    if (s === 'farm lane' || s === 'farmlane' || s === 'farm' || s === 'gold lane') return Role.FARM;
+    if (s === 'clash lane' || s === 'clashlane' || s === 'clash' || s === 'exp lane') return Role.CLASH;
+
+    // Fuzzy fallback
+    const clean = s.replace(/[\s\-_]/g, '');
+    if (clean.includes('jung')) return Role.JUNGLE;
+    if (clean.includes('mid') || clean.includes('mage')) return Role.MID;
+    if (clean.includes('roam') || clean.includes('tank') || clean.includes('supp')) return Role.ROAM;
+    if (clean.includes('farm') || clean.includes('gold') || clean.includes('mm') || clean.includes('marksman')) return Role.FARM;
+    if (clean.includes('clash') || clean.includes('exp') || clean.includes('off') || clean.includes('fight')) return Role.CLASH;
+
+    return Role.CLASH; // Default fallback
+};
+
 // Reconstruct Player object from Excel data
 export const excelDataToPlayers = (data: any[]): Player[] => {
   return data.map((row: any) => {
-    // Helper to find key case-insensitively
-    const findKey = (keys: string[]) => {
-        for (const k of keys) {
-            if (row[k] !== undefined) return row[k];
-            // Try uppercase/lowercase variations
-            const lowerK = k.toLowerCase();
-            const upperK = k.toUpperCase();
-            const foundKey = Object.keys(row).find(rk => rk.toLowerCase() === lowerK || rk.replace(/\s/g, '').toLowerCase() === lowerK.replace(/\s/g, ''));
-            if (foundKey) return row[foundKey];
+    // Helper to find key case-insensitively and loosely
+    const findKey = (candidates: string[]) => {
+        const rowKeys = Object.keys(row);
+        for (const candidate of candidates) {
+            // Exact match
+            if (row[candidate] !== undefined) return row[candidate];
+            
+            // Case insensitive match
+            const found = rowKeys.find(k => k.toLowerCase() === candidate.toLowerCase());
+            if (found) return row[found];
+
+            // Fuzzy match (contains)
+            const fuzzy = rowKeys.find(k => k.toLowerCase().includes(candidate.toLowerCase()));
+            if (fuzzy) return row[fuzzy];
         }
         return undefined;
     };
 
-    const imageUrl = findKey(['Image URL', 'ImageURL', 'Image', 'Photo', 'URL']);
+    const imageUrl = findKey(['Image URL', 'Image', 'Photo', 'Link', 'Picture', 'Icon', 'Foto']);
+    const rawRole = findKey(['ROLE', 'Position', 'Pos', 'Lane', 'Role Name']);
 
     return {
         id: String(row.ID || Math.random().toString(36).substr(2, 9)),
-        name: findKey(['PLAYER NAME', 'Player Name', 'Name', 'Player']) || 'Unknown',
-        team: findKey(['TEAM NAME', 'Team Name', 'Team']) || 'Free Agent',
-        role: (findKey(['ROLE', 'Role']) || Role.CLASH) as Role,
+        name: findKey(['PLAYER NAME', 'Name', 'Player', 'Ign', 'Nick']) || 'Unknown',
+        team: findKey(['TEAM NAME', 'Team', 'Squad']) || 'Free Agent',
+        role: normalizeRole(rawRole),
         image: imageUrl || undefined,
         stats: {
-        matches: Number(findKey(['PLAYED', 'Played', 'Matches'])) || 0,
-        kill: Number(findKey(['KILL', 'Kill', 'Kills'])) || 0,
-        death: Number(findKey(['DEATH', 'Death', 'Deaths'])) || 0,
-        assist: Number(findKey(['ASSIST', 'Assist', 'Assists'])) || 0,
-        gpm: Number(findKey(['GPM', 'Gold'])) || 0
+            matches: Number(findKey(['PLAYED', 'Matches', 'Games', 'Main'])) || 0,
+            kill: Number(findKey(['KILL', 'Kills', 'K'])) || 0,
+            death: Number(findKey(['DEATH', 'Deaths', 'D'])) || 0,
+            assist: Number(findKey(['ASSIST', 'Assists', 'A'])) || 0,
+            gpm: Number(findKey(['GPM', 'Gold', 'Gold/Min'])) || 0
         }
     };
-  }).filter(p => p.name !== 'Unknown'); // Filter out empty rows
+  }).filter(p => p.name !== 'Unknown' && p.name !== undefined); // Filter out empty rows
 };
 
 // Teams Export

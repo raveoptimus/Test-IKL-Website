@@ -1,5 +1,13 @@
 import { Player, Role, Team, DreamTeamSubmission } from './types';
 
+export const ROLE_LABELS: Record<Role, string> = {
+  [Role.CLASH]: 'CLASH LANE',
+  [Role.FARM]: 'FARM LANE',
+  [Role.JUNGLE]: 'JUNGLER',
+  [Role.MID]: 'MID LANE',
+  [Role.ROAM]: 'ROAMER'
+};
+
 // Simulate KV Data for Players
 export const MOCK_PLAYERS: Player[] = [
   { 
@@ -138,5 +146,4 @@ export const MOCK_TEAMS: Team[] = [
   },
 ];
 
-// Simulate KV Data for Submissions (Kept for type safety, but not used in new flow)
 export const MOCK_SUBMISSIONS: DreamTeamSubmission[] = [];

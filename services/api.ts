@@ -69,8 +69,10 @@ const saveToStorage = (key: string, value: any): boolean => {
 // Load synchronously on startup
 let currentPlayers = loadFromStorage<Player[]>(KEY_PLAYERS, [...MOCK_PLAYERS]);
 let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
+
+// Updated default logo to the Google Drive link provided
 let currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, {
-  logoUrl: "https://placehold.co/400x400/000000/ff2a2a?text=IKL+FALL",
+  logoUrl: "https://drive.google.com/uc?id=1nRGF3ELWXAcpdnkQzvXHlCfHqgXQUclF",
   googleFormUrl: ""
 });
 

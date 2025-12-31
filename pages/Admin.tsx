@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Player, Team, Role, AppConfig } from '../types';
 import { getPlayers, getTeams, updatePlayer, createPlayer, updateTeam, bulkUpdatePlayers, bulkUpdateTeams, getAppConfig, updateAppConfig, deletePlayer } from '../services/api';
 import { exportToExcel, playersToExcelData, excelDataToPlayers, teamsToExcelData, excelDataToTeams, readExcelFile } from '../services/excelService';
+import { ROLE_LABELS } from '../constants';
 
 type Tab = 'players' | 'teams' | 'settings';
 
@@ -12,6 +13,19 @@ const fileToBase64 = (file: File): Promise<string> => {
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = error => reject(error);
   });
+};
+
+// Checkerboard pattern for transparent PNGs
+const transparentBgStyle = {
+  backgroundImage: `
+    linear-gradient(45deg, #222 25%, transparent 25%), 
+    linear-gradient(-45deg, #222 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #222 75%), 
+    linear-gradient(-45deg, transparent 75%, #222 75%)
+  `,
+  backgroundSize: '20px 20px',
+  backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+  backgroundColor: '#111'
 };
 
 export const Admin: React.FC = () => {
@@ -291,8 +305,8 @@ export const Admin: React.FC = () => {
                             <div key={player.id} className="bg-white/5 border border-white/5 p-4 rounded-lg hover:border-ikl-red/50 transition-all hover:bg-white/10 flex flex-col gap-3 group relative">
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center space-x-3">
-                                         {/* PNG Friendly: Used bg-white/5 instead of bg-black */}
-                                         <div className="w-12 h-12 bg-white/5 rounded-lg overflow-hidden border border-white/20 shrink-0 flex items-center justify-center">
+                                         {/* PNG Friendly: Used Checkerboard Pattern */}
+                                         <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 flex items-center justify-center" style={transparentBgStyle}>
                                             {player.image ? (
                                                 <img src={player.image} alt={player.name} className="w-full h-full object-contain" />
                                             ) : (
@@ -338,13 +352,13 @@ export const Admin: React.FC = () => {
                                             {/* Photo Section */}
                                             <div className="col-span-1">
                                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-3">Player Photo</label>
-                                                {/* PNG Friendly Preview */}
-                                                <div className="w-full aspect-[4/5] bg-white/5 border border-white/20 rounded-lg overflow-hidden relative mb-3 group flex items-center justify-center">
+                                                {/* PNG Friendly Preview with Checkerboard */}
+                                                <div className="w-full aspect-[4/5] border border-white/20 rounded-lg overflow-hidden relative mb-3 group flex items-center justify-center" style={transparentBgStyle}>
                                                     {editingPlayer.image ? (
                                                         <img src={editingPlayer.image} alt="Preview" className="w-full h-full object-contain" />
                                                     ) : (
-                                                        <div className="flex flex-col items-center justify-center text-gray-600 gap-2">
-                                                            <span className="text-xs">No Image</span>
+                                                        <div className="flex flex-col items-center justify-center text-gray-500 gap-2">
+                                                            <span className="text-xs font-bold">No Image</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -380,7 +394,7 @@ export const Admin: React.FC = () => {
                                                     <div>
                                                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Role</label>
                                                         <select className="w-full bg-black border border-white/20 rounded p-3 text-white focus:border-ikl-red outline-none uppercase" value={editingPlayer.role} onChange={e => setEditingPlayer({...editingPlayer, role: e.target.value as Role})}>
-                                                            {Object.values(Role).map(r => <option key={r} value={r}>{r}</option>)}
+                                                            {Object.values(Role).map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                                                         </select>
                                                     </div>
                                                 </div>
@@ -422,7 +436,7 @@ export const Admin: React.FC = () => {
                          <div key={team.id} className="bg-white/5 border border-white/10 p-6 rounded-lg hover:border-ikl-red/50 transition-colors flex items-center justify-between group">
                              <div className="flex items-center space-x-6">
                                  {/* PNG Friendly Logo Container */}
-                                 <div className="w-20 h-20 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 overflow-hidden">
+                                 <div className="w-20 h-20 rounded-lg flex items-center justify-center border border-white/10 overflow-hidden" style={transparentBgStyle}>
                                      {team.logo && !team.logo.includes('placehold') ? (
                                          <img src={team.logo} alt={team.name} className="w-full h-full object-contain" />
                                      ) : (
@@ -458,9 +472,9 @@ export const Admin: React.FC = () => {
                                     value={config.logoUrl}
                                     onChange={e => setConfig({...config, logoUrl: e.target.value})}
                                 />
-                                {/* PNG Friendly Preview - Checkered background or transparent */}
-                                <div className="bg-white/5 p-4 rounded border border-white/10 flex items-center gap-4">
-                                    <span className="text-gray-500 text-sm font-bold uppercase">Preview:</span>
+                                {/* PNG Friendly Preview - Checkerboard Pattern */}
+                                <div className="p-4 rounded border border-white/10 flex items-center gap-4" style={transparentBgStyle}>
+                                    <span className="text-gray-500 text-sm font-bold uppercase bg-black/80 px-2 rounded">Preview:</span>
                                     {config.logoUrl ? (
                                         <img src={config.logoUrl} alt="Logo Preview" className="h-12 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
                                     ) : (
