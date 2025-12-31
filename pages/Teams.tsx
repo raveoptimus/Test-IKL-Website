@@ -50,17 +50,17 @@ export const Teams: React.FC = () => {
          {/* Roster Grid */}
          <h2 className="text-5xl font-display font-bold text-white mb-10 flex items-center gap-6 px-2">
              <span className="w-2 h-10 bg-ikl-red"></span>
-             ACTIVE ROSTER
+             ROSTER
          </h2>
          
          {roster.length > 0 ? (
            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8 px-2">
               {roster.map(player => (
                   <div key={player.id} className="bg-white/5 rounded-xl overflow-hidden group border border-white/5 hover:border-ikl-red/50 transition-all duration-300">
-                      {/* Photo Player - Keep dark bg for player photos usually, but can be adjusted */}
+                      {/* Photo Player - Changed to object-contain and bottom alignment to fix cropping */}
                       <div className="aspect-[4/5] bg-gray-900 relative">
                           {player.image ? (
-                             <img src={player.image} alt={player.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer" />
+                             <img src={player.image} alt={player.name} className="w-full h-full object-contain object-bottom transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer" />
                           ) : (
                              <div className="w-full h-full flex items-center justify-center text-5xl font-display text-gray-800 font-bold">
                                 {player.name.substring(0,1)}

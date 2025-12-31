@@ -5,118 +5,6 @@ import { ROLE_LABELS } from '../constants';
 
 // --- COMPONENTS ---
 
-const PlayerListTable: React.FC<{ players: Player[]; teams: Team[] }> = ({ players, teams }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<Role | 'all'>('all');
-
-  const filteredPlayers = players.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          p.team.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'all' || p.role === roleFilter;
-    return matchesSearch && matchesRole;
-  });
-
-  return (
-    <div className="bg-gradient-to-br from-white/5 to-black border border-white/10 rounded-xl p-6 md:p-8 backdrop-blur-sm shadow-2xl animate-fade-in">
-       <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-6">
-          <div className="w-full md:w-auto">
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-white uppercase tracking-wider mb-2">Player Database</h2>
-            <p className="text-gray-500 text-lg">Analyze stats to build your perfect team.</p>
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-             {/* Search */}
-             <div className="relative flex-1 md:flex-none">
-                <input 
-                  type="text" 
-                  placeholder="Search Player or Team..." 
-                  className="w-full md:w-72 bg-black/50 border border-white/20 rounded-lg py-3 px-4 pl-12 text-white focus:border-ikl-red focus:outline-none text-lg"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <svg className="w-6 h-6 text-gray-500 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-             </div>
-             
-             {/* Role Filter */}
-             <select 
-                className="w-full md:w-auto bg-black/50 border border-white/20 rounded-lg py-3 px-4 text-white focus:border-ikl-red focus:outline-none uppercase text-lg"
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value as Role | 'all')}
-             >
-                <option value="all">All Roles</option>
-                {Object.values(Role).map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
-             </select>
-          </div>
-       </div>
-
-       <div className="overflow-x-auto -mx-6 md:mx-0">
-          <table className="w-full text-left border-collapse min-w-[600px]">
-             <thead>
-                <tr className="text-gray-500 text-sm font-bold uppercase tracking-wider border-b border-white/10">
-                   <th className="pb-4 pl-6 md:pl-4">Player</th>
-                   <th className="pb-4">Role</th>
-                   <th className="pb-4">Team</th>
-                   <th className="pb-4 text-right">KDA</th>
-                   <th className="pb-4 text-right pr-6 md:pr-4">GPM</th>
-                </tr>
-             </thead>
-             <tbody className="divide-y divide-white/5 text-base">
-                {filteredPlayers.map(player => {
-                   const teamLogo = teams.find(t => t.name === player.team)?.logo;
-                   // Calc KDA manually for display if needed or use pre-calc
-                   const kda = (player.stats.kill + player.stats.assist) / (player.stats.death || 1);
-                   
-                   return (
-                     <tr key={player.id} className="hover:bg-white/5 transition-colors group">
-                        <td className="py-4 pl-6 md:pl-4">
-                           <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-gray-900 rounded-full overflow-hidden border border-white/10 group-hover:border-ikl-red/50 transition-colors relative flex-shrink-0">
-                                 {player.image ? (
-                                    <img 
-                                        src={player.image} 
-                                        alt={player.name} 
-                                        className="w-full h-full object-cover" 
-                                        referrerPolicy="no-referrer"
-                                        onError={(e) => {
-                                            e.currentTarget.style.display = 'none';
-                                            e.currentTarget.parentElement?.classList.add('fallback-avatar');
-                                        }}
-                                    />
-                                 ) : null}
-                                 {/* Fallback Text Avatar */}
-                                 <div className={`absolute inset-0 flex items-center justify-center text-gray-600 font-display pointer-events-none ${player.image ? 'opacity-0' : 'opacity-100'} fallback-content`}>
-                                     {player.name.substring(0,1)}
-                                 </div>
-                              </div>
-                              <span className="font-display text-2xl text-white tracking-wide">{player.name}</span>
-                           </div>
-                        </td>
-                        <td className="py-4">
-                           <span className="px-3 py-1 rounded bg-white/5 border border-white/5 text-xs uppercase text-gray-300 tracking-wider font-bold">
-                              {ROLE_LABELS[player.role]}
-                           </span>
-                        </td>
-                        <td className="py-4">
-                           <div className="flex items-center gap-3 text-gray-300">
-                              {teamLogo && <img src={teamLogo} alt="Team" className="w-6 h-6 object-contain opacity-80" referrerPolicy="no-referrer" />}
-                              <span className="uppercase text-sm font-bold tracking-wide">{player.team}</span>
-                           </div>
-                        </td>
-                        <td className="py-4 text-right font-mono text-xl text-ikl-red font-bold">{kda.toFixed(1)}</td>
-                        <td className="py-4 text-right pr-6 md:pr-4 font-mono text-xl text-ikl-gold font-bold">{player.stats.gpm}</td>
-                     </tr>
-                   );
-                })}
-             </tbody>
-          </table>
-          {filteredPlayers.length === 0 && (
-             <div className="text-center py-12 text-gray-500 text-xl font-display uppercase tracking-widest">No players found matching your filters.</div>
-          )}
-       </div>
-    </div>
-  );
-};
-
 const RoleSection: React.FC<{
   role: Role;
   players: Player[];
@@ -151,45 +39,50 @@ const RoleSection: React.FC<{
               }`}
             >
               {/* Image Container */}
-              <div className="aspect-[4/5] bg-gradient-to-b from-[#1a1a1a] to-black relative">
+              <div className="aspect-[4/5] bg-gradient-to-b from-[#1a1a1a] to-black relative overflow-hidden">
+                 {/* Selection Glow Effect behind player */}
+                 {isSelected && <div className="absolute inset-0 bg-ikl-green/20 blur-xl"></div>}
+
                  {player.image && !imgError ? (
                    <img 
                     src={player.image} 
                     alt={player.name} 
-                    className="w-full h-full object-contain object-bottom opacity-90 group-hover:opacity-100 transition-opacity" 
+                    // Changed to object-contain to show full image, removed opacity dimming to highlight photo
+                    className={`w-full h-full object-contain object-bottom transition-all duration-300 relative z-10 ${isSelected ? 'scale-110 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-105'}`}
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
                    />
                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-7xl font-bold select-none">
+                    <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-7xl font-bold select-none relative z-10">
                         {player.team.substring(0,2)}
                     </div>
                  )}
                  {/* Stronger Gradient Overlay for Text readability */}
-                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-20"></div>
               </div>
 
               {/* Selection Badge */}
               {isSelected && (
-                <div className="absolute top-3 right-3 bg-ikl-green text-black text-xs font-bold px-3 py-1 rounded shadow-lg animate-pulse uppercase tracking-wider z-20">
+                <div className="absolute top-3 right-3 bg-ikl-green text-black text-xs font-bold px-3 py-1 rounded shadow-lg animate-pulse uppercase tracking-wider z-30">
                   Picked
                 </div>
               )}
               
               {/* Info Overlay */}
-              <div className="absolute bottom-0 left-0 w-full p-4 pt-12">
-                <div className={`font-display text-3xl md:text-3xl font-bold leading-none tracking-wide text-center mb-3 drop-shadow-md ${isSelected ? 'text-ikl-green' : 'text-white group-hover:text-ikl-red transition-colors'}`}>
+              <div className="absolute bottom-0 left-0 w-full p-3 pt-8 z-30">
+                {/* Reduced font size for nickname */}
+                <div className={`font-display text-xl md:text-2xl font-bold leading-none tracking-wide text-center mb-2 drop-shadow-md ${isSelected ? 'text-ikl-green' : 'text-white group-hover:text-white transition-colors'}`}>
                     {player.name}
                 </div>
                 
                 {/* Team Info */}
                 <div className="flex items-center justify-center gap-2 border-t border-white/20 pt-2">
                     {teamLogo ? (
-                        <img src={teamLogo} alt={player.team} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
+                        <img src={teamLogo} alt={player.team} className="w-5 h-5 object-contain" referrerPolicy="no-referrer" />
                     ) : (
-                        <div className="w-5 h-5 bg-gray-700 rounded-full"></div>
+                        <div className="w-4 h-4 bg-gray-700 rounded-full"></div>
                     )}
-                    <div className="text-xs font-bold text-gray-300 uppercase tracking-widest truncate max-w-[100px]">
+                    <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest truncate max-w-[80px]">
                         {player.team}
                     </div>
                 </div>
@@ -209,7 +102,6 @@ export const DreamTeam: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'builder' | 'list'>('builder');
   
   // State for flow: builder -> confirm -> success
   const [step, setStep] = useState<'builder' | 'confirm' | 'success'>('builder');
@@ -249,7 +141,7 @@ export const DreamTeam: React.FC = () => {
     return missingRoles.length === 0;
   };
 
-  // Step 1: User clicks "Generate Team" -> Go to Confirm
+  // Step 1: User clicks "Submit" -> Go to Confirm
   const handleGenerateClick = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
@@ -442,77 +334,53 @@ export const DreamTeam: React.FC = () => {
       {/* --- CONTENT SECTION --- */}
       <div id="builder-section" className="scroll-mt-32 max-w-7xl mx-auto px-4">
           
-          {/* Tabs - Mobile Friendly */}
-          <div className="flex justify-center mb-16">
-            <div className="w-full md:w-auto bg-black/40 border border-white/10 rounded-lg p-1.5 flex gap-2 overflow-x-auto">
-               <button 
-                 onClick={() => setActiveTab('builder')}
-                 className={`flex-1 md:flex-none px-8 py-4 rounded font-display font-bold text-xl md:text-2xl uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === 'builder' ? 'bg-gradient-to-r from-red-900 to-ikl-red text-white shadow-[0_0_20px_rgba(255,42,42,0.4)] border border-white/10' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-               >
-                 Team Builder
-               </button>
-               <button 
-                 onClick={() => setActiveTab('list')}
-                 className={`flex-1 md:flex-none px-8 py-4 rounded font-display font-bold text-xl md:text-2xl uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === 'list' ? 'bg-gradient-to-r from-red-900 to-ikl-red text-white shadow-[0_0_20px_rgba(255,42,42,0.4)] border border-white/10' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
-               >
-                 Player List
-               </button>
-            </div>
+          <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-12 border-b border-white/10 pb-6">
+            <h2 className="text-6xl md:text-7xl font-display font-bold text-white leading-none">PILIH <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ikl-red to-white">PLAYER</span></h2>
+            <p className="text-gray-400 font-display text-2xl mb-2 tracking-wide uppercase"> / Select 1 Player Per Role</p>
           </div>
+          
+          <form onSubmit={handleGenerateClick} className="space-y-12">
+            
+            {/* Roles Selection */}
+            <div className="space-y-4">
+                {Object.values(Role).map(role => (
+                <RoleSection 
+                    key={role} 
+                    role={role} 
+                    players={players}
+                    teams={teams}
+                    selectedId={selections[role]} 
+                    onSelect={(id) => handleSelection(role, id)}
+                    error={errors.includes(role)}
+                />
+                ))}
+            </div>
 
-          {activeTab === 'list' ? (
-             <PlayerListTable players={players} teams={teams} />
-          ) : (
-            <>
-                <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-12 border-b border-white/10 pb-6">
-                  <h2 className="text-6xl md:text-7xl font-display font-bold text-white leading-none">PILIH <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ikl-red to-white">PLAYER</span></h2>
-                  <p className="text-gray-400 font-display text-2xl mb-2 tracking-wide uppercase"> / Select 1 Player Per Role</p>
+            {/* Submit Bar - Sticky on Mobile */}
+            <div className="fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-t border-ikl-red/30 p-4 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+                <div className="max-w-7xl mx-auto flex flex-row items-center justify-between gap-4">
+                    <div className="text-gray-400 font-display text-xl uppercase tracking-wider hidden md:block">
+                        <span className={`text-3xl font-bold ${Object.keys(selections).length === 5 ? 'text-ikl-green' : 'text-white'}`}>{Object.keys(selections).length}</span> / 5 SELECTED
+                    </div>
+                    
+                    {/* Mobile Counter */}
+                    <div className="md:hidden flex flex-col justify-center">
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Selected</span>
+                        <span className={`text-2xl font-display font-bold ${Object.keys(selections).length === 5 ? 'text-ikl-green' : 'text-white'}`}>{Object.keys(selections).length}/5</span>
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className={`flex-1 md:flex-none md:w-auto px-8 py-4 md:px-16 md:py-5 text-2xl md:text-3xl font-display font-bold uppercase tracking-[0.1em] rounded transition-all transform active:scale-95 ${Object.keys(selections).length === 5 ? 'bg-gradient-to-r from-ikl-red to-red-600 text-white shadow-[0_0_30px_rgba(255,42,42,0.5)] hover:shadow-[0_0_50px_rgba(255,42,42,0.7)]' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
+                      disabled={Object.keys(selections).length !== 5}
+                    >
+                      Submit
+                    </button>
                 </div>
-                
-                <form onSubmit={handleGenerateClick} className="space-y-12">
-                  
-                  {/* Roles Selection */}
-                  <div className="space-y-4">
-                      {Object.values(Role).map(role => (
-                      <RoleSection 
-                          key={role} 
-                          role={role} 
-                          players={players}
-                          teams={teams}
-                          selectedId={selections[role]} 
-                          onSelect={(id) => handleSelection(role, id)}
-                          error={errors.includes(role)}
-                      />
-                      ))}
-                  </div>
-
-                  {/* Submit Bar - Sticky on Mobile */}
-                  <div className="fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-t border-ikl-red/30 p-4 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
-                      <div className="max-w-7xl mx-auto flex flex-row items-center justify-between gap-4">
-                          <div className="text-gray-400 font-display text-xl uppercase tracking-wider hidden md:block">
-                              <span className={`text-3xl font-bold ${Object.keys(selections).length === 5 ? 'text-ikl-green' : 'text-white'}`}>{Object.keys(selections).length}</span> / 5 SELECTED
-                          </div>
-                          
-                          {/* Mobile Counter */}
-                          <div className="md:hidden flex flex-col justify-center">
-                              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Selected</span>
-                              <span className={`text-2xl font-display font-bold ${Object.keys(selections).length === 5 ? 'text-ikl-green' : 'text-white'}`}>{Object.keys(selections).length}/5</span>
-                          </div>
-
-                          <button 
-                            type="submit" 
-                            className={`flex-1 md:flex-none md:w-auto px-8 py-4 md:px-16 md:py-5 text-2xl md:text-3xl font-display font-bold uppercase tracking-[0.1em] rounded transition-all transform active:scale-95 ${Object.keys(selections).length === 5 ? 'bg-gradient-to-r from-ikl-red to-red-600 text-white shadow-[0_0_30px_rgba(255,42,42,0.5)] hover:shadow-[0_0_50px_rgba(255,42,42,0.7)]' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
-                            disabled={Object.keys(selections).length !== 5}
-                          >
-                            Generate Team
-                          </button>
-                      </div>
-                  </div>
-                  {/* Spacer for sticky footer */}
-                  <div className="h-24 md:h-0"></div>
-                </form>
-            </>
-          )}
+            </div>
+            {/* Spacer for sticky footer */}
+            <div className="h-24 md:h-0"></div>
+          </form>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Player } from '../types';
-import { getPlayers } from '../services/api';
+import { Player, Team } from '../types';
+import { getPlayers, getTeams } from '../services/api';
 import { ROLE_LABELS } from '../constants';
 
 type SortDirection = 'asc' | 'desc';
@@ -9,14 +9,16 @@ type SortConfig = { key: string; direction: SortDirection } | null;
 
 export const Stats: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   // Default to 'roster' (PLAYERS) as it is now the main view
   const [activeTab, setActiveTab] = useState<'highlights' | 'roster'>('roster');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'calcKDA', direction: 'desc' });
 
   useEffect(() => {
-    getPlayers().then(data => {
-      setPlayers(data);
+    Promise.all([getPlayers(), getTeams()]).then(([playerData, teamData]) => {
+      setPlayers(playerData);
+      setTeams(teamData);
       setLoading(false);
     });
   }, []);
@@ -171,10 +173,20 @@ export const Stats: React.FC = () => {
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-white/5">
-                    {sortedPlayers.map((p, idx) => (
+                    {sortedPlayers.map((p, idx) => {
+                       const teamLogo = teams.find(t => t.name === p.team)?.logo;
+                       
+                       return (
                        <tr key={p.id} className={`hover:bg-white/5 transition-colors group ${idx % 2 === 0 ? 'bg-white/[0.02]' : 'bg-transparent'}`}>
                           <td className="p-5 font-display text-2xl text-white group-hover:text-ikl-red transition-colors">{p.name}</td>
-                          <td className="p-5 text-gray-300 text-base font-bold">{p.team}</td>
+                          <td className="p-5 text-gray-300 text-base font-bold">
+                              <div className="flex items-center gap-3">
+                                  {teamLogo && (
+                                      <img src={teamLogo} alt={p.team} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
+                                  )}
+                                  <span>{p.team}</span>
+                              </div>
+                          </td>
                           <td className="p-5"><span className="px-3 py-1 bg-white/10 border border-white/5 rounded text-xs uppercase text-gray-300 font-bold tracking-wider">{ROLE_LABELS[p.role]}</span></td>
                           <td className="p-5 text-right font-mono text-lg text-gray-500">{p.stats.matches}</td>
                           <td className="p-5 text-right font-mono text-lg text-gray-400">{p.stats.kill}</td>
@@ -186,7 +198,7 @@ export const Stats: React.FC = () => {
                           </td>
                           <td className="p-5 text-right font-mono text-xl text-ikl-gold font-bold">{p.stats.gpm}</td>
                        </tr>
-                    ))}
+                    )})}
                  </tbody>
               </table>
             </div>
