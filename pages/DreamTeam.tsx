@@ -109,9 +109,10 @@ export const DreamTeam: React.FC = () => {
   const [selections, setSelections] = useState<{ [key in Role]?: string }>({});
   const [errors, setErrors] = useState<string[]>([]);
 
-  // Confirmation Form States
-  const [managerName, setManagerName] = useState('');
-  const [contactInfo, setContactInfo] = useState('');
+  // Form States - Renamed and Added Week
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [week, setWeek] = useState('1');
 
   const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/167WebdFXfpn0arheh1KoHNwoRnbq2aJlHtlB00dxK1Q/edit?usp=sharing";
 
@@ -138,29 +139,35 @@ export const DreamTeam: React.FC = () => {
       if (!selections[role]) missingRoles.push(role);
     });
     setErrors(missingRoles);
-    return missingRoles.length === 0;
+
+    if (missingRoles.length > 0) {
+        alert("Please select a player for every role.");
+        return false;
+    }
+    if (!email.trim()) {
+        alert("Please enter your Email Address.");
+        return false;
+    }
+    if (!username.trim()) {
+        alert("Please enter your Username / Instagram Link.");
+        return false;
+    }
+    return true;
   };
 
   // Step 1: User clicks "Submit" -> Go to Confirm
   const handleGenerateClick = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) {
-       alert("Please select a player for every role.");
-       return;
+    if (validate()) {
+       setStep('confirm');
+       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    setStep('confirm');
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Step 2: User confirms details -> Go to Success
   const handleFinalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!managerName.trim()) {
-        alert("Please enter a manager name.");
-        return;
-    }
-
+    // Data is already in state, just proceed
     setStep('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -202,7 +209,7 @@ export const DreamTeam: React.FC = () => {
       return (
         <div className="min-h-[70vh] flex flex-col items-center justify-center animate-fade-in px-4 pb-20 pt-10">
             <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-2 text-center">DOUBLE CHECK</h1>
-            <p className="text-gray-400 mb-10 text-xl font-display tracking-wide uppercase">Confirm your roster before submitting</p>
+            <p className="text-gray-400 mb-10 text-xl font-display tracking-wide uppercase">Confirm your submission</p>
             
             <div className="flex flex-col lg:flex-row gap-10 w-full max-w-6xl">
                 
@@ -222,35 +229,26 @@ export const DreamTeam: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Right: Submission Form */}
+                {/* Right: Submission Summary */}
                 <div className="flex-1 bg-ikl-panel p-8 rounded-xl border border-white/10 shadow-2xl">
-                     <h3 className="text-2xl font-display font-bold text-white mb-6 tracking-widest border-b border-white/10 pb-4">MANAGER DETAILS</h3>
-                     <form onSubmit={handleFinalSubmit} className="space-y-6">
+                     <h3 className="text-2xl font-display font-bold text-white mb-6 tracking-widest border-b border-white/10 pb-4">YOUR DETAILS</h3>
+                     <div className="space-y-6">
                         <div>
-                            <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Manager Name / IGN</label>
-                            <input 
-                                required
-                                type="text" 
-                                className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg font-bold"
-                                placeholder="Enter your name"
-                                value={managerName}
-                                onChange={e => setManagerName(e.target.value)}
-                            />
+                            <span className="block text-gray-400 text-xs font-bold uppercase mb-1">Email Address</span>
+                            <div className="text-xl text-white font-bold tracking-wide">{email}</div>
                         </div>
                         <div>
-                            <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Instagram / WhatsApp (Optional)</label>
-                            <input 
-                                type="text" 
-                                className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg"
-                                placeholder="@username or 08..."
-                                value={contactInfo}
-                                onChange={e => setContactInfo(e.target.value)}
-                            />
+                            <span className="block text-gray-400 text-xs font-bold uppercase mb-1">Username / Instagram Link</span>
+                            <div className="text-xl text-white font-bold tracking-wide">{username}</div>
+                        </div>
+                        <div>
+                            <span className="block text-gray-400 text-xs font-bold uppercase mb-1">Week</span>
+                            <div className="text-xl text-white font-bold tracking-wide">WEEK {week}</div>
                         </div>
 
                         <div className="pt-6 space-y-4">
                             <button 
-                                type="submit"
+                                onClick={handleFinalSubmit}
                                 className="w-full py-5 bg-gradient-to-r from-ikl-red to-red-700 text-white font-display text-3xl font-bold rounded uppercase tracking-widest shadow-lg hover:shadow-[0_0_30px_rgba(255,42,42,0.4)] transition-all transform active:scale-95"
                             >
                                 CONFIRM & SUBMIT
@@ -263,7 +261,7 @@ export const DreamTeam: React.FC = () => {
                                 Back to Edit
                             </button>
                         </div>
-                     </form>
+                     </div>
                 </div>
             </div>
         </div>
@@ -278,7 +276,7 @@ export const DreamTeam: React.FC = () => {
                 <svg className="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
             <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-2 animate-slide-up">TEAM SUBMITTED</h1>
-            <p className="text-gray-400 mb-10 text-xl font-display uppercase tracking-widest animate-slide-up">Good luck, Manager {managerName}!</p>
+            <p className="text-gray-400 mb-10 text-xl font-display uppercase tracking-widest animate-slide-up">Good luck for Week {week}!</p>
             
             <div className="flex flex-col gap-4 w-full max-w-md animate-slide-up">
                 <button 
@@ -293,8 +291,9 @@ export const DreamTeam: React.FC = () => {
                     onClick={() => { 
                         setStep('builder'); 
                         setSelections({}); 
-                        setManagerName(''); 
-                        setContactInfo('');
+                        setEmail(''); 
+                        setUsername('');
+                        setWeek('1');
                     }} 
                     className="text-gray-500 hover:text-white mt-8 text-lg tracking-wide uppercase font-bold"
                 >
@@ -334,13 +333,61 @@ export const DreamTeam: React.FC = () => {
       {/* --- CONTENT SECTION --- */}
       <div id="builder-section" className="scroll-mt-32 max-w-7xl mx-auto px-4">
           
-          <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-12 border-b border-white/10 pb-6">
-            <h2 className="text-6xl md:text-7xl font-display font-bold text-white leading-none">PILIH <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ikl-red to-white">PLAYER</span></h2>
-            <p className="text-gray-400 font-display text-2xl mb-2 tracking-wide uppercase"> / Select 1 Player Per Role</p>
-          </div>
-          
           <form onSubmit={handleGenerateClick} className="space-y-12">
             
+            {/* New Input Section - Moved from Confirm Screen */}
+            <div className="bg-ikl-panel p-6 md:p-8 rounded-xl border border-white/10 shadow-2xl mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                     {/* Email */}
+                     <div>
+                        <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Email Address</label>
+                        <input 
+                            required
+                            type="email" 
+                            className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg font-bold"
+                            placeholder="youremail@example.com"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                        />
+                     </div>
+                     {/* Username */}
+                     <div>
+                        <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Username / Instagram Link</label>
+                        <input 
+                            required
+                            type="text" 
+                            className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg"
+                            placeholder="@yourusername"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                        />
+                     </div>
+                     {/* Week Selector */}
+                     <div>
+                        <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Week</label>
+                        <div className="relative">
+                            <select 
+                                className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg appearance-none font-bold"
+                                value={week}
+                                onChange={e => setWeek(e.target.value)}
+                            >
+                                {[1, 2, 3, 4, 5, 6].map(w => (
+                                    <option key={w} value={w}>Week {w}</option>
+                                ))}
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-8 border-b border-white/10 pb-6">
+                <h2 className="text-6xl md:text-7xl font-display font-bold text-white leading-none">PILIH <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ikl-red to-white">PLAYER</span></h2>
+                <p className="text-gray-400 font-display text-2xl mb-2 tracking-wide uppercase"> / Select 1 Player Per Role</p>
+            </div>
+
             {/* Roles Selection */}
             <div className="space-y-4">
                 {Object.values(Role).map(role => (
@@ -371,8 +418,7 @@ export const DreamTeam: React.FC = () => {
 
                     <button 
                       type="submit" 
-                      className={`flex-1 md:flex-none md:w-auto px-8 py-4 md:px-16 md:py-5 text-2xl md:text-3xl font-display font-bold uppercase tracking-[0.1em] rounded transition-all transform active:scale-95 ${Object.keys(selections).length === 5 ? 'bg-gradient-to-r from-ikl-red to-red-600 text-white shadow-[0_0_30px_rgba(255,42,42,0.5)] hover:shadow-[0_0_50px_rgba(255,42,42,0.7)]' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
-                      disabled={Object.keys(selections).length !== 5}
+                      className={`flex-1 md:flex-none md:w-auto px-8 py-4 md:px-16 md:py-5 text-2xl md:text-3xl font-display font-bold uppercase tracking-[0.1em] rounded transition-all transform active:scale-95 ${Object.keys(selections).length === 5 && email && username ? 'bg-gradient-to-r from-ikl-red to-red-600 text-white shadow-[0_0_30px_rgba(255,42,42,0.5)] hover:shadow-[0_0_50px_rgba(255,42,42,0.7)]' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
                     >
                       Submit
                     </button>
