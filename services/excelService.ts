@@ -38,8 +38,9 @@ export const playersToExcelData = (players: Player[]) => {
 const cleanDriveLink = (url: string | undefined): string | undefined => {
     if (!url || typeof url !== 'string') return undefined;
     
-    // Use lh3.googleusercontent.com/d/ID which is more stable for embedding than drive.google.com/uc
-    const makeDirectLink = (id: string) => `https://lh3.googleusercontent.com/d/${id}`;
+    // Use drive.google.com/thumbnail?id=ID&sz=w1000 which is most reliable for embedding images
+    // It bypasses the virus scan warning for large files that breaks uc?export=view
+    const makeDirectLink = (id: string) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
 
     // Check if it's a Google Drive link
     if (url.includes('drive.google.com')) {

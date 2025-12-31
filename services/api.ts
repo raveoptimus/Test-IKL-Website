@@ -72,7 +72,7 @@ let currentTeams = loadFromStorage<Team[]>(KEY_TEAMS, [...MOCK_TEAMS]);
 
 // Updated default logo to the specific Google Drive link provided by user, using the more reliable endpoint
 let currentConfig = loadFromStorage<AppConfig>(KEY_CONFIG, {
-  logoUrl: "https://lh3.googleusercontent.com/d/1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4",
+  logoUrl: "https://drive.google.com/thumbnail?id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4&sz=w1000",
   googleFormUrl: ""
 });
 

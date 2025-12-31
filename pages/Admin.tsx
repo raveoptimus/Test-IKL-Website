@@ -31,8 +31,9 @@ const transparentBgStyle = {
 const convertDriveLink = (url: string) => {
     if (!url) return url;
 
-    // Use lh3.googleusercontent.com/d/ID which is more stable for embedding than drive.google.com/uc
-    const makeDirectLink = (id: string) => `https://lh3.googleusercontent.com/d/${id}`;
+    // Use drive.google.com/thumbnail?id=ID&sz=w1000 which is most reliable for embedding images
+    // It bypasses the virus scan warning for large files that breaks uc?export=view
+    const makeDirectLink = (id: string) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
 
     // Pattern 1: https://drive.google.com/file/d/ID/view...
     const viewMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -506,6 +507,91 @@ export const Admin: React.FC = () => {
                          </div>
                      ))}
                  </div>
+
+                 {/* EDIT TEAM MODAL */}
+                 {editingTeam && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+                        <div className="bg-ikl-panel border border-white/20 rounded-xl max-w-2xl w-full p-0 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                                <h3 className="text-3xl font-display text-white">EDIT TEAM: {editingTeam.name}</h3>
+                                <button onClick={() => setEditingTeam(null)} className="text-gray-500 hover:text-white">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                            
+                            <div className="p-6 overflow-y-auto custom-scrollbar">
+                                <form id="teamForm" onSubmit={handleSaveTeam} className="space-y-6">
+                                    {/* Logo Section */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Team Logo</label>
+                                        <div className="flex gap-4 items-start">
+                                            <div className="w-24 h-24 rounded border border-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center" style={transparentBgStyle}>
+                                                {editingTeam.logo ? (
+                                                    <img src={editingTeam.logo} alt="Preview" className="w-full h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.currentTarget.style.display='none')} />
+                                                ) : (
+                                                    <span className="text-xs text-gray-500">No Logo</span>
+                                                )}
+                                            </div>
+                                            <div className="flex-grow space-y-2">
+                                                <input 
+                                                    type="text"
+                                                    placeholder="Paste Public Drive Link or Image URL..."
+                                                    className="w-full bg-black border border-white/20 rounded p-3 text-white focus:border-ikl-red outline-none text-sm"
+                                                    value={editingTeam.logo}
+                                                    onChange={(e) => setEditingTeam({...editingTeam, logo: convertDriveLink(e.target.value)})}
+                                                />
+                                                <p className="text-xs text-gray-500">Supported: Google Drive Links, Direct Image URLs</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Name & Desc */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Team Name</label>
+                                        <input required className="w-full bg-black border border-white/20 rounded p-3 text-white focus:border-ikl-red outline-none font-bold" value={editingTeam.name} onChange={e => setEditingTeam({...editingTeam, name: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Description</label>
+                                        <textarea className="w-full bg-black border border-white/20 rounded p-3 text-white focus:border-ikl-red outline-none h-24" value={editingTeam.description || ''} onChange={e => setEditingTeam({...editingTeam, description: e.target.value})} />
+                                    </div>
+
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-lg border border-white/5">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Match Points</label>
+                                            <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.matchPoints} onChange={e => setEditingTeam({...editingTeam, matchPoints: parseInt(e.target.value) || 0})} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Match Wins</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.matchWins} onChange={e => setEditingTeam({...editingTeam, matchWins: parseInt(e.target.value) || 0})} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Match Loss</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.matchLosses} onChange={e => setEditingTeam({...editingTeam, matchLosses: parseInt(e.target.value) || 0})} />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2 col-span-2">
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Game Wins</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.gameWins} onChange={e => setEditingTeam({...editingTeam, gameWins: parseInt(e.target.value) || 0})} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Game Loss</label>
+                                                <input type="number" className="w-full bg-black border border-white/20 rounded p-2 text-white" value={editingTeam.gameLosses} onChange={e => setEditingTeam({...editingTeam, gameLosses: parseInt(e.target.value) || 0})} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="p-6 border-t border-white/10 bg-black/40 flex justify-end gap-3">
+                                <button type="button" onClick={() => setEditingTeam(null)} className="px-6 py-3 rounded text-gray-400 hover:text-white font-bold">CANCEL</button>
+                                <button type="submit" form="teamForm" className="px-8 py-3 bg-white text-black hover:bg-ikl-red hover:text-white rounded font-display font-bold text-xl uppercase tracking-wider shadow-lg">Save Team</button>
+                            </div>
+                        </div>
+                    </div>
+                 )}
+
                  </div>
             )}
 
