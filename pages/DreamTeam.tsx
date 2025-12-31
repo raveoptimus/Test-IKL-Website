@@ -190,10 +190,12 @@ export const DreamTeam: React.FC = () => {
       return Object.values(Role).map(role => {
           const pid = selections[role];
           const p = players.find(x => x.id === pid);
+          const t = teams.find(team => team.name === p?.team);
           return {
               Role: ROLE_LABELS[role],
               Player: p?.name || 'Unknown',
-              Team: p?.team || 'Unknown'
+              Team: p?.team || 'Unknown',
+              TeamLogo: t?.logo
           };
       });
   };
@@ -237,7 +239,13 @@ export const DreamTeam: React.FC = () => {
                                     <span className="text-gray-500 font-bold text-xs uppercase tracking-wider">{item.Role}</span>
                                     <span className="text-white font-display text-3xl">{item.Player}</span>
                                 </div>
-                                <span className="text-gray-400 text-sm font-bold uppercase bg-white/5 px-2 py-1 rounded">{item.Team}</span>
+                                {item.TeamLogo ? (
+                                   <div title={item.Team} className="w-12 h-12 bg-white/5 rounded flex items-center justify-center p-1.5 border border-white/10">
+                                      <img src={item.TeamLogo} alt={item.Team} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                                   </div>
+                                ) : (
+                                   <span className="text-gray-400 text-sm font-bold uppercase bg-white/5 px-2 py-1 rounded">{item.Team}</span>
+                                )}
                             </div>
                         ))}
                     </div>
