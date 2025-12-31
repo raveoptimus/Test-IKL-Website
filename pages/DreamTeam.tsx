@@ -151,13 +151,13 @@ const RoleSection: React.FC<{
                   : 'border-transparent bg-black/40 hover:border-ikl-red/50 hover:bg-white/5'
               }`}
             >
-              {/* Image Container */}
+              {/* Image Container - CHANGED to object-contain to show full image */}
               <div className="aspect-[4/5] bg-gray-900 relative">
                  {player.image && !imgError ? (
                    <img 
                     src={player.image} 
                     alt={player.name} 
-                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
+                    className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity" 
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
                    />
@@ -167,7 +167,7 @@ const RoleSection: React.FC<{
                     </div>
                  )}
                  {/* Gradient Overlay for Text readability */}
-                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none"></div>
               </div>
 
               {/* Selection Badge */}
