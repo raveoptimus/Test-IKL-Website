@@ -288,7 +288,6 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
 
        {loading ? ( <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ikl-red"></div></div> ) : (
          <>
-            {/* PLAYERS TAB & TEAMS TAB ... (Identical to previous, skipping strictly for brevity as requested only changes, but need to include SETTINGS tab updates) */}
             {activeTab === 'players' && (
                 <div className="space-y-6">
                     <div className="bg-ikl-panel p-4 rounded-lg border border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -325,7 +324,6 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
                                 <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5"><h3 className="text-3xl font-display text-white">{isNewPlayer ? 'REGISTER NEW PLAYER' : 'EDIT PLAYER PROFILE'}</h3><button onClick={() => setEditingPlayer(null)} className="text-gray-500 hover:text-white"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
                                 <div className="p-6 overflow-y-auto custom-scrollbar">
                                     <form id="playerForm" onSubmit={handleSavePlayer} className="space-y-8">
-                                        {/* Simplified logic for update: only showing that it wraps existing form */}
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                             <div className="col-span-1">
                                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-3">Player Photo</label>
@@ -476,9 +474,15 @@ export const MOCK_TEAMS: Team[] = ${JSON.stringify(teams, null, 2)};
                                     </button>
                                 </div>
                                 <div>
-                                    <p className="text-gray-400 text-sm mb-2 font-bold">2. HARDCODE MOCK DATA (Optional)</p>
+                                    <p className="text-gray-400 text-sm mb-2 font-bold">2. GENERATE MOCK DATA CODE (From Current Sync)</p>
+                                    <p className="text-xs text-gray-500 mb-3">
+                                        If you want your Sheet data to be the default "Offline/Mock Data" in the app code:
+                                        <br/>1. Click "Test & Force Sync Now" above.
+                                        <br/>2. Click the button below.
+                                        <br/>3. Paste the result into <code>constants.ts</code>.
+                                    </p>
                                     <button type="button" onClick={handleCopyDataForCode} className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-mono text-sm border border-white/20 rounded transition-all uppercase tracking-widest">
-                                        Copy Data for Code
+                                        Copy Players & Teams JSON
                                     </button>
                                 </div>
                             </div>
