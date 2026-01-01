@@ -34,103 +34,1055 @@ export const MOCK_MATCHES: Match[] = [
   { id: 'm5', teamA: 'RBL', teamB: 'KAG', date: '2025-10-27', time: '17:00 WIB', status: 'Upcoming', scoreA: 0, scoreB: 0, format: 'Bo3', stage: 'WEEK 1 - DAY 3' },
 ];
 
-// Simulate KV Data for Teams (10 Teams)
-export const MOCK_TEAMS: Team[] = [
-  { "id": "t1", "name": "RRQ", "matchPoints": 15, "matchWins": 10, "matchLosses": 2, "gameWins": 21, "gameLosses": 5, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t2", "name": "BTR", "matchPoints": 12, "matchWins": 8, "matchLosses": 4, "gameWins": 18, "gameLosses": 10, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t3", "name": "ONIC", "matchPoints": 10, "matchWins": 7, "matchLosses": 5, "gameWins": 16, "gameLosses": 12, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t4", "name": "EVOS", "matchPoints": 9, "matchWins": 6, "matchLosses": 6, "gameWins": 14, "gameLosses": 14, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t5", "name": "AE", "matchPoints": 6, "matchWins": 4, "matchLosses": 8, "gameWins": 10, "gameLosses": 18, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t6", "name": "GEEK", "matchPoints": 6, "matchWins": 4, "matchLosses": 8, "gameWins": 11, "gameLosses": 19, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t7", "name": "TLID", "matchPoints": 12, "matchWins": 8, "matchLosses": 4, "gameWins": 17, "gameLosses": 11, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t8", "name": "DEWA", "matchPoints": 3, "matchWins": 2, "matchLosses": 10, "gameWins": 8, "gameLosses": 22, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t9", "name": "RBL", "matchPoints": 3, "matchWins": 2, "matchLosses": 10, "gameWins": 7, "gameLosses": 23, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" },
-  { "id": "t10", "name": "KAG", "matchPoints": 9, "matchWins": 6, "matchLosses": 6, "gameWins": 13, "gameLosses": 15, "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000" }
-];
 
-// Simulate KV Data for Players (62 Players total - 10 Teams)
+// --- PASTE THIS INTO constants.ts TO SYNC DATA ---
+// Simulate KV Data for Players
 export const MOCK_PLAYERS: Player[] = [
-  // --- RRQ ROSTER (7) ---
-  { id: "rrq1", name: "RRQ.R7", team: "RRQ", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 35, kill: 120, death: 60, assist: 150, gpm: 720 } },
-  { id: "rrq2", name: "RRQ.Sutsujin", team: "RRQ", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 35, kill: 180, death: 50, assist: 110, gpm: 850 } },
-  { id: "rrq3", name: "RRQ.Clayyy", team: "RRQ", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 35, kill: 140, death: 45, assist: 200, gpm: 680 } },
-  { id: "rrq4", name: "RRQ.Harpist", team: "RRQ", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 35, kill: 190, death: 54, assist: 90, gpm: 810 } },
-  { id: "rrq5", name: "RRQ.Vyn", team: "RRQ", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 35, kill: 40, death: 80, assist: 250, gpm: 500 } },
-  { id: "rrq6", name: "RRQ.Lemon", team: "RRQ", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 15, kill: 60, death: 20, assist: 90, gpm: 700 } },
-  { id: "rrq7", name: "RRQ.Skylar", team: "RRQ", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 20, kill: 100, death: 30, assist: 45, gpm: 790 } },
-
-  // --- BTR ROSTER (6) ---
-  { id: "btr1", name: "BTR.Xorizo", team: "BTR", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 30, kill: 90, death: 65, assist: 120, gpm: 700 } },
-  { id: "btr2", name: "BTR.SuperKenn", team: "BTR", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 30, kill: 160, death: 55, assist: 100, gpm: 830 } },
-  { id: "btr3", name: "BTR.ZhanQ", team: "BTR", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 30, kill: 155, death: 40, assist: 180, gpm: 750 } },
-  { id: "btr4", name: "BTR.Eman", team: "BTR", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 30, kill: 170, death: 60, assist: 80, gpm: 790 } },
-  { id: "btr5", name: "BTR.Kyy", team: "BTR", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 30, kill: 30, death: 90, assist: 220, gpm: 510 } },
-  { id: "btr6", name: "BTR.Moreno", team: "BTR", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 12, kill: 50, death: 25, assist: 70, gpm: 710 } },
-
-  // --- ONIC ROSTER (6) ---
-  { id: "onic1", name: "ONIC.Butsss", team: "ONIC", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 32, kill: 100, death: 50, assist: 140, gpm: 710 } },
-  { id: "onic2", name: "ONIC.Senkoo", team: "ONIC", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 32, kill: 210, death: 35, assist: 80, gpm: 880 } },
-  { id: "onic3", name: "ONIC.Sanz", team: "ONIC", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 32, kill: 160, death: 40, assist: 190, gpm: 760 } },
-  { id: "onic4", name: "ONIC.CW", team: "ONIC", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 32, kill: 180, death: 45, assist: 100, gpm: 820 } },
-  { id: "onic5", name: "ONIC.Kiboy", team: "ONIC", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 32, kill: 50, death: 70, assist: 280, gpm: 530 } },
-  { id: "onic6", name: "ONIC.Alberttt", team: "ONIC", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 18, kill: 120, death: 30, assist: 60, gpm: 860 } },
-
-  // --- EVOS ROSTER (7) ---
-  { id: "evos1", name: "EVOS.Raven", team: "EVOS", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 28, kill: 110, death: 45, assist: 110, gpm: 690 } },
-  { id: "evos2", name: "EVOS.Anavel", team: "EVOS", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 28, kill: 140, death: 60, assist: 90, gpm: 800 } },
-  { id: "evos3", name: "EVOS.Clawkun", team: "EVOS", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 28, kill: 130, death: 50, assist: 160, gpm: 700 } },
-  { id: "evos4", name: "EVOS.Branz", team: "EVOS", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 28, kill: 160, death: 55, assist: 85, gpm: 780 } },
-  { id: "evos5", name: "EVOS.Dreams", team: "EVOS", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 28, kill: 25, death: 85, assist: 210, gpm: 490 } },
-  { id: "evos6", name: "EVOS.Fluffy", team: "EVOS", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 14, kill: 60, death: 30, assist: 70, gpm: 680 } },
-  { id: "evos7", name: "EVOS.Douma", team: "EVOS", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 10, kill: 50, death: 20, assist: 30, gpm: 770 } },
-  
-  // --- AE ROSTER (6) ---
-  { id: "ae1", name: "AE.Pai", team: "AE", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 25, kill: 85, death: 55, assist: 130, gpm: 680 } },
-  { id: "ae2", name: "AE.Nnael", team: "AE", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 25, kill: 150, death: 65, assist: 95, gpm: 810 } },
-  { id: "ae3", name: "AE.Udil", team: "AE", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 25, kill: 145, death: 48, assist: 170, gpm: 720 } },
-  { id: "ae4", name: "AE.Nino", team: "AE", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 25, kill: 165, death: 58, assist: 75, gpm: 770 } },
-  { id: "ae5", name: "AE.Rasy", team: "AE", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 25, kill: 20, death: 95, assist: 200, gpm: 480 } },
-  { id: "ae6", name: "AE.Celiboy", team: "AE", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 15, kill: 80, death: 40, assist: 100, gpm: 710 } },
-
-  // --- GEEK FAM ROSTER (6) ---
-  { id: "geek1", name: "GEEK.Luke", team: "GEEK", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 26, kill: 95, death: 55, assist: 110, gpm: 695 } },
-  { id: "geek2", name: "GEEK.Reyy", team: "GEEK", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 26, kill: 135, death: 62, assist: 88, gpm: 790 } },
-  { id: "geek3", name: "GEEK.Aboy", team: "GEEK", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 26, kill: 125, death: 48, assist: 150, gpm: 715 } },
-  { id: "geek4", name: "GEEK.Caderaa", team: "GEEK", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 26, kill: 155, death: 50, assist: 70, gpm: 785 } },
-  { id: "geek5", name: "GEEK.Baloyskie", team: "GEEK", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 26, kill: 35, death: 88, assist: 230, gpm: 505 } },
-  { id: "geek6", name: "GEEK.Markyyyyy", team: "GEEK", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 12, kill: 65, death: 25, assist: 35, gpm: 780 } },
-
-  // --- TLID (Team Liquid ID) ROSTER (6) ---
-  { id: "tlid1", name: "TLID.Aran", team: "TLID", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 29, kill: 105, death: 52, assist: 125, gpm: 710 } },
-  { id: "tlid2", name: "TLID.Gugun", team: "TLID", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 29, kill: 165, death: 58, assist: 92, gpm: 825 } },
-  { id: "tlid3", name: "TLID.Yehezkiel", team: "TLID", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 29, kill: 142, death: 44, assist: 175, gpm: 740 } },
-  { id: "tlid4", name: "TLID.Kabuki", team: "TLID", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 29, kill: 168, death: 52, assist: 78, gpm: 805 } },
-  { id: "tlid5", name: "TLID.Yawi", team: "TLID", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 29, kill: 42, death: 82, assist: 260, gpm: 520 } },
-  { id: "tlid6", name: "TLID.Aeron", team: "TLID", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 10, kill: 48, death: 18, assist: 32, gpm: 795 } },
-
-  // --- DEWA UNITED ROSTER (6) ---
-  { id: "dewa1", name: "DEWA.Dyxon", team: "DEWA", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 24, kill: 82, death: 60, assist: 105, gpm: 675 } },
-  { id: "dewa2", name: "DEWA.Lanaya", team: "DEWA", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 24, kill: 128, death: 68, assist: 85, gpm: 785 } },
-  { id: "dewa3", name: "DEWA.Keyz", team: "DEWA", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 24, kill: 115, death: 52, assist: 140, gpm: 690 } },
-  { id: "dewa4", name: "DEWA.Watt", team: "DEWA", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 24, kill: 145, death: 58, assist: 65, gpm: 765 } },
-  { id: "dewa5", name: "DEWA.Shacco", team: "DEWA", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 24, kill: 22, death: 92, assist: 190, gpm: 475 } },
-  { id: "dewa6", name: "DEWA.Pendragon", team: "DEWA", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 10, kill: 35, death: 25, assist: 45, gpm: 670 } },
-
-  // --- RBL (Rebellion) ROSTER (6) ---
-  { id: "rbl1", name: "RBL.Karss", team: "RBL", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 23, kill: 78, death: 62, assist: 100, gpm: 665 } },
-  { id: "rbl2", name: "RBL.Vincentt", team: "RBL", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 23, kill: 122, death: 70, assist: 80, gpm: 775 } },
-  { id: "rbl3", name: "RBL.SwayLow", team: "RBL", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 23, kill: 110, death: 55, assist: 135, gpm: 685 } },
-  { id: "rbl4", name: "RBL.Matt", team: "RBL", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 23, kill: 138, death: 62, assist: 60, gpm: 760 } },
-  { id: "rbl5", name: "RBL.AudyTzy", team: "RBL", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 23, kill: 25, death: 95, assist: 185, gpm: 470 } },
-  { id: "rbl6", name: "RBL.Haizz", team: "RBL", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 8, kill: 40, death: 15, assist: 25, gpm: 755 } },
-
-  // --- KAG (Kagendra) ROSTER (6) ---
-  { id: "kag1", name: "KAG.Hanss", team: "KAG", role: Role.CLASH, image: PLACEHOLDER_IMG, stats: { matches: 27, kill: 98, death: 50, assist: 115, gpm: 705 } },
-  { id: "kag2", name: "KAG.Wiraww", team: "KAG", role: Role.JUNGLE, image: PLACEHOLDER_IMG, stats: { matches: 27, kill: 155, death: 45, assist: 95, gpm: 840 } },
-  { id: "kag3", name: "KAG.Muver", team: "KAG", role: Role.MID, image: PLACEHOLDER_IMG, stats: { matches: 27, kill: 135, death: 42, assist: 165, gpm: 730 } },
-  { id: "kag4", name: "KAG.Backdoor", team: "KAG", role: Role.FARM, image: PLACEHOLDER_IMG, stats: { matches: 27, kill: 162, death: 48, assist: 75, gpm: 795 } },
-  { id: "kag5", name: "KAG.Starlest", team: "KAG", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 27, kill: 38, death: 75, assist: 240, gpm: 515 } },
-  { id: "kag6", name: "KAG.Zero", team: "KAG", role: Role.ROAM, image: PLACEHOLDER_IMG, stats: { matches: 10, kill: 15, death: 30, assist: 80, gpm: 500 } }
+  {
+    "id": "1",
+    "name": "RRQ.Harpist",
+    "team": "REX REGUM QEON",
+    "teamAbv": "RRQ",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 81,
+      "death": 54,
+      "assist": 125,
+      "gpm": 810.8
+    }
+  },
+  {
+    "id": "2",
+    "name": "RRQ.Bai",
+    "team": "REX REGUM QEON",
+    "teamAbv": "RRQ",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1aKq_HfSlhXfZx5KNo8v1NxPVqzkWLDuH&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 91,
+      "death": 54,
+      "assist": 145,
+      "gpm": 745.6
+    }
+  },
+  {
+    "id": "3",
+    "name": "RRQ.Lexx",
+    "team": "REX REGUM QEON",
+    "teamAbv": "RRQ",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1ISTYoZGb7i5sZDPksJvgbqShozxCskEW&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 51,
+      "death": 47,
+      "assist": 176,
+      "gpm": 644.6
+    }
+  },
+  {
+    "id": "4",
+    "name": "RRQ.Xinglin",
+    "team": "REX REGUM QEON",
+    "teamAbv": "RRQ",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1ZMl91CYVRNNlvKGyC-ksTFb0SGHSCZ6Z&sz=w1000",
+    "stats": {
+      "matches": 34,
+      "kill": 70,
+      "death": 65,
+      "assist": 139,
+      "gpm": 746.3
+    }
+  },
+  {
+    "id": "5",
+    "name": "RRQ.663",
+    "team": "REX REGUM QEON",
+    "teamAbv": "RRQ",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1ndJTOI8N2V6Fhwf1EGEy6f-MbNwViKko&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 14,
+      "death": 55,
+      "assist": 237,
+      "gpm": 532.5
+    }
+  },
+  {
+    "id": "6",
+    "name": "RRQ.Frederica",
+    "team": "REX REGUM QEON",
+    "teamAbv": "RRQ",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1vzQBlpv1Wy9x1fQcBClooAu9hXeE4vCQ&sz=w1000",
+    "stats": {
+      "matches": 1,
+      "kill": 2,
+      "death": 4,
+      "assist": 3,
+      "gpm": 20.3
+    }
+  },
+  {
+    "id": "7",
+    "name": "BTR.Zaan",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1xsDc7Wkomc7gYZwQApJI8_gTGM3DdfDv&sz=w1000",
+    "stats": {
+      "matches": 50,
+      "kill": 136,
+      "death": 46,
+      "assist": 180,
+      "gpm": 1197.8
+    }
+  },
+  {
+    "id": "8",
+    "name": "BTR.ZhanQ",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1a2daY_-E2q2GPj9Wo2VSwuU7o3PNU0UJ&sz=w1000",
+    "stats": {
+      "matches": 50,
+      "kill": 158,
+      "death": 47,
+      "assist": 197,
+      "gpm": 1168.5
+    }
+  },
+  {
+    "id": "9",
+    "name": "BTR.Niel",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1cNDVE98GCTNHJWF6dZ9_97MpZIiGjvnk&sz=w1000",
+    "stats": {
+      "matches": 50,
+      "kill": 63,
+      "death": 59,
+      "assist": 265,
+      "gpm": 840.3
+    }
+  },
+  {
+    "id": "10",
+    "name": "BTR.Tufzzz",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1jcE-macs4RlYZHO-kT_Ap6NrrFafUPyT&sz=w1000",
+    "stats": {
+      "matches": 50,
+      "kill": 77,
+      "death": 78,
+      "assist": 181,
+      "gpm": 1057.8
+    }
+  },
+  {
+    "id": "11",
+    "name": "BTR.Nineteen",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=12nepViHDaK8j4-Rwp2ECS3b_1t0rC3f8&sz=w1000",
+    "stats": {
+      "matches": 4,
+      "kill": 2,
+      "death": 5,
+      "assist": 17,
+      "gpm": 56.8
+    }
+  },
+  {
+    "id": "12",
+    "name": "BTR.Saule",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1RJ-a5bHBe43ytUOf8GhmO9VbY9sCeNHS&sz=w1000",
+    "stats": {
+      "matches": 0,
+      "kill": 0,
+      "death": 0,
+      "assist": 0,
+      "gpm": 0
+    }
+  },
+  {
+    "id": "13",
+    "name": "BTR.Ormson",
+    "team": "BIGETRON BY VITALITY",
+    "teamAbv": "BTR",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1xXjIudyrLgCDXbQAxyZ-Z2BYl1MBISDp&sz=w1000",
+    "stats": {
+      "matches": 46,
+      "kill": 25,
+      "death": 46,
+      "assist": 338,
+      "gpm": 679.3
+    }
+  },
+  {
+    "id": "14",
+    "name": "ONIC.Fadelboy",
+    "team": "ONIC",
+    "teamAbv": "ONIC",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1E6Q12ygoJKI2XwgSPsaw7pWDaJa3Syee&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 38,
+      "death": 46,
+      "assist": 108,
+      "gpm": 549.5
+    }
+  },
+  {
+    "id": "15",
+    "name": "ONIC.Falah",
+    "team": "ONIC",
+    "teamAbv": "ONIC",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1J511vo02cVz2r8YkhAULcawTT2EVY17Z&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 17,
+      "death": 77,
+      "assist": 153,
+      "gpm": 452.3
+    }
+  },
+  {
+    "id": "16",
+    "name": "ONIC.Ahem",
+    "team": "ONIC",
+    "teamAbv": "ONIC",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1REw4dtIeu-8817lnNAzLO3dFskgNzhz8&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 40,
+      "death": 54,
+      "assist": 97,
+      "gpm": 666.1
+    }
+  },
+  {
+    "id": "17",
+    "name": "ONIC.Switch",
+    "team": "ONIC",
+    "teamAbv": "ONIC",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1ODPptgFFSXNTCbxww7mZhPM-9v3oNDL3&sz=w1000",
+    "stats": {
+      "matches": 29,
+      "kill": 40,
+      "death": 83,
+      "assist": 86,
+      "gpm": 605.8
+    }
+  },
+  {
+    "id": "18",
+    "name": "ONIC.AZ1",
+    "team": "ONIC",
+    "teamAbv": "ONIC",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1ys9TX-ybfbBvD9lq65Ojh24ey6Yild1n&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 69,
+      "death": 54,
+      "assist": 82,
+      "gpm": 708.7
+    }
+  },
+  {
+    "id": "19",
+    "name": "ONIC.Kine",
+    "team": "ONIC",
+    "teamAbv": "ONIC",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1MehH39XrbBXGbp9FQkrtyB9P1GUWCAIh&sz=w1000",
+    "stats": {
+      "matches": 1,
+      "kill": 0,
+      "death": 2,
+      "assist": 1,
+      "gpm": 17.8
+    }
+  },
+  {
+    "id": "20",
+    "name": "AE.DECOY",
+    "team": "ALTER EGO ESPORTS",
+    "teamAbv": "AE",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1LYetG51-x4nDddPG51GDhF9-S4GOeGlt&sz=w1000",
+    "stats": {
+      "matches": 29,
+      "kill": 8,
+      "death": 64,
+      "assist": 120,
+      "gpm": 436.9
+    }
+  },
+  {
+    "id": "21",
+    "name": "AE.CLAUSEN",
+    "team": "ALTER EGO ESPORTS",
+    "teamAbv": "AE",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1fE4UB2UH8jUGLyejY_zPZUi8iyFqRk9y&sz=w1000",
+    "stats": {
+      "matches": 16,
+      "kill": 14,
+      "death": 27,
+      "assist": 41,
+      "gpm": 327
+    }
+  },
+  {
+    "id": "22",
+    "name": "AE.1Tut",
+    "team": "ALTER EGO ESPORTS",
+    "teamAbv": "AE",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=16Z-heM7XoWo9VZAm9INoL3c5J2d7K16z&sz=w1000",
+    "stats": {
+      "matches": 29,
+      "kill": 51,
+      "death": 45,
+      "assist": 66,
+      "gpm": 697.1
+    }
+  },
+  {
+    "id": "23",
+    "name": "AE.ZenShao",
+    "team": "ALTER EGO ESPORTS",
+    "teamAbv": "AE",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1hh-p6BKTjtxezAL7qt4KqinpCKBy1W-b&sz=w1000",
+    "stats": {
+      "matches": 29,
+      "kill": 60,
+      "death": 52,
+      "assist": 68,
+      "gpm": 677.9
+    }
+  },
+  {
+    "id": "24",
+    "name": "AE.niubii",
+    "team": "ALTER EGO ESPORTS",
+    "teamAbv": "AE",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1-i7VNkKkCLnCCRf3UcJLb9VAgUP6cxtA&sz=w1000",
+    "stats": {
+      "matches": 29,
+      "kill": 29,
+      "death": 52,
+      "assist": 96,
+      "gpm": 509.5
+    }
+  },
+  {
+    "id": "25",
+    "name": "AE.Icytail",
+    "team": "ALTER EGO ESPORTS",
+    "teamAbv": "AE",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1EMpKazgTnOTAQ_kVJNme6aA5dtiwYiG5&sz=w1000",
+    "stats": {
+      "matches": 13,
+      "kill": 9,
+      "death": 29,
+      "assist": 45,
+      "gpm": 251.6
+    }
+  },
+  {
+    "id": "26",
+    "name": "KAGE.Senkooo",
+    "team": "KAGENDRA",
+    "teamAbv": "KAGE",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1TC6MVbieUuKN-rl5VV2E9sHk1bOdpRAq&sz=w1000",
+    "stats": {
+      "matches": 46,
+      "kill": 91,
+      "death": 42,
+      "assist": 256,
+      "gpm": 889.6
+    }
+  },
+  {
+    "id": "27",
+    "name": "KAGE.iHanss",
+    "team": "KAGENDRA",
+    "teamAbv": "KAGE",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1JtDyPZ3475heDVjjxYNBqcG4rTgEBoH8&sz=w1000",
+    "stats": {
+      "matches": 45,
+      "kill": 84,
+      "death": 100,
+      "assist": 188,
+      "gpm": 925.6
+    }
+  },
+  {
+    "id": "28",
+    "name": "KAGE.Wiraww",
+    "team": "KAGENDRA",
+    "teamAbv": "KAGE",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1C6zUCZUG-lmw4URGYypJCFv-GB8ghfWZ&sz=w1000",
+    "stats": {
+      "matches": 46,
+      "kill": 117,
+      "death": 73,
+      "assist": 194,
+      "gpm": 949.9
+    }
+  },
+  {
+    "id": "29",
+    "name": "KAGE.LanFeng",
+    "team": "KAGENDRA",
+    "teamAbv": "KAGE",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1pOD4mdlsNy-JeOorA0PmBpwketf3k-VO&sz=w1000",
+    "stats": {
+      "matches": 46,
+      "kill": 172,
+      "death": 62,
+      "assist": 206,
+      "gpm": 1123.9
+    }
+  },
+  {
+    "id": "30",
+    "name": "KAGE.Lu",
+    "team": "KAGENDRA",
+    "teamAbv": "KAGE",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=177u4eYR7GkCLl0z0NGeu-myAl7dyJrw7&sz=w1000",
+    "stats": {
+      "matches": 46,
+      "kill": 30,
+      "death": 68,
+      "assist": 375,
+      "gpm": 689.2
+    }
+  },
+  {
+    "id": "31",
+    "name": "KAGE.ZeroZero",
+    "team": "KAGENDRA",
+    "teamAbv": "KAGE",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1OnrNgQIdqEF6T04CPbpi7XibdolP6QpP&sz=w1000",
+    "stats": {
+      "matches": 1,
+      "kill": 1,
+      "death": 0,
+      "assist": 4,
+      "gpm": 21.4
+    }
+  },
+  {
+    "id": "32",
+    "name": "DMT.EL",
+    "team": "DOMINATOR ESPORTS",
+    "teamAbv": "DMT",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1hJYU3xZG68SYO0DKq-8J9GJjFIIFZIjn&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 18,
+      "death": 55,
+      "assist": 256,
+      "gpm": 510.3
+    }
+  },
+  {
+    "id": "33",
+    "name": "DMT.JerL",
+    "team": "DOMINATOR ESPORTS",
+    "teamAbv": "DMT",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1wGaUCisP-m5uxCo8xcWQl_aKz2y8-C5Z&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 66,
+      "death": 55,
+      "assist": 163,
+      "gpm": 664.1
+    }
+  },
+  {
+    "id": "34",
+    "name": "DMT.CipengZ",
+    "team": "DOMINATOR ESPORTS",
+    "teamAbv": "DMT",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1TSyl59Ud8LQ5wCgxiXmjKBqOZwPRxgu_&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 57,
+      "death": 69,
+      "assist": 129,
+      "gpm": 688.5
+    }
+  },
+  {
+    "id": "35",
+    "name": "DMT.TianX",
+    "team": "DOMINATOR ESPORTS",
+    "teamAbv": "DMT",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=15fVioXCEt0vvrAhyyeFESYR_Or7wej57&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 109,
+      "death": 70,
+      "assist": 126,
+      "gpm": 840.7
+    }
+  },
+  {
+    "id": "36",
+    "name": "DMT.Toshi",
+    "team": "DOMINATOR ESPORTS",
+    "teamAbv": "DMT",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=13hQfZdJIcSVee6JYHKxfnxtEp9lWUQnn&sz=w1000",
+    "stats": {
+      "matches": 35,
+      "kill": 77,
+      "death": 49,
+      "assist": 143,
+      "gpm": 796
+    }
+  },
+  {
+    "id": "37",
+    "name": "DMT.anaktuyulz",
+    "team": "DOMINATOR ESPORTS",
+    "teamAbv": "DMT",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1M5-hYHth980OlV5nk9Y3qrus57HGsfYH&sz=w1000",
+    "stats": {
+      "matches": 0,
+      "kill": 0,
+      "death": 0,
+      "assist": 0,
+      "gpm": 0
+    }
+  },
+  {
+    "id": "38",
+    "name": "TLN.SRD",
+    "team": "TALON",
+    "teamAbv": "TLN",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=18PHIbdX1PUj2zHX_9BJo5zjIKB4iFuwy&sz=w1000",
+    "stats": {
+      "matches": 31,
+      "kill": 68,
+      "death": 60,
+      "assist": 132,
+      "gpm": 675.9
+    }
+  },
+  {
+    "id": "39",
+    "name": "TLN.Choux",
+    "team": "TALON",
+    "teamAbv": "TLN",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1HC5UJcuU4NscxTZXevdNWrdS9PIbmamD&sz=w1000",
+    "stats": {
+      "matches": 31,
+      "kill": 57,
+      "death": 75,
+      "assist": 121,
+      "gpm": 650.9
+    }
+  },
+  {
+    "id": "40",
+    "name": "TLN.Xena",
+    "team": "TALON",
+    "teamAbv": "TLN",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1NMCyvHW_hBjd9s6Ru_DWgdLRwteCzl1X&sz=w1000",
+    "stats": {
+      "matches": 31,
+      "kill": 12,
+      "death": 57,
+      "assist": 196,
+      "gpm": 462.9
+    }
+  },
+  {
+    "id": "41",
+    "name": "TLN.Lcc2",
+    "team": "TALON",
+    "teamAbv": "TLN",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=16v1LojrcyOMx8py-2yJDhQzlGV9TAgrQ&sz=w1000",
+    "stats": {
+      "matches": 31,
+      "kill": 49,
+      "death": 67,
+      "assist": 152,
+      "gpm": 581.4
+    }
+  },
+  {
+    "id": "42",
+    "name": "TLN.Luochenn",
+    "team": "TALON",
+    "teamAbv": "TLN",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1ImXS-qeKbf3_S4VD3k--Sc_r_fjBDxjR&sz=w1000",
+    "stats": {
+      "matches": 31,
+      "kill": 85,
+      "death": 36,
+      "assist": 104,
+      "gpm": 728.1
+    }
+  },
+  {
+    "id": "43",
+    "name": "TLN.Tokyo",
+    "team": "TALON",
+    "teamAbv": "TLN",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1BYN9xyDBPCMOLu3vSK6ZfoW_9av-m-sy&sz=w1000",
+    "stats": {
+      "matches": 0,
+      "kill": 0,
+      "death": 0,
+      "assist": 0,
+      "gpm": 0
+    }
+  },
+  {
+    "id": "44",
+    "name": "MHD.Zhe",
+    "team": "MAHADEWA",
+    "teamAbv": "MHD",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=18YGtNYayo7v75XGYJb0XZz1t4evun2nz&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 73,
+      "death": 62,
+      "assist": 93,
+      "gpm": 663
+    }
+  },
+  {
+    "id": "45",
+    "name": "MHD.Enyxx",
+    "team": "MAHADEWA",
+    "teamAbv": "MHD",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1A3TyiHPtOok9ZlCd4ql6k7HOdljQWnET&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 85,
+      "death": 37,
+      "assist": 117,
+      "gpm": 723.1
+    }
+  },
+  {
+    "id": "46",
+    "name": "MHD.Axiorety",
+    "team": "MAHADEWA",
+    "teamAbv": "MHD",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1bWQ1Oj6ZnO1dw7pDzp98-vC1idcMbjbV&sz=w1000",
+    "stats": {
+      "matches": 30,
+      "kill": 43,
+      "death": 46,
+      "assist": 140,
+      "gpm": 547.5
+    }
+  },
+  {
+    "id": "47",
+    "name": "MHD.Newack",
+    "team": "MAHADEWA",
+    "teamAbv": "MHD",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1deeqFUVF-i-DXuLxp7nR0aKNzO7iEI4F&sz=w1000",
+    "stats": {
+      "matches": 19,
+      "kill": 14,
+      "death": 37,
+      "assist": 155,
+      "gpm": 297.4
+    }
+  },
+  {
+    "id": "48",
+    "name": "MHD.K1",
+    "team": "MAHADEWA",
+    "teamAbv": "MHD",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1RqRLmUSJPVJ1aZCn0EZKjDrnJpjBiMhx&sz=w1000",
+    "stats": {
+      "matches": 22,
+      "kill": 29,
+      "death": 51,
+      "assist": 77,
+      "gpm": 445.6
+    }
+  },
+  {
+    "id": "49",
+    "name": "MHD.Monss",
+    "team": "MAHADEWA",
+    "teamAbv": "MHD",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1SCVGOhZostsVWHZ_RuF9TwrIzduPDyV1&sz=w1000",
+    "stats": {
+      "matches": 19,
+      "kill": 17,
+      "death": 43,
+      "assist": 88,
+      "gpm": 323.4
+    }
+  },
+  {
+    "id": "50",
+    "name": "VESA.Nev",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1911dCXlCmaAoRmc68uZLTocfxwKeR-8N&sz=w1000",
+    "stats": {
+      "matches": 41,
+      "kill": 113,
+      "death": 81,
+      "assist": 183,
+      "gpm": 921.2
+    }
+  },
+  {
+    "id": "51",
+    "name": "VESA.JenMyth",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1f-VSHyjhoi9Ba0QlIdeR7sFHvWbcEcmZ&sz=w1000",
+    "stats": {
+      "matches": 41,
+      "kill": 78,
+      "death": 54,
+      "assist": 234,
+      "gpm": 739.1
+    }
+  },
+  {
+    "id": "52",
+    "name": "VESA.Bal",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=15Z3GR4XdK1V_v6APmtzKgI0NuJqDG5oq&sz=w1000",
+    "stats": {
+      "matches": 41,
+      "kill": 98,
+      "death": 97,
+      "assist": 159,
+      "gpm": 850.1
+    }
+  },
+  {
+    "id": "53",
+    "name": "VESA.JunYong",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1EmSO661UBVYRDHc0WYVKt4q8OlIY9xQp&sz=w1000",
+    "stats": {
+      "matches": 41,
+      "kill": 21,
+      "death": 67,
+      "assist": 306,
+      "gpm": 618.4
+    }
+  },
+  {
+    "id": "54",
+    "name": "VESA.Raven",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1M5WZA1YC0C7f_hw2nexnzl6XOsjlGvAl&sz=w1000",
+    "stats": {
+      "matches": 41,
+      "kill": 109,
+      "death": 81,
+      "assist": 166,
+      "gpm": 970.5
+    }
+  },
+  {
+    "id": "55",
+    "name": "VESA.Barudak",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1BKNhEbbOWYcg7oWS82r8N6AePUcmEmJL&sz=w1000",
+    "stats": {
+      "matches": 0,
+      "kill": 0,
+      "death": 0,
+      "assist": 0,
+      "gpm": 0
+    }
+  },
+  {
+    "id": "56",
+    "name": "VESA.Sieg",
+    "team": "VESAKHA ESPORTS",
+    "teamAbv": "VESA",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1a8iPhbgVNPLLa9lMD1WgU_GyyZ_FVktT&sz=w1000",
+    "stats": {
+      "matches": 0,
+      "kill": 0,
+      "death": 0,
+      "assist": 0,
+      "gpm": 0
+    }
+  },
+  {
+    "id": "57",
+    "name": "RVM.Acaaaa",
+    "team": "REVEMOIN ESPORTS",
+    "teamAbv": "RVM",
+    "role": "mid",
+    "image": "https://drive.google.com/thumbnail?id=1MMERFZ8UQsAX7oKMhSUIS-UO_EdzWc80&sz=w1000",
+    "stats": {
+      "matches": 27,
+      "kill": 17,
+      "death": 68,
+      "assist": 74,
+      "gpm": 454.5
+    }
+  },
+  {
+    "id": "58",
+    "name": "RVM.Imagination",
+    "team": "REVEMOIN ESPORTS",
+    "teamAbv": "RVM",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=1CRiIt_Aam5HBeBUXXD4ux1UfWZFlVOji&sz=w1000",
+    "stats": {
+      "matches": 27,
+      "kill": 42,
+      "death": 40,
+      "assist": 49,
+      "gpm": 626.5
+    }
+  },
+  {
+    "id": "59",
+    "name": "RVM.BiLjane",
+    "team": "REVEMOIN ESPORTS",
+    "teamAbv": "RVM",
+    "role": "roam",
+    "image": "https://drive.google.com/thumbnail?id=1REEGqSFLrmRH5lK7g_p3HCbMPP3dsN0W&sz=w1000",
+    "stats": {
+      "matches": 19,
+      "kill": 7,
+      "death": 47,
+      "assist": 76,
+      "gpm": 281.1
+    }
+  },
+  {
+    "id": "60",
+    "name": "RVM.L",
+    "team": "REVEMOIN ESPORTS",
+    "teamAbv": "RVM",
+    "role": "clash",
+    "image": "https://drive.google.com/thumbnail?id=1kreIHLDDX1aTn30ttp5mySz3cUV3u_70&sz=w1000",
+    "stats": {
+      "matches": 27,
+      "kill": 38,
+      "death": 71,
+      "assist": 56,
+      "gpm": 555.8
+    }
+  },
+  {
+    "id": "61",
+    "name": "RVM.Sasakii",
+    "team": "REVEMOIN ESPORTS",
+    "teamAbv": "RVM",
+    "role": "jungle",
+    "image": "https://drive.google.com/thumbnail?id=1oDTYQPUkLjgAXOqMczVXWr1Br2vQhRqu&sz=w1000",
+    "stats": {
+      "matches": 27,
+      "kill": 42,
+      "death": 86,
+      "assist": 66,
+      "gpm": 610.1
+    }
+  },
+  {
+    "id": "62",
+    "name": "RVM.KidoyZ",
+    "team": "REVEMOIN ESPORTS",
+    "teamAbv": "RVM",
+    "role": "farm",
+    "image": "https://drive.google.com/thumbnail?id=14GdCIPDmrjQOy1TlCAzx2V--XrTH6GWI&sz=w1000",
+    "stats": {
+      "matches": 8,
+      "kill": 10,
+      "death": 19,
+      "assist": 15,
+      "gpm": 157
+    }
+  }
 ];
+
+// Simulate KV Data for Teams
+export const MOCK_TEAMS: Team[] = [
+  {
+    "id": "t1",
+    "name": "REX REGUM QEON",
+    "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000",
+    "description": "",
+    "matchPoints": 15,
+    "matchWins": 10,
+    "matchLosses": 2,
+    "gameWins": 21,
+    "gameLosses": 5
+  },
+  {
+    "id": "t2",
+    "name": "BIGETRON BY VITALITY",
+    "logo": "https://drive.google.com/thumbnail?id=1MuJ6SJBfMcH3JaxoQe4te2ABW-rPwAJ1&sz=w1000",
+    "description": "",
+    "matchPoints": 13,
+    "matchWins": 9,
+    "matchLosses": 3,
+    "gameWins": 19,
+    "gameLosses": 8
+  },
+  {
+    "id": "t3",
+    "name": "ONIC",
+    "logo": "https://drive.google.com/thumbnail?id=1gorNyv8s645IoJcDTDjbBwG7oQCMcMwx&sz=w1000",
+    "description": "",
+    "matchPoints": 10,
+    "matchWins": 6,
+    "matchLosses": 6,
+    "gameWins": 14,
+    "gameLosses": 14
+  },
+  {
+    "id": "t4",
+    "name": "ALTER EGO ESPORTS",
+    "logo": "https://drive.google.com/thumbnail?id=1p0HeAOXOPSsQhZJFLfsCsO7dYTmWTpWg&sz=w1000",
+    "description": "",
+    "matchPoints": 8,
+    "matchWins": 5,
+    "matchLosses": 7,
+    "gameWins": 12,
+    "gameLosses": 16
+  },
+  {
+    "id": "t5",
+    "name": "KAGENDRA",
+    "logo": "https://drive.google.com/thumbnail?id=1jrxJdX7wY3D2HZvTXOGKXxoNmt4RywGZ&sz=w1000",
+    "description": "",
+    "matchPoints": 6,
+    "matchWins": 4,
+    "matchLosses": 8,
+    "gameWins": 10,
+    "gameLosses": 18
+  },
+  {
+    "id": "t6",
+    "name": "DOMINATOR ESPORTS",
+    "logo": "https://drive.google.com/thumbnail?id=1MJiJMiDiwR3JX8-O8It6cv3ukDpdXlKL&sz=w1000",
+    "description": "",
+    "matchPoints": 5,
+    "matchWins": 2,
+    "matchLosses": 10,
+    "gameWins": 6,
+    "gameLosses": 21
+  },
+  {
+    "id": "t7",
+    "name": "TALON",
+    "logo": "https://drive.google.com/thumbnail?id=15gzTU3yH82bv4ss7MVjEISdTt8AyQqkb&sz=w1000",
+    "description": "",
+    "matchPoints": 4,
+    "matchWins": 6,
+    "matchLosses": 6,
+    "gameWins": 14,
+    "gameLosses": 14
+  },
+  {
+    "id": "t8",
+    "name": "MAHADEWA",
+    "logo": "https://drive.google.com/thumbnail?id=1WEue59I62hu-0DHEAdtnHxWjcgdCoh8v&sz=w1000",
+    "description": "",
+    "matchPoints": 3,
+    "matchWins": 5,
+    "matchLosses": 7,
+    "gameWins": 12,
+    "gameLosses": 16
+  },
+  {
+    "id": "t9",
+    "name": "VESAKHA ESPORTS",
+    "logo": "https://drive.google.com/thumbnail?id=1rG_bPLbY3xJunxBlBeRIxDaKx2b86ZIf&sz=w1000",
+    "description": "",
+    "matchPoints": 2,
+    "matchWins": 4,
+    "matchLosses": 8,
+    "gameWins": 10,
+    "gameLosses": 18
+  },
+  {
+    "id": "t10",
+    "name": "REVEMOIN ESPORTS",
+    "logo": "https://drive.google.com/thumbnail?id=13FG-_AwvWjM-wQ-Pw516X1Xs1u2gI_Tt&sz=w1000",
+    "description": "",
+    "matchPoints": 1,
+    "matchWins": 2,
+    "matchLosses": 10,
+    "gameWins": 6,
+    "gameLosses": 21
+  }
+];
+    
 
 export const MOCK_SUBMISSIONS: DreamTeamSubmission[] = [];
