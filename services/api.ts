@@ -394,11 +394,13 @@ export const submitDreamTeam = async (submission: any): Promise<boolean> => {
         await fetch(currentConfig.googleFormUrl, {
             method: 'POST',
             mode: 'no-cors', 
-            headers: { 'Content-Type': 'application/json' },
+            // Changed from application/json to text/plain to avoid CORS preflight options request which GAS cannot handle
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify(submission)
         });
         return true;
     } catch (e) {
+        console.error("Submission failed", e);
         return true; 
     }
   }
