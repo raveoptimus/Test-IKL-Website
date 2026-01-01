@@ -37,6 +37,19 @@ export interface Team {
   description?: string;
 }
 
+export interface Match {
+  id: string;
+  teamA: string; // Team Name
+  teamB: string; // Team Name
+  date: string;  // ISO Date string YYYY-MM-DD
+  time: string;  // Display time e.g. "19:00"
+  status: 'Upcoming' | 'Live' | 'Finished';
+  scoreA: number;
+  scoreB: number;
+  format: string; // e.g. "Bo3"
+  stage: string;  // e.g. "Week 1 - Day 1"
+}
+
 export interface DreamTeamSubmission {
   id: string;
   email: string;
@@ -50,7 +63,8 @@ export interface DreamTeamSubmission {
 
 export interface AppConfig {
   logoUrl: string;
-  kvUrl?: string;          // New: Link to Key Visual / Banner Background
+  kvUrl?: string;          // Link to Key Visual / Banner Background
+  aboutText?: string;      // New: About Us Description text
   googleFormUrl?: string;
   playersSheetUrl?: string; 
   teamsSheetUrl?: string;   

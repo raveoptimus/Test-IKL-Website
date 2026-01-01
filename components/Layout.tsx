@@ -29,10 +29,10 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       </button>
       
       <div className="flex flex-col space-y-8 text-center w-full max-w-sm">
-        <Link to="/" onClick={onClose} className="text-5xl font-display font-bold text-white hover:text-ikl-red tracking-widest transition-transform active:scale-95 py-2 border-b border-white/5">SBBT</Link>
+        <Link to="/" onClick={onClose} className="text-5xl font-display font-bold text-white hover:text-ikl-red tracking-widest transition-transform active:scale-95 py-2 border-b border-white/5">HOME</Link>
+        <Link to="/sbbt" onClick={onClose} className="text-5xl font-display font-bold text-white hover:text-ikl-red tracking-widest transition-transform active:scale-95 py-2 border-b border-white/5">SBBT</Link>
         <Link to="/teams" onClick={onClose} className="text-5xl font-display font-bold text-white hover:text-ikl-red tracking-widest transition-transform active:scale-95 py-2 border-b border-white/5">TEAMS</Link>
         <Link to="/stats" onClick={onClose} className="text-5xl font-display font-bold text-white hover:text-ikl-red tracking-widest transition-transform active:scale-95 py-2 border-b border-white/5">STATS</Link>
-        <Link to="/standings" onClick={onClose} className="text-5xl font-display font-bold text-white hover:text-ikl-red tracking-widest transition-transform active:scale-95 py-2 border-b border-white/5">STANDINGS</Link>
       </div>
 
       <div className="absolute bottom-12 text-gray-500 font-display text-xl tracking-widest">
@@ -76,12 +76,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     };
   }, []); 
 
+  // Check if we are on the Home page to handle KV differently if needed
+  // For now, we allow the global KV logic, but the Home page will overlay its own dedicated hero.
+  const isHomePage = location.pathname === '/';
+
   return (
     <div className="min-h-screen bg-ikl-darker text-white flex flex-col relative overflow-hidden">
       {/* --- DYNAMIC GLOBAL BACKGROUND (KV) --- */}
+      {/* On Home page, we might want the hero component to handle the main visual, but consistent background is good. */}
       <div className="fixed inset-0 z-0 pointer-events-none">
          {/* KV Image Layer */}
-         {kvUrl ? (
+         {kvUrl && !isHomePage ? (
              <div className="absolute top-0 left-0 w-full h-[60vh] md:h-[80vh] opacity-40 transition-opacity duration-1000 ease-out">
                 <img 
                     src={kvUrl} 
@@ -90,56 +95,46 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     referrerPolicy="no-referrer"
                 />
              </div>
-         ) : (
-             // Fallback Gradient if no KV
-             <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-ikl-red/10 to-transparent opacity-20"></div>
-         )}
-         
-         {/* Gradient Overlay for Readability (Fades KV into black at bottom) */}
-         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#050505]/80 to-[#050505]"></div>
-         
-         {/* Ambient Glows */}
-         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-ikl-red/5 rounded-full blur-[120px]"></div>
-         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px] mix-blend-overlay"></div>
+         ) : null}
+
+         {/* Fallback/Overlay */}
+         <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-b from-ikl-red/5 to-black/90 ${isHomePage ? 'opacity-20' : 'opacity-100'}`}></div>
          
          {/* Texture Overlay */}
          <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-2xl">
+      <nav className={`sticky top-0 z-50 transition-all duration-300 ${isHomePage ? 'bg-transparent border-none' : 'bg-black/80 backdrop-blur-xl border-b border-white/5 shadow-2xl'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 md:h-24">
             <div className="flex-shrink-0 flex items-center space-x-4">
-              {/* Dynamic Logo Section */}
-              <div className="relative group">
-                <div className="absolute -inset-2 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <img 
-                    src={logoUrl} 
-                    alt="IKL Logo" 
-                    className="h-10 md:h-14 w-auto object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                       // Fallback if image fails (optional)
-                    }}
-                />
-              </div>
+              <Link to="/">
+                  <div className="relative group cursor-pointer">
+                    <img 
+                        src={logoUrl} 
+                        alt="IKL Logo" 
+                        className="h-10 md:h-14 w-auto object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                           // Fallback if image fails (optional)
+                        }}
+                    />
+                  </div>
+              </Link>
               <div className="hidden sm:flex flex-col">
                   <span className="font-display font-bold text-2xl md:text-3xl tracking-[0.15em] text-white leading-none drop-shadow-lg">
-                    INDONESIA KINGS LAGA
-                  </span>
-                  <span className="font-display font-bold text-lg md:text-xl text-ikl-red tracking-[0.3em] leading-none opacity-90 mt-1 drop-shadow-md">
-                    FALL 2025
+                    IKL <span className="text-ikl-red">FALL 2025</span>
                   </span>
               </div>
             </div>
             
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
-                <NavLink to="/" label="SBBT" active={location.pathname === '/'} />
+                <NavLink to="/" label="HOME" active={location.pathname === '/'} />
+                <NavLink to="/sbbt" label="SBBT" active={location.pathname === '/sbbt'} />
                 <NavLink to="/teams" label="TEAMS" active={location.pathname === '/teams'} />
                 <NavLink to="/stats" label="STATS" active={location.pathname === '/stats'} />
-                <NavLink to="/standings" label="STANDINGS" active={location.pathname === '/standings'} />
               </div>
             </div>
 
@@ -160,29 +155,26 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
       {/* Content */}
-      <main className="flex-grow z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-slide-up">
+      <main className="flex-grow z-10 w-full animate-slide-up">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="z-10 bg-[#080808]/90 border-t border-white/5 py-16 relative overflow-hidden backdrop-blur-sm">
+      <footer className="z-10 bg-[#050505] border-t border-white/5 py-12 relative overflow-hidden backdrop-blur-sm">
         {/* Decor line */}
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-ikl-red to-transparent opacity-50"></div>
         
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 tracking-widest">INDONESIA KINGS LAGA</h2>
-          <p className="text-gray-500 font-display text-xl mb-10 tracking-wide">
-            OFFICIAL ESPORTS PLATFORM
-          </p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-8 tracking-widest">INDONESIA KINGS LAGA</h2>
           
-          <div className="flex justify-center space-x-10 mb-10">
-             <a href="#" className="text-gray-500 hover:text-white transition-all transform hover:scale-110 font-bold uppercase tracking-wider">Instagram</a>
-             <a href="#" className="text-gray-500 hover:text-white transition-all transform hover:scale-110 font-bold uppercase tracking-wider">YouTube</a>
-             <a href="#" className="text-gray-500 hover:text-white transition-all transform hover:scale-110 font-bold uppercase tracking-wider">Discord</a>
+          <div className="flex justify-center space-x-8 mb-8">
+             <a href="#" className="text-gray-500 hover:text-white transition-all transform hover:scale-110 font-bold uppercase tracking-wider text-sm">Instagram</a>
+             <a href="#" className="text-gray-500 hover:text-white transition-all transform hover:scale-110 font-bold uppercase tracking-wider text-sm">YouTube</a>
+             <a href="#" className="text-gray-500 hover:text-white transition-all transform hover:scale-110 font-bold uppercase tracking-wider text-sm">TikTok</a>
           </div>
           
-          <p className="text-gray-700 text-sm">
-            &copy; 2025 IKL. All rights reserved.
+          <p className="text-gray-600 text-xs font-mono uppercase tracking-widest">
+            Trademarks 2025 HOK Esports Indonesia All Right Reserverd
           </p>
         </div>
       </footer>

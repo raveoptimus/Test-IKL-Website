@@ -32,23 +32,23 @@ export const Standings: React.FC = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto animate-fade-in pb-16 px-4 md:px-0">
-      <div className="text-center mb-10 md:mb-16">
-        <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-4 uppercase tracking-tighter">SEASON <br className="md:hidden" /> STANDINGS</h1>
-        <div className="h-2 w-32 bg-ikl-red mx-auto"></div>
+    <div className="max-w-6xl mx-auto animate-fade-in pb-16 px-2 md:px-0">
+      <div className="text-center mb-8 md:mb-16">
+        <h1 className="text-4xl md:text-8xl font-display font-bold text-white mb-2 md:mb-4 uppercase tracking-tighter">SEASON <br className="md:hidden" /> STANDINGS</h1>
+        <div className="h-1.5 w-24 md:h-2 md:w-32 bg-ikl-red mx-auto"></div>
       </div>
 
-      <div className="bg-[#0a0a0a] rounded-t-2xl border border-white/10 overflow-hidden shadow-2xl relative">
-        <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full whitespace-nowrap min-w-[600px] text-left border-collapse">
+      <div className="bg-[#0a0a0a] rounded-t-xl md:rounded-t-2xl border border-white/10 overflow-hidden shadow-2xl relative">
+        <div className="w-full">
+            <table className="w-full text-left border-collapse table-auto">
             <thead>
-                <tr className="bg-gradient-to-r from-red-950 to-[#111] text-gray-300 border-b border-white/10 text-lg md:text-xl uppercase tracking-widest font-display">
-                    <th className="p-4 md:p-6 sticky left-0 z-20 bg-red-950/95 backdrop-blur-sm border-r border-white/5 md:border-none shadow-[2px_0_10px_rgba(0,0,0,0.5)] md:shadow-none">#</th>
-                    <th className="p-4 md:p-6 w-full">TEAM</th>
-                    <th className="p-4 md:p-6 text-center text-white">PTS</th>
-                    <th className="p-4 md:p-6 text-center">M. W-L</th>
-                    <th className="p-4 md:p-6 text-center">NET</th>
-                    <th className="p-4 md:p-6 text-center">G. W-L</th>
+                <tr className="bg-gradient-to-r from-red-950 to-[#111] text-gray-300 border-b border-white/10 text-[10px] md:text-xl uppercase tracking-widest font-display">
+                    <th className="p-2 md:p-6 text-center border-r border-white/5 md:border-none w-8 md:w-auto">#</th>
+                    <th className="p-2 md:p-6 w-auto md:w-full">TEAM</th>
+                    <th className="p-2 md:p-6 text-center text-white w-10 md:w-auto">PTS</th>
+                    <th className="p-2 md:p-6 text-center whitespace-nowrap w-14 md:w-auto">M. W-L</th>
+                    <th className="p-2 md:p-6 text-center w-10 md:w-auto">NET</th>
+                    <th className="p-2 md:p-6 text-center whitespace-nowrap w-14 md:w-auto">G. W-L</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-white/5 bg-[#0f0f0f]">
@@ -56,15 +56,15 @@ export const Standings: React.FC = () => {
                     const netGame = team.gameWins - team.gameLosses;
                     return (
                         <tr key={team.id} className="group hover:bg-white/5 transition-colors">
-                            {/* Sticky Rank Column */}
-                            <td className="p-4 md:p-6 font-display text-3xl text-gray-500 font-bold sticky left-0 z-10 bg-[#0f0f0f] group-hover:bg-[#1a1a1a] transition-colors border-r border-white/5 md:border-none shadow-[2px_0_10px_rgba(0,0,0,0.5)] md:shadow-none">
+                            {/* Rank Column */}
+                            <td className="p-2 md:p-6 font-display text-lg md:text-3xl text-gray-500 font-bold text-center border-r border-white/5 md:border-none">
                                 {index + 1}
                             </td>
                             
                             {/* Team Column */}
-                            <td className="p-4 md:p-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 md:w-14 md:h-14 bg-black/40 rounded-lg flex items-center justify-center border border-white/10 shrink-0 overflow-hidden relative">
+                            <td className="p-2 md:p-6">
+                                <div className="flex items-center space-x-2 md:space-x-4">
+                                    <div className="w-8 h-8 md:w-14 md:h-14 bg-black/40 rounded md:rounded-lg flex items-center justify-center border border-white/10 shrink-0 overflow-hidden relative">
                                         {team.logo && !team.logo.includes('placehold') ? (
                                             <img 
                                                 src={team.logo} 
@@ -81,26 +81,26 @@ export const Standings: React.FC = () => {
                                             {team.name.substring(0,2)}
                                         </span>
                                     </div>
-                                    <span className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-wide truncate max-w-[160px] md:max-w-none">
+                                    <span className="font-display text-sm md:text-3xl font-bold text-white uppercase tracking-wide leading-tight truncate max-w-[100px] sm:max-w-none md:whitespace-normal">
                                         {team.name}
                                     </span>
                                 </div>
                             </td>
 
                             {/* Stats Columns */}
-                            <td className="p-4 md:p-6 text-center font-display text-3xl md:text-4xl text-white font-bold tracking-wider">
+                            <td className="p-2 md:p-6 text-center font-display text-lg md:text-4xl text-white font-bold tracking-wider">
                                 {team.matchPoints}
                             </td>
-                            <td className="p-4 md:p-6 text-center font-mono text-lg md:text-xl text-gray-400 font-bold">
-                                {team.matchWins} - {team.matchLosses}
+                            <td className="p-2 md:p-6 text-center font-mono text-xs md:text-xl text-gray-400 font-bold whitespace-nowrap">
+                                {team.matchWins}-{team.matchLosses}
                             </td>
-                            <td className="p-4 md:p-6 text-center font-mono text-lg md:text-xl font-bold">
+                            <td className="p-2 md:p-6 text-center font-mono text-xs md:text-xl font-bold">
                                 <span className={netGame > 0 ? 'text-ikl-green' : netGame < 0 ? 'text-red-500' : 'text-gray-500'}>
                                     {netGame > 0 ? `+${netGame}` : netGame}
                                 </span>
                             </td>
-                             <td className="p-4 md:p-6 text-center font-mono text-lg md:text-xl text-gray-500 font-bold">
-                                {team.gameWins} - {team.gameLosses}
+                             <td className="p-2 md:p-6 text-center font-mono text-xs md:text-xl text-gray-500 font-bold whitespace-nowrap">
+                                {team.gameWins}-{team.gameLosses}
                             </td>
                         </tr>
                     );

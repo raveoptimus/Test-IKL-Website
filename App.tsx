@@ -1,6 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { Home } from './pages/Home';
 import { DreamTeam } from './pages/DreamTeam';
 import { Stats } from './pages/Stats';
 import { Standings } from './pages/Standings';
@@ -12,7 +13,8 @@ const App: React.FC = () => {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<DreamTeam />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/sbbt" element={<DreamTeam />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/standings" element={<Standings />} />
           <Route path="/teams" element={<Teams />} />

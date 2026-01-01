@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Player, Role, Team, AppConfig } from '../types';
 import { getPlayers, getTeams, getAppConfig, submitDreamTeam } from '../services/api';
 import { ROLE_LABELS } from '../constants';
+import { Link } from 'react-router-dom';
 
 // --- COMPONENTS ---
 
@@ -17,16 +18,19 @@ const RoleSection: React.FC<{
   return (
     <div className={`mb-12 rounded-xl p-4 md:p-8 transition-all duration-500 ${error ? 'bg-red-900/20 border border-red-500 shadow-[0_0_30px_rgba(255,42,42,0.3)]' : 'bg-white/5 border border-white/5'}`}>
       <div className="flex items-center mb-6 border-l-4 border-ikl-red pl-4">
-        <h2 className="text-4xl md:text-5xl font-display font-bold tracking-widest text-white uppercase">
+        <h2 className="text-3xl md:text-5xl font-display font-bold tracking-widest text-white uppercase">
           {ROLE_LABELS[role]}
         </h2>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
         {players.filter(p => p.role === role).map((player) => {
            const isSelected = selectedId === player.id;
            const teamLogo = teams.find(t => t.name === player.team)?.logo;
            const [imgError, setImgError] = useState(false);
+           
+           // Format Nickname: RRQ.Harpist -> Harpist
+           const nickname = player.name.includes('.') ? player.name.split('.').pop() : player.name;
 
            return (
             <div
@@ -64,7 +68,7 @@ const RoleSection: React.FC<{
                     onError={() => setImgError(true)}
                    />
                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-7xl font-bold select-none relative z-10">
+                    <div className="w-full h-full flex items-center justify-center text-gray-800 font-display text-5xl md:text-7xl font-bold select-none relative z-10">
                         {player.team.substring(0,2)}
                     </div>
                  )}
@@ -78,20 +82,20 @@ const RoleSection: React.FC<{
               </div>
               
               {/* Footer Info Area - Solid Black Background */}
-              <div className="bg-[#080808] p-2 md:p-4 flex flex-col items-center justify-center border-t border-white/10 relative z-20 min-h-[90px] md:min-h-[100px]">
+              <div className="bg-[#080808] p-2 md:p-4 flex flex-col items-center justify-center border-t border-white/10 relative z-20 min-h-[80px] md:min-h-[120px]">
                 {/* Name - Adjusted for Wrapping on Mobile */}
-                <div className={`font-display text-xl md:text-3xl font-bold leading-none tracking-wide text-center uppercase break-words w-full mb-2 ${isSelected ? 'text-ikl-green' : 'text-white'}`}>
-                    {player.name}
+                <div className={`font-display text-xl md:text-3xl font-bold leading-none tracking-wide text-center uppercase break-words w-full mb-2 md:mb-3 ${isSelected ? 'text-ikl-green' : 'text-white'}`}>
+                    {nickname}
                 </div>
                 
-                {/* Team Info Row: Logo + ABV */}
+                {/* Team Info Row: Logo + ABV (Increased Size) */}
                 <div className="flex items-center justify-center gap-2 md:gap-3">
                     {teamLogo ? (
-                        <div className="w-8 h-8 md:w-9 md:h-9 bg-white/5 rounded-full flex items-center justify-center p-1 border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                        <div className="w-8 h-8 md:w-12 md:h-12 bg-white/5 rounded-full flex items-center justify-center p-1 md:p-1.5 border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
                              <img src={teamLogo} alt={player.team} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                         </div>
                     ) : null}
-                    <div className="text-gray-400 font-bold text-xs md:text-sm tracking-widest uppercase">
+                    <div className="text-gray-400 font-bold text-sm md:text-2xl tracking-widest uppercase font-display">
                         {player.teamAbv || player.team}
                     </div>
                 </div>
@@ -118,7 +122,7 @@ export const DreamTeam: React.FC = () => {
   const [selections, setSelections] = useState<{ [key in Role]?: string }>({});
   const [errors, setErrors] = useState<string[]>([]);
 
-  // Form States - Renamed and Added Week
+  // Form States
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [week, setWeek] = useState('1');
@@ -214,10 +218,6 @@ export const DreamTeam: React.FC = () => {
               TeamLogo: t?.logo
           };
       });
-  };
-
-  const handleViewStandings = () => {
-      window.open(GOOGLE_SHEET_URL, '_blank');
   };
 
   const scrollToBuilder = () => {
@@ -334,18 +334,18 @@ export const DreamTeam: React.FC = () => {
            {/* Background FX */}
            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] md:w-[800px] md:h-[800px] bg-ikl-red/5 rounded-full blur-[100px] pointer-events-none"></div>
            
-           <h1 className="text-[5rem] md:text-[10rem] font-display font-bold text-white mb-8 leading-[0.85] tracking-tighter drop-shadow-2xl select-none z-10">
+           <h1 className="text-6xl md:text-[10rem] font-display font-bold text-white mb-8 leading-[0.9] md:leading-[0.85] tracking-tighter drop-shadow-2xl select-none z-10 px-4">
               SEMUA BISA <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-b from-ikl-red to-red-900 animate-pulse drop-shadow-[0_0_20px_rgba(255,42,42,0.6)]">BIKIN TIM</span>
            </h1>
            
            <button 
              onClick={scrollToBuilder}
-             className="group relative px-12 py-6 bg-white text-black font-display font-bold text-3xl uppercase tracking-widest overflow-hidden transition-all hover:bg-ikl-red hover:text-white rounded-sm shadow-xl hover:shadow-2xl hover:shadow-ikl-red/30 z-10 transform active:scale-95"
+             className="group relative px-8 py-4 md:px-12 md:py-6 bg-white text-black font-display font-bold text-xl md:text-3xl uppercase tracking-widest overflow-hidden transition-all hover:bg-ikl-red hover:text-white rounded-sm shadow-xl hover:shadow-2xl hover:shadow-ikl-red/30 z-10 transform active:scale-95"
            >
              <span className="relative z-10 flex items-center gap-3">
                 Mulai
-                <svg className="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                <svg className="w-5 h-5 md:w-6 md:h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
              </span>
              <div className="absolute inset-0 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
            </button>
@@ -358,14 +358,14 @@ export const DreamTeam: React.FC = () => {
             
             {/* New Input Section - Moved from Confirm Screen */}
             <div className="bg-ikl-panel p-6 md:p-8 rounded-xl border border-white/10 shadow-2xl mb-10">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                      {/* Email */}
                      <div>
                         <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Email Address</label>
                         <input 
                             required
                             type="email" 
-                            className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg font-bold"
+                            className="w-full bg-black border border-white/20 rounded-lg p-3 md:p-4 text-white focus:border-ikl-red focus:outline-none text-base md:text-lg font-bold"
                             placeholder="youremail@example.com"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
@@ -377,7 +377,7 @@ export const DreamTeam: React.FC = () => {
                         <input 
                             required
                             type="text" 
-                            className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg"
+                            className="w-full bg-black border border-white/20 rounded-lg p-3 md:p-4 text-white focus:border-ikl-red focus:outline-none text-base md:text-lg"
                             placeholder="@yourusername"
                             value={username}
                             onChange={e => setUsername(e.target.value)}
@@ -388,7 +388,7 @@ export const DreamTeam: React.FC = () => {
                         <label className="block text-gray-400 text-xs font-bold uppercase mb-2">Week</label>
                         <div className="relative">
                             <select 
-                                className="w-full bg-black border border-white/20 rounded-lg p-4 text-white focus:border-ikl-red focus:outline-none text-lg appearance-none font-bold"
+                                className="w-full bg-black border border-white/20 rounded-lg p-3 md:p-4 text-white focus:border-ikl-red focus:outline-none text-base md:text-lg appearance-none font-bold"
                                 value={week}
                                 onChange={e => setWeek(e.target.value)}
                             >
@@ -405,8 +405,8 @@ export const DreamTeam: React.FC = () => {
             </div>
 
             <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-8 border-b border-white/10 pb-6">
-                <h2 className="text-6xl md:text-7xl font-display font-bold text-white leading-none">PILIH <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ikl-red to-white">PLAYER</span></h2>
-                <p className="text-gray-400 font-display text-2xl mb-2 tracking-wide uppercase"> / Select 1 Player Per Role</p>
+                <h2 className="text-5xl md:text-7xl font-display font-bold text-white leading-none">PILIH <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ikl-red to-white">PLAYER</span></h2>
+                <p className="text-gray-400 font-display text-xl md:text-2xl mb-2 tracking-wide uppercase"> / Select 1 Player Per Role</p>
             </div>
 
             {/* Roles Selection */}

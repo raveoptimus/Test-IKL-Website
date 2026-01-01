@@ -1,5 +1,5 @@
-import { Player, Team, DreamTeamSubmission, AppConfig, Role } from '../types';
-import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, DATA_VERSION, ROLE_LABELS, GLOBAL_CONFIG } from '../constants';
+import { Player, Team, DreamTeamSubmission, AppConfig, Role, Match } from '../types';
+import { MOCK_PLAYERS, MOCK_TEAMS, MOCK_SUBMISSIONS, MOCK_MATCHES, DATA_VERSION, ROLE_LABELS, GLOBAL_CONFIG } from '../constants';
 
 // --- STORAGE KEYS ---
 const KEY_PLAYERS = 'ikl_data_players_v2';
@@ -133,6 +133,12 @@ export const getPlayers = async (): Promise<Player[]> => {
 export const getTeams = async (): Promise<Team[]> => {
   return new Promise((resolve) => {
     setTimeout(() => resolve([...currentTeams]), SIMULATE_DELAY);
+  });
+};
+
+export const getMatches = async (): Promise<Match[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve([...MOCK_MATCHES]), SIMULATE_DELAY);
   });
 };
 
