@@ -387,7 +387,7 @@ export const updateAppConfig = async (config: AppConfig): Promise<boolean> => {
   });
 };
 
-export const submitDreamTeam = async (submission: Omit<DreamTeamSubmission, 'id' | 'submittedAt'>): Promise<boolean> => {
+export const submitDreamTeam = async (submission: any): Promise<boolean> => {
   console.log("Submitting:", submission);
   if (currentConfig.googleFormUrl) {
     try {

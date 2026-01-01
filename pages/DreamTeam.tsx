@@ -190,13 +190,21 @@ export const DreamTeam: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Construct Payload
-    const payload = {
-        email,
-        instagram: username,
-        week,
-        selections: selections as { [key in Role]: string }
+    // Prepare FLAT payload with keys EXACTLY matching Google Sheet Headers
+    const payload: any = {
+        "Email": email,
+        "Instagram": username,
+        "Week": `Week ${week}`, 
+        "Timestamp": new Date().toLocaleString()
     };
+    
+    // Flatten roles mapping internal keys to Sheet Headers (e.g. "CLASH LANE": "RRQ.R7")
+    Object.values(Role).forEach(role => {
+        const id = selections[role];
+        const player = players.find(p => p.id === id);
+        // Use ROLE_LABELS to match columns: CLASH LANE, FARM LANE, JUNGLER, MID LANE, ROAMER
+        payload[ROLE_LABELS[role]] = player ? player.name : '';
+    });
 
     // Send to Google Sheets (via API service)
     await submitDreamTeam(payload);

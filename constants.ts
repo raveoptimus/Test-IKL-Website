@@ -43,7 +43,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "RRQ.Harpist",
     "team": "REX REGUM QEON",
     "teamAbv": "RRQ",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1wBPg4cSl_QffKYsiDYv_PH-xFdtm4X_4&sz=w1000",
     "stats": {
       "matches": 35,
@@ -58,7 +58,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "RRQ.Bai",
     "team": "REX REGUM QEON",
     "teamAbv": "RRQ",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=1aKq_HfSlhXfZx5KNo8v1NxPVqzkWLDuH&sz=w1000",
     "stats": {
       "matches": 35,
@@ -73,7 +73,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "RRQ.Lexx",
     "team": "REX REGUM QEON",
     "teamAbv": "RRQ",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=1ISTYoZGb7i5sZDPksJvgbqShozxCskEW&sz=w1000",
     "stats": {
       "matches": 35,
@@ -88,7 +88,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "RRQ.Xinglin",
     "team": "REX REGUM QEON",
     "teamAbv": "RRQ",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1ZMl91CYVRNNlvKGyC-ksTFb0SGHSCZ6Z&sz=w1000",
     "stats": {
       "matches": 34,
@@ -103,7 +103,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "RRQ.663",
     "team": "REX REGUM QEON",
     "teamAbv": "RRQ",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=1ndJTOI8N2V6Fhwf1EGEy6f-MbNwViKko&sz=w1000",
     "stats": {
       "matches": 35,
@@ -118,7 +118,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "RRQ.Frederica",
     "team": "REX REGUM QEON",
     "teamAbv": "RRQ",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1vzQBlpv1Wy9x1fQcBClooAu9hXeE4vCQ&sz=w1000",
     "stats": {
       "matches": 1,
@@ -133,7 +133,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.Zaan",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1xsDc7Wkomc7gYZwQApJI8_gTGM3DdfDv&sz=w1000",
     "stats": {
       "matches": 50,
@@ -148,7 +148,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.ZhanQ",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=1a2daY_-E2q2GPj9Wo2VSwuU7o3PNU0UJ&sz=w1000",
     "stats": {
       "matches": 50,
@@ -163,7 +163,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.Niel",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=1cNDVE98GCTNHJWF6dZ9_97MpZIiGjvnk&sz=w1000",
     "stats": {
       "matches": 50,
@@ -178,7 +178,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.Tufzzz",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1jcE-macs4RlYZHO-kT_Ap6NrrFafUPyT&sz=w1000",
     "stats": {
       "matches": 50,
@@ -193,7 +193,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.Nineteen",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=12nepViHDaK8j4-Rwp2ECS3b_1t0rC3f8&sz=w1000",
     "stats": {
       "matches": 4,
@@ -208,7 +208,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.Saule",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1RJ-a5bHBe43ytUOf8GhmO9VbY9sCeNHS&sz=w1000",
     "stats": {
       "matches": 0,
@@ -223,7 +223,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "BTR.Ormson",
     "team": "BIGETRON BY VITALITY",
     "teamAbv": "BTR",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=1xXjIudyrLgCDXbQAxyZ-Z2BYl1MBISDp&sz=w1000",
     "stats": {
       "matches": 46,
@@ -238,7 +238,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "ONIC.Fadelboy",
     "team": "ONIC",
     "teamAbv": "ONIC",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=1E6Q12ygoJKI2XwgSPsaw7pWDaJa3Syee&sz=w1000",
     "stats": {
       "matches": 30,
@@ -253,7 +253,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "ONIC.Falah",
     "team": "ONIC",
     "teamAbv": "ONIC",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=1J511vo02cVz2r8YkhAULcawTT2EVY17Z&sz=w1000",
     "stats": {
       "matches": 30,
@@ -268,7 +268,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "ONIC.Ahem",
     "team": "ONIC",
     "teamAbv": "ONIC",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1REw4dtIeu-8817lnNAzLO3dFskgNzhz8&sz=w1000",
     "stats": {
       "matches": 30,
@@ -283,7 +283,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "ONIC.Switch",
     "team": "ONIC",
     "teamAbv": "ONIC",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1ODPptgFFSXNTCbxww7mZhPM-9v3oNDL3&sz=w1000",
     "stats": {
       "matches": 29,
@@ -298,7 +298,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "ONIC.AZ1",
     "team": "ONIC",
     "teamAbv": "ONIC",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=1ys9TX-ybfbBvD9lq65Ojh24ey6Yild1n&sz=w1000",
     "stats": {
       "matches": 30,
@@ -313,7 +313,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "ONIC.Kine",
     "team": "ONIC",
     "teamAbv": "ONIC",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1MehH39XrbBXGbp9FQkrtyB9P1GUWCAIh&sz=w1000",
     "stats": {
       "matches": 1,
@@ -328,7 +328,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "AE.DECOY",
     "team": "ALTER EGO ESPORTS",
     "teamAbv": "AE",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=1LYetG51-x4nDddPG51GDhF9-S4GOeGlt&sz=w1000",
     "stats": {
       "matches": 29,
@@ -343,7 +343,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "AE.CLAUSEN",
     "team": "ALTER EGO ESPORTS",
     "teamAbv": "AE",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1fE4UB2UH8jUGLyejY_zPZUi8iyFqRk9y&sz=w1000",
     "stats": {
       "matches": 16,
@@ -358,7 +358,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "AE.1Tut",
     "team": "ALTER EGO ESPORTS",
     "teamAbv": "AE",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=16Z-heM7XoWo9VZAm9INoL3c5J2d7K16z&sz=w1000",
     "stats": {
       "matches": 29,
@@ -373,7 +373,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "AE.ZenShao",
     "team": "ALTER EGO ESPORTS",
     "teamAbv": "AE",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=1hh-p6BKTjtxezAL7qt4KqinpCKBy1W-b&sz=w1000",
     "stats": {
       "matches": 29,
@@ -388,7 +388,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "AE.niubii",
     "team": "ALTER EGO ESPORTS",
     "teamAbv": "AE",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=1-i7VNkKkCLnCCRf3UcJLb9VAgUP6cxtA&sz=w1000",
     "stats": {
       "matches": 29,
@@ -403,7 +403,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "AE.Icytail",
     "team": "ALTER EGO ESPORTS",
     "teamAbv": "AE",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1EMpKazgTnOTAQ_kVJNme6aA5dtiwYiG5&sz=w1000",
     "stats": {
       "matches": 13,
@@ -418,7 +418,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "KAGE.Senkooo",
     "team": "KAGENDRA",
     "teamAbv": "KAGE",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=1TC6MVbieUuKN-rl5VV2E9sHk1bOdpRAq&sz=w1000",
     "stats": {
       "matches": 46,
@@ -433,7 +433,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "KAGE.iHanss",
     "team": "KAGENDRA",
     "teamAbv": "KAGE",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1JtDyPZ3475heDVjjxYNBqcG4rTgEBoH8&sz=w1000",
     "stats": {
       "matches": 45,
@@ -448,7 +448,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "KAGE.Wiraww",
     "team": "KAGENDRA",
     "teamAbv": "KAGE",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=1C6zUCZUG-lmw4URGYypJCFv-GB8ghfWZ&sz=w1000",
     "stats": {
       "matches": 46,
@@ -463,7 +463,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "KAGE.LanFeng",
     "team": "KAGENDRA",
     "teamAbv": "KAGE",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1pOD4mdlsNy-JeOorA0PmBpwketf3k-VO&sz=w1000",
     "stats": {
       "matches": 46,
@@ -478,7 +478,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "KAGE.Lu",
     "team": "KAGENDRA",
     "teamAbv": "KAGE",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=177u4eYR7GkCLl0z0NGeu-myAl7dyJrw7&sz=w1000",
     "stats": {
       "matches": 46,
@@ -493,7 +493,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "KAGE.ZeroZero",
     "team": "KAGENDRA",
     "teamAbv": "KAGE",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1OnrNgQIdqEF6T04CPbpi7XibdolP6QpP&sz=w1000",
     "stats": {
       "matches": 1,
@@ -508,7 +508,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "DMT.EL",
     "team": "DOMINATOR ESPORTS",
     "teamAbv": "DMT",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=1hJYU3xZG68SYO0DKq-8J9GJjFIIFZIjn&sz=w1000",
     "stats": {
       "matches": 35,
@@ -523,7 +523,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "DMT.JerL",
     "team": "DOMINATOR ESPORTS",
     "teamAbv": "DMT",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=1wGaUCisP-m5uxCo8xcWQl_aKz2y8-C5Z&sz=w1000",
     "stats": {
       "matches": 35,
@@ -538,7 +538,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "DMT.CipengZ",
     "team": "DOMINATOR ESPORTS",
     "teamAbv": "DMT",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1TSyl59Ud8LQ5wCgxiXmjKBqOZwPRxgu_&sz=w1000",
     "stats": {
       "matches": 35,
@@ -553,7 +553,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "DMT.TianX",
     "team": "DOMINATOR ESPORTS",
     "teamAbv": "DMT",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=15fVioXCEt0vvrAhyyeFESYR_Or7wej57&sz=w1000",
     "stats": {
       "matches": 35,
@@ -568,7 +568,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "DMT.Toshi",
     "team": "DOMINATOR ESPORTS",
     "teamAbv": "DMT",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=13hQfZdJIcSVee6JYHKxfnxtEp9lWUQnn&sz=w1000",
     "stats": {
       "matches": 35,
@@ -583,7 +583,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "DMT.anaktuyulz",
     "team": "DOMINATOR ESPORTS",
     "teamAbv": "DMT",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1M5-hYHth980OlV5nk9Y3qrus57HGsfYH&sz=w1000",
     "stats": {
       "matches": 0,
@@ -598,7 +598,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "TLN.SRD",
     "team": "TALON",
     "teamAbv": "TLN",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=18PHIbdX1PUj2zHX_9BJo5zjIKB4iFuwy&sz=w1000",
     "stats": {
       "matches": 31,
@@ -613,7 +613,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "TLN.Choux",
     "team": "TALON",
     "teamAbv": "TLN",
-    "role": "clash",
+    "role": Role.CLASH,
     "image": "https://drive.google.com/thumbnail?id=1HC5UJcuU4NscxTZXevdNWrdS9PIbmamD&sz=w1000",
     "stats": {
       "matches": 31,
@@ -628,7 +628,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "TLN.Xena",
     "team": "TALON",
     "teamAbv": "TLN",
-    "role": "roam",
+    "role": Role.ROAM,
     "image": "https://drive.google.com/thumbnail?id=1NMCyvHW_hBjd9s6Ru_DWgdLRwteCzl1X&sz=w1000",
     "stats": {
       "matches": 31,
@@ -643,7 +643,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "TLN.Lcc2",
     "team": "TALON",
     "teamAbv": "TLN",
-    "role": "mid",
+    "role": Role.MID,
     "image": "https://drive.google.com/thumbnail?id=16v1LojrcyOMx8py-2yJDhQzlGV9TAgrQ&sz=w1000",
     "stats": {
       "matches": 31,
@@ -658,7 +658,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "TLN.Luochenn",
     "team": "TALON",
     "teamAbv": "TLN",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1ImXS-qeKbf3_S4VD3k--Sc_r_fjBDxjR&sz=w1000",
     "stats": {
       "matches": 31,
@@ -673,7 +673,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "TLN.Tokyo",
     "team": "TALON",
     "teamAbv": "TLN",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=1BYN9xyDBPCMOLu3vSK6ZfoW_9av-m-sy&sz=w1000",
     "stats": {
       "matches": 0,
@@ -688,7 +688,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "MHD.Zhe",
     "team": "MAHADEWA",
     "teamAbv": "MHD",
-    "role": "jungle",
+    "role": Role.JUNGLE,
     "image": "https://drive.google.com/thumbnail?id=18YGtNYayo7v75XGYJb0XZz1t4evun2nz&sz=w1000",
     "stats": {
       "matches": 30,
@@ -703,7 +703,7 @@ export const MOCK_PLAYERS: Player[] = [
     "name": "MHD.Enyxx",
     "team": "MAHADEWA",
     "teamAbv": "MHD",
-    "role": "farm",
+    "role": Role.FARM,
     "image": "https://drive.google.com/thumbnail?id=1A3TyiHPtOok9ZlCd4ql6k7HOdljQWnET&sz=w1000",
     "stats": {
       "matches": 30,
@@ -712,377 +712,18 @@ export const MOCK_PLAYERS: Player[] = [
       "assist": 117,
       "gpm": 723.1
     }
-  },
-  {
-    "id": "46",
-    "name": "MHD.Axiorety",
-    "team": "MAHADEWA",
-    "teamAbv": "MHD",
-    "role": "mid",
-    "image": "https://drive.google.com/thumbnail?id=1bWQ1Oj6ZnO1dw7pDzp98-vC1idcMbjbV&sz=w1000",
-    "stats": {
-      "matches": 30,
-      "kill": 43,
-      "death": 46,
-      "assist": 140,
-      "gpm": 547.5
-    }
-  },
-  {
-    "id": "47",
-    "name": "MHD.Newack",
-    "team": "MAHADEWA",
-    "teamAbv": "MHD",
-    "role": "roam",
-    "image": "https://drive.google.com/thumbnail?id=1deeqFUVF-i-DXuLxp7nR0aKNzO7iEI4F&sz=w1000",
-    "stats": {
-      "matches": 19,
-      "kill": 14,
-      "death": 37,
-      "assist": 155,
-      "gpm": 297.4
-    }
-  },
-  {
-    "id": "48",
-    "name": "MHD.K1",
-    "team": "MAHADEWA",
-    "teamAbv": "MHD",
-    "role": "clash",
-    "image": "https://drive.google.com/thumbnail?id=1RqRLmUSJPVJ1aZCn0EZKjDrnJpjBiMhx&sz=w1000",
-    "stats": {
-      "matches": 22,
-      "kill": 29,
-      "death": 51,
-      "assist": 77,
-      "gpm": 445.6
-    }
-  },
-  {
-    "id": "49",
-    "name": "MHD.Monss",
-    "team": "MAHADEWA",
-    "teamAbv": "MHD",
-    "role": "roam",
-    "image": "https://drive.google.com/thumbnail?id=1SCVGOhZostsVWHZ_RuF9TwrIzduPDyV1&sz=w1000",
-    "stats": {
-      "matches": 19,
-      "kill": 17,
-      "death": 43,
-      "assist": 88,
-      "gpm": 323.4
-    }
-  },
-  {
-    "id": "50",
-    "name": "VESA.Nev",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "jungle",
-    "image": "https://drive.google.com/thumbnail?id=1911dCXlCmaAoRmc68uZLTocfxwKeR-8N&sz=w1000",
-    "stats": {
-      "matches": 41,
-      "kill": 113,
-      "death": 81,
-      "assist": 183,
-      "gpm": 921.2
-    }
-  },
-  {
-    "id": "51",
-    "name": "VESA.JenMyth",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "mid",
-    "image": "https://drive.google.com/thumbnail?id=1f-VSHyjhoi9Ba0QlIdeR7sFHvWbcEcmZ&sz=w1000",
-    "stats": {
-      "matches": 41,
-      "kill": 78,
-      "death": 54,
-      "assist": 234,
-      "gpm": 739.1
-    }
-  },
-  {
-    "id": "52",
-    "name": "VESA.Bal",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "clash",
-    "image": "https://drive.google.com/thumbnail?id=15Z3GR4XdK1V_v6APmtzKgI0NuJqDG5oq&sz=w1000",
-    "stats": {
-      "matches": 41,
-      "kill": 98,
-      "death": 97,
-      "assist": 159,
-      "gpm": 850.1
-    }
-  },
-  {
-    "id": "53",
-    "name": "VESA.JunYong",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "roam",
-    "image": "https://drive.google.com/thumbnail?id=1EmSO661UBVYRDHc0WYVKt4q8OlIY9xQp&sz=w1000",
-    "stats": {
-      "matches": 41,
-      "kill": 21,
-      "death": 67,
-      "assist": 306,
-      "gpm": 618.4
-    }
-  },
-  {
-    "id": "54",
-    "name": "VESA.Raven",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "farm",
-    "image": "https://drive.google.com/thumbnail?id=1M5WZA1YC0C7f_hw2nexnzl6XOsjlGvAl&sz=w1000",
-    "stats": {
-      "matches": 41,
-      "kill": 109,
-      "death": 81,
-      "assist": 166,
-      "gpm": 970.5
-    }
-  },
-  {
-    "id": "55",
-    "name": "VESA.Barudak",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "roam",
-    "image": "https://drive.google.com/thumbnail?id=1BKNhEbbOWYcg7oWS82r8N6AePUcmEmJL&sz=w1000",
-    "stats": {
-      "matches": 0,
-      "kill": 0,
-      "death": 0,
-      "assist": 0,
-      "gpm": 0
-    }
-  },
-  {
-    "id": "56",
-    "name": "VESA.Sieg",
-    "team": "VESAKHA ESPORTS",
-    "teamAbv": "VESA",
-    "role": "jungle",
-    "image": "https://drive.google.com/thumbnail?id=1a8iPhbgVNPLLa9lMD1WgU_GyyZ_FVktT&sz=w1000",
-    "stats": {
-      "matches": 0,
-      "kill": 0,
-      "death": 0,
-      "assist": 0,
-      "gpm": 0
-    }
-  },
-  {
-    "id": "57",
-    "name": "RVM.Acaaaa",
-    "team": "REVEMOIN ESPORTS",
-    "teamAbv": "RVM",
-    "role": "mid",
-    "image": "https://drive.google.com/thumbnail?id=1MMERFZ8UQsAX7oKMhSUIS-UO_EdzWc80&sz=w1000",
-    "stats": {
-      "matches": 27,
-      "kill": 17,
-      "death": 68,
-      "assist": 74,
-      "gpm": 454.5
-    }
-  },
-  {
-    "id": "58",
-    "name": "RVM.Imagination",
-    "team": "REVEMOIN ESPORTS",
-    "teamAbv": "RVM",
-    "role": "farm",
-    "image": "https://drive.google.com/thumbnail?id=1CRiIt_Aam5HBeBUXXD4ux1UfWZFlVOji&sz=w1000",
-    "stats": {
-      "matches": 27,
-      "kill": 42,
-      "death": 40,
-      "assist": 49,
-      "gpm": 626.5
-    }
-  },
-  {
-    "id": "59",
-    "name": "RVM.BiLjane",
-    "team": "REVEMOIN ESPORTS",
-    "teamAbv": "RVM",
-    "role": "roam",
-    "image": "https://drive.google.com/thumbnail?id=1REEGqSFLrmRH5lK7g_p3HCbMPP3dsN0W&sz=w1000",
-    "stats": {
-      "matches": 19,
-      "kill": 7,
-      "death": 47,
-      "assist": 76,
-      "gpm": 281.1
-    }
-  },
-  {
-    "id": "60",
-    "name": "RVM.L",
-    "team": "REVEMOIN ESPORTS",
-    "teamAbv": "RVM",
-    "role": "clash",
-    "image": "https://drive.google.com/thumbnail?id=1kreIHLDDX1aTn30ttp5mySz3cUV3u_70&sz=w1000",
-    "stats": {
-      "matches": 27,
-      "kill": 38,
-      "death": 71,
-      "assist": 56,
-      "gpm": 555.8
-    }
-  },
-  {
-    "id": "61",
-    "name": "RVM.Sasakii",
-    "team": "REVEMOIN ESPORTS",
-    "teamAbv": "RVM",
-    "role": "jungle",
-    "image": "https://drive.google.com/thumbnail?id=1oDTYQPUkLjgAXOqMczVXWr1Br2vQhRqu&sz=w1000",
-    "stats": {
-      "matches": 27,
-      "kill": 42,
-      "death": 86,
-      "assist": 66,
-      "gpm": 610.1
-    }
-  },
-  {
-    "id": "62",
-    "name": "RVM.KidoyZ",
-    "team": "REVEMOIN ESPORTS",
-    "teamAbv": "RVM",
-    "role": "farm",
-    "image": "https://drive.google.com/thumbnail?id=14GdCIPDmrjQOy1TlCAzx2V--XrTH6GWI&sz=w1000",
-    "stats": {
-      "matches": 8,
-      "kill": 10,
-      "death": 19,
-      "assist": 15,
-      "gpm": 157
-    }
   }
 ];
 
-// Simulate KV Data for Teams
 export const MOCK_TEAMS: Team[] = [
-  {
-    "id": "t1",
-    "name": "REX REGUM QEON",
-    "logo": "https://drive.google.com/thumbnail?id=1HvB5iFUdcejXACV9w0zwe89q0AVnrfsu&sz=w1000",
-    "description": "",
-    "matchPoints": 15,
-    "matchWins": 10,
-    "matchLosses": 2,
-    "gameWins": 21,
-    "gameLosses": 5
-  },
-  {
-    "id": "t2",
-    "name": "BIGETRON BY VITALITY",
-    "logo": "https://drive.google.com/thumbnail?id=1MuJ6SJBfMcH3JaxoQe4te2ABW-rPwAJ1&sz=w1000",
-    "description": "",
-    "matchPoints": 13,
-    "matchWins": 9,
-    "matchLosses": 3,
-    "gameWins": 19,
-    "gameLosses": 8
-  },
-  {
-    "id": "t3",
-    "name": "ONIC",
-    "logo": "https://drive.google.com/thumbnail?id=1gorNyv8s645IoJcDTDjbBwG7oQCMcMwx&sz=w1000",
-    "description": "",
-    "matchPoints": 10,
-    "matchWins": 6,
-    "matchLosses": 6,
-    "gameWins": 14,
-    "gameLosses": 14
-  },
-  {
-    "id": "t4",
-    "name": "ALTER EGO ESPORTS",
-    "logo": "https://drive.google.com/thumbnail?id=1p0HeAOXOPSsQhZJFLfsCsO7dYTmWTpWg&sz=w1000",
-    "description": "",
-    "matchPoints": 8,
-    "matchWins": 5,
-    "matchLosses": 7,
-    "gameWins": 12,
-    "gameLosses": 16
-  },
-  {
-    "id": "t5",
-    "name": "KAGENDRA",
-    "logo": "https://drive.google.com/thumbnail?id=1jrxJdX7wY3D2HZvTXOGKXxoNmt4RywGZ&sz=w1000",
-    "description": "",
-    "matchPoints": 6,
-    "matchWins": 4,
-    "matchLosses": 8,
-    "gameWins": 10,
-    "gameLosses": 18
-  },
-  {
-    "id": "t6",
-    "name": "DOMINATOR ESPORTS",
-    "logo": "https://drive.google.com/thumbnail?id=1MJiJMiDiwR3JX8-O8It6cv3ukDpdXlKL&sz=w1000",
-    "description": "",
-    "matchPoints": 5,
-    "matchWins": 2,
-    "matchLosses": 10,
-    "gameWins": 6,
-    "gameLosses": 21
-  },
-  {
-    "id": "t7",
-    "name": "TALON",
-    "logo": "https://drive.google.com/thumbnail?id=15gzTU3yH82bv4ss7MVjEISdTt8AyQqkb&sz=w1000",
-    "description": "",
-    "matchPoints": 4,
-    "matchWins": 6,
-    "matchLosses": 6,
-    "gameWins": 14,
-    "gameLosses": 14
-  },
-  {
-    "id": "t8",
-    "name": "MAHADEWA",
-    "logo": "https://drive.google.com/thumbnail?id=1WEue59I62hu-0DHEAdtnHxWjcgdCoh8v&sz=w1000",
-    "description": "",
-    "matchPoints": 3,
-    "matchWins": 5,
-    "matchLosses": 7,
-    "gameWins": 12,
-    "gameLosses": 16
-  },
-  {
-    "id": "t9",
-    "name": "VESAKHA ESPORTS",
-    "logo": "https://drive.google.com/thumbnail?id=1rG_bPLbY3xJunxBlBeRIxDaKx2b86ZIf&sz=w1000",
-    "description": "",
-    "matchPoints": 2,
-    "matchWins": 4,
-    "matchLosses": 8,
-    "gameWins": 10,
-    "gameLosses": 18
-  },
-  {
-    "id": "t10",
-    "name": "REVEMOIN ESPORTS",
-    "logo": "https://drive.google.com/thumbnail?id=13FG-_AwvWjM-wQ-Pw516X1Xs1u2gI_Tt&sz=w1000",
-    "description": "",
-    "matchPoints": 1,
-    "matchWins": 2,
-    "matchLosses": 10,
-    "gameWins": 6,
-    "gameLosses": 21
-  }
+  { id: 't1', name: 'REX REGUM QEON', logo: 'https://drive.google.com/thumbnail?id=1nRGF3ELWXAcpdnkQzvXHlCfHqgXQUclF&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't2', name: 'BIGETRON BY VITALITY', logo: 'https://drive.google.com/thumbnail?id=1xsDc7Wkomc7gYZwQApJI8_gTGM3DdfDv&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't3', name: 'ONIC', logo: 'https://drive.google.com/thumbnail?id=1E6Q12ygoJKI2XwgSPsaw7pWDaJa3Syee&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't4', name: 'ALTER EGO ESPORTS', logo: 'https://drive.google.com/thumbnail?id=1LYetG51-x4nDddPG51GDhF9-S4GOeGlt&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't5', name: 'KAGENDRA', logo: 'https://drive.google.com/thumbnail?id=1TC6MVbieUuKN-rl5VV2E9sHk1bOdpRAq&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't6', name: 'DOMINATOR ESPORTS', logo: 'https://drive.google.com/thumbnail?id=1hJYU3xZG68SYO0DKq-8J9GJjFIIFZIjn&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't7', name: 'TALON', logo: 'https://drive.google.com/thumbnail?id=18PHIbdX1PUj2zHX_9BJo5zjIKB4iFuwy&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
+  { id: 't8', name: 'MAHADEWA', logo: 'https://drive.google.com/thumbnail?id=18YGtNYayo7v75XGYJb0XZz1t4evun2nz&sz=w1000', matchPoints: 0, matchWins: 0, matchLosses: 0, gameWins: 0, gameLosses: 0 },
 ];
-    
 
 export const MOCK_SUBMISSIONS: DreamTeamSubmission[] = [];
